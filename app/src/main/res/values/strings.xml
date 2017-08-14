@@ -7,4 +7,6 @@
     <string name="file_manager">文件</string>
     <string name="remote_manager">远程</string>
     <string name="setting_manager">设置</string>
+    <string name="string_pc">控制电脑</string>
+    <string name="string_phone">控制手机</string>
 </resources>
