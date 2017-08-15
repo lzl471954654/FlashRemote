@@ -9,4 +9,16 @@
     <string name="setting_manager">设置</string>
     <string name="string_pc">控制电脑</string>
     <string name="string_phone">控制手机</string>
+
+    <string name="pc_power">电源</string>
+    <string name="screen">截屏</string>
+    <string name="wcg">鼠标</string>
+    <string name="disk">电脑盘符</string>
+    <string name="light">亮度</string>
+    <string name="tools">快捷工具</string>
+    <string name="search">搜索</string>
+    <string name="voice">音量</string>
+    <string name="yuying">语音</string>
+    <string name="back">返回</string>
+    
 </resources>
