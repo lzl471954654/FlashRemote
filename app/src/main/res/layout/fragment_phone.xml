@@ -6,5 +6,39 @@
 
     <include layout="@layout/myphone_layout"/>
 
+    <LinearLayout
+        android:layout_margin="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
 
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="对方IP："/>
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:hint="请输入服务端IP"/>
+    </LinearLayout>
+    <TextView
+        android:layout_margin="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:text="链接"
+        android:gravity="center"
+        android:background="@drawable/remote_tv_bg"/>
+    <TextView
+      android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:text="扫码链接"
+        android:gravity="center"
+        android:background="@drawable/remote_tv_bg"/>
 </LinearLayout>

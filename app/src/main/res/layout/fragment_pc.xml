@@ -14,11 +14,11 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
                 android:layout_marginTop="30dp"
-                android:src="@mipmap/pc" />
+                android:src="@mipmap/defualt_image" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -37,21 +37,21 @@
 
                 <ImageView
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
                     android:src="@mipmap/down" />
 
                 <ImageView
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
                     android:src="@mipmap/light" />
 
                 <ImageView
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
                     android:src="@mipmap/cat" />
@@ -59,7 +59,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="45dp"
                 android:layout_marginRight="45dp"
                 android:orientation="horizontal">
@@ -96,34 +96,31 @@
                 android:layout_marginRight="45dp"
                 android:orientation="horizontal">
 
-                <TextView
+                <ImageView
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="电源" />
+                    android:src="@mipmap/down" />
 
-                <TextView
+                <ImageView
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="亮度" />
+                    android:src="@mipmap/light" />
 
-                <TextView
+                <ImageView
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="截屏" />
+                    android:src="@mipmap/cat" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="45dp"
                 android:layout_marginRight="45dp"
                 android:orientation="horizontal">
@@ -161,6 +158,34 @@
                 android:layout_marginRight="45dp"
                 android:orientation="horizontal">
 
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:src="@mipmap/down" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:src="@mipmap/light" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:src="@mipmap/cat" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="45dp"
+                android:layout_marginRight="45dp"
+                android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -184,6 +209,8 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="截屏" />
+
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
@@ -191,7 +218,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="20dp"
         android:orientation="horizontal">
 
         <TextView
