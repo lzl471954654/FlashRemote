@@ -1,4 +1,4 @@
-package com.lp.flashremote.activities.adapters;
+package com.lp.flashremote.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

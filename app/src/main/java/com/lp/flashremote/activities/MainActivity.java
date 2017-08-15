@@ -1,0 +1,91 @@
+package com.lp.flashremote.activities;
+
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+
+import com.lp.flashremote.R;
+import com.lp.flashremote.adapters.MainTabPagerAdapter;
+import com.lp.flashremote.fragments.FileFragment;
+import com.lp.flashremote.fragments.RemoteFragments;
+import com.lp.flashremote.fragments.SettingFragment;
+
+
+import butterknife.ButterKnife;
+
+public class MainActivity extends AppCompatActivity {
+
+    private BottomNavigationView mNavigation;
+    private Fragment mFileFragment = new FileFragment();
+    private Fragment mRemoteFragment = new RemoteFragments();
+    private Fragment mSettingFragment = new SettingFragment();
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            hideFragment();
+            switch (item.getItemId()) {
+                case R.id.navigation_file:
+                    showFragment(mFileFragment);
+                    return true;
+                case R.id.navigation_remote:
+                    showFragment(mRemoteFragment);
+                    return true;
+                case R.id.navigation_settings:
+                    showFragment(mSettingFragment);
+                    return true;
+            }
+            return false;
+        }
+
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        mNavigation = (BottomNavigationView) findViewById(R.id.navigation_bar);
+        mNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        initFragment();
+    }
+
+
+    public void hideFragment() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.hide(mFileFragment)
+                .hide(mRemoteFragment)
+                .hide(mSettingFragment)
+                .commitNow();
+    }
+
+    public void showFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .show(fragment)
+                .commitNow();
+    }
+
+    public void initFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.content, mFileFragment)
+                .add(R.id.content, mRemoteFragment)
+                .add(R.id.content, mSettingFragment)
+                .commitNow();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .hide(mRemoteFragment)
+                .hide(mSettingFragment)
+                .commitNow();
+    }
+
+}

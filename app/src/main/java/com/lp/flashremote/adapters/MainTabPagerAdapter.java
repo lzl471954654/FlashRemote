@@ -1,12 +1,12 @@
-package com.lp.flashremote.activities.adapters;
+package com.lp.flashremote.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.lp.flashremote.activities.fragments.FileFragment;
-import com.lp.flashremote.activities.fragments.RemoteFragments;
-import com.lp.flashremote.activities.fragments.SettingFragment;
+import com.lp.flashremote.fragments.FileFragment;
+import com.lp.flashremote.fragments.RemoteFragments;
+import com.lp.flashremote.fragments.SettingFragment;
 
 /**
  * Created by PUJW on 2017/8/14.

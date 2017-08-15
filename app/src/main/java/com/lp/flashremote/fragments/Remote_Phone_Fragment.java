@@ -1,4 +1,4 @@
-package com.lp.flashremote.activities.fragments;
+package com.lp.flashremote.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

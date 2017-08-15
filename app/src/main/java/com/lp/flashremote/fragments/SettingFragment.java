@@ -1,4 +1,4 @@
-package com.lp.flashremote.activities.fragments;
+package com.lp.flashremote.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,10 +11,9 @@ import com.lp.flashremote.R;
 
 /**
  * Created by PUJW on 2017/8/14.
- *
  */
 
-public class FileFragment extends Fragment {
+public class SettingFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

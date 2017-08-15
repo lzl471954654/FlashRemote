@@ -1,4 +1,4 @@
-package com.lp.flashremote.activities.fragments;
+package com.lp.flashremote.fragments;
 
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.lp.flashremote.R;
-import com.lp.flashremote.activities.adapters.Remote_Tab_Adapter;
+import com.lp.flashremote.adapters.Remote_Tab_Adapter;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

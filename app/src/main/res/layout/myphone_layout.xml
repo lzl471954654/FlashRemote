@@ -3,11 +3,6 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="100dp">
-    <android.support.v4.widget.CircleImageView
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="match_parent"
-        android:src="@color/icons"/>
 
     <TextView
         android:layout_width="0dp"
