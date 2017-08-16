@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/myphone_layout"/>
+    <include android:id="@+id/codeimage"
+        layout="@layout/myphone_layout"/>
 
     <LinearLayout
         android:layout_margin="30dp"
