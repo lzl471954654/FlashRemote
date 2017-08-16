@@ -20,5 +20,15 @@
     <string name="voice">音量</string>
     <string name="yuying">语音</string>
     <string name="back">返回</string>
+
+    <string name="manager_video">视频</string>
+    <string name="manager_document">文档</string>
+    <string name="manager_pic">图片</string>
+    <string name="manager_music">音乐</string>
+    <string name="manager_apk">安装包</string>
+    <string name="manager_zip">压缩包</string>
+    <string name="manager_bluetooth">蓝牙</string>
+    <string name="manager_download">下载</string>
+    <string name="manager_remote">远程</string>
     
 </resources>

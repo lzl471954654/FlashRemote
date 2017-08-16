@@ -19,4 +19,13 @@
     <color name="icons">#212121</color>
     <color name="divider">#BDBDBD</color>
 
+    <color name="video_color">#00aeeb</color>
+    <color name="document_color">#9d6ee5</color>
+    <color name="pic_color">#00c293</color>
+    <color name="music_color">#ff5290</color>
+    <color name="apk_color">#00c192</color>
+    <color name="zip_color">#83c215</color>
+    <color name="bluetooth_color">#3f82f6</color>
+    <color name="download_color">#fe7158</color>
+    <color name="remote_color">#00c093</color>
 </resources>

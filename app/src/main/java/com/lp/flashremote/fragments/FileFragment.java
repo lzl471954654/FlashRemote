@@ -18,7 +18,7 @@ public class FileFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.fragment_file,null);
+        View view=inflater.inflate(R.layout.fragment_file_manager,container,false);
         return view;
     }
 }
