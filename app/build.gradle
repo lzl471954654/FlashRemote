@@ -31,4 +31,6 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.0'
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.google.zxing:core:3.2.1'
+    compile project(':libzxing')
 }

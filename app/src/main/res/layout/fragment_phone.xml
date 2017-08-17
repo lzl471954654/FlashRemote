@@ -34,7 +34,8 @@
         android:gravity="center"
         android:background="@drawable/remote_tv_bg"/>
     <TextView
-      android:layout_marginStart="30dp"
+        android:id="@+id/scanQR"
+         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
         android:layout_width="match_parent"
         android:layout_height="45dp"
