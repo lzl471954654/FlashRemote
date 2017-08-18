@@ -28,7 +28,8 @@
                 <TextView
                     android:id="@+id/m_video_count"
                     style="@style/fileManagerCountText"
-                    android:text="7项"
+                    android:text=""
+                    android:visibility="invisible"
                     />
                 <TextView
                     android:text="@string/manager_video"
@@ -52,7 +53,8 @@
                 <TextView
                     android:id="@+id/m_document_count"
                     style="@style/fileManagerCountText"
-                    android:text="87项"
+                    android:text=""
+                    android:visibility="invisible"
                     />
                 <TextView
                     android:id="@+id/m_text2"
@@ -76,7 +78,8 @@
                 <TextView
                     android:id="@+id/m_pic_count"
                     style="@style/fileManagerCountText"
-                    android:text="55项"
+                    android:text=""
+                    android:visibility="invisible"
                     />
                 <TextView
                     android:id="@+id/m_text3"
@@ -106,7 +109,8 @@
                 <TextView
                     android:id="@+id/m_music_count"
                     style="@style/fileManagerCountText"
-                    android:text="356项"
+                    android:text=""
+                    android:visibility="invisible"
                     />
                 <TextView
                     android:id="@+id/m_text4"
@@ -131,7 +135,8 @@
                 <TextView
                     android:id="@+id/m_apk_count"
                     style="@style/fileManagerCountText"
-                    android:text="8项"
+                    android:text=""
+                    android:visibility="invisible"
                     />
                 <TextView
                     android:id="@+id/m_text5"
@@ -155,7 +160,8 @@
                 <TextView
                     android:id="@+id/m_zip_count"
                     style="@style/fileManagerCountText"
-                    android:text="156项"
+                    android:text=""
+                    android:visibility="invisible"
                     />
                 <TextView
                     android:id="@+id/m_text6"
@@ -186,7 +192,8 @@
                 <TextView
                     android:id="@+id/m_bluetooth_count"
                     style="@style/fileManagerCountText"
-                    android:text="20项"
+                    android:text=""
+                    android:visibility="invisible"
                     />
                 <TextView
                     android:id="@+id/m_text7"
@@ -211,7 +218,8 @@
                 <TextView
                     android:id="@+id/m_download_count"
                     style="@style/fileManagerCountText"
-                    android:text="77项"
+                    android:text=""
+                    android:visibility="invisible"
                     />
                 <TextView
                     android:id="@+id/m_text8"
@@ -291,7 +299,7 @@
                 android:layout_height="45dp"
                 android:src="@mipmap/icon_folder"
                 android:layout_centerVertical="true"
-                android:id="@+id/m_image1"
+                android:id="@+id/m_folder"
                 />
             <TextView
                 android:id="@+id/m_store_text"
@@ -299,8 +307,8 @@
                 android:layout_height="wrap_content"
                 android:text="手机存储"
                 android:textColor="@color/primary_text"
-                android:layout_toRightOf="@id/m_image1"
-                android:layout_alignTop="@id/m_image1"
+                android:layout_toRightOf="@id/m_folder"
+                android:layout_alignTop="@id/m_folder"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
                 />
@@ -308,8 +316,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
                 android:background="@color/green"
-                android:layout_toRightOf="@id/m_image1"
-                android:layout_alignBottom="@id/m_image1"
+                android:layout_toRightOf="@id/m_folder"
+                android:layout_alignBottom="@id/m_folder"
                 android:layout_marginBottom="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"

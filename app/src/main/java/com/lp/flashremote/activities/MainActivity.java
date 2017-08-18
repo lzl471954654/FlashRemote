@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private Fragment mFileFragment = new FileFragment();
     private Fragment mRemoteFragment = new RemoteFragments();
     private Fragment mSettingFragment = new SettingFragment();
+    private Fragment mNowFragment = null;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -60,6 +61,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideFragment();
+        if(mNowFragment==null)
+            showFragment(mFileFragment);
+        else
+            showFragment(mNowFragment);
+    }
+
     public void hideFragment() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.hide(mFileFragment)
@@ -72,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .show(fragment)
                 .commitNow();
+        mNowFragment = fragment;
     }
 
     public void initFragment() {
@@ -86,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 .hide(mRemoteFragment)
                 .hide(mSettingFragment)
                 .commitNow();
+        mNowFragment = mFileFragment;
     }
 
 }
