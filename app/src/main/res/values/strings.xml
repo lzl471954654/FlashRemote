@@ -20,6 +20,8 @@
     <string name="voice">音量</string>
     <string name="yuying">语音</string>
     <string name="back">返回</string>
+    <string name="mIp">我的IP:</string>
+    <string name="errorIp">当前网络有故障</string>
 
     <string name="manager_video">视频</string>
     <string name="manager_document">文档</string>

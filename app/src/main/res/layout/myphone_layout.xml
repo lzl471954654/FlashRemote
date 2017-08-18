@@ -11,11 +11,12 @@
         android:src="@mipmap/defualt_image"/>
 
     <TextView
+       android:id="@+id/ipaddress"
         android:layout_width="0dp"
         android:layout_weight="2"
         android:layout_height="match_parent"
         android:gravity="center|left"
-        android:text="我的IP：127.0.0.1"/>
+        android:text="@string/mIp"/>
 
     <ImageView
         android:layout_weight="1"
