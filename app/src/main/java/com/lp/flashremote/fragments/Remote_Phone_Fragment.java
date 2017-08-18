@@ -1,5 +1,6 @@
 package com.lp.flashremote.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -14,8 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lp.flashremote.R;
+import com.lp.flashremote.bean.NetParameter;
 import com.lp.flashremote.utils.QRcodeutil;
 import com.lp.flashremote.views.CodeDialog;
 import com.xys.libzxing.zxing.activity.CaptureActivity;
@@ -28,8 +31,10 @@ import java.io.File;
  */
 
 public class Remote_Phone_Fragment extends Fragment implements View.OnClickListener{
+    private static final int QR_RESULT_CODE=1;
     private LinearLayout mQRcode;
     private TextView mScanQR;
+    private TextView myIpAddress;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -50,6 +55,8 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
     }
 
     private void iniView(View view) {
+        myIpAddress=(TextView)view.findViewById(R.id.ipaddress);
+        myIpAddress.setText(NetParameter.IPAddress);
         mQRcode=(LinearLayout)view.findViewById(R.id.codeimage);
         mScanQR=(TextView)view.findViewById(R.id.scanQR);
     }
@@ -60,9 +67,8 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
             case R.id.codeimage:
                 final String filepath=getFileRoot(getContext())
                         + File.separator+"qr"+System.currentTimeMillis()+".jpg";
-                String content="愿世界和平!";
                 Bitmap bitmap=null;
-                if (QRcodeutil.createQRcode(content,600,600,filepath)){
+                if (QRcodeutil.createQRcode(NetParameter.IPAddress,600,600,filepath)){
                     bitmap= BitmapFactory.decodeFile(filepath);
                 }else{
                     bitmap=BitmapFactory.decodeResource(getResources(),R.drawable.code);
@@ -75,7 +81,7 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                 break;
             case R.id.scanQR:
                 Intent intent=new Intent(getActivity(), CaptureActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent,QR_RESULT_CODE);
                 break;
         }
     }
@@ -87,5 +93,15 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
             }
         }
         return context.getFilesDir().getAbsolutePath();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode==QR_RESULT_CODE && resultCode== Activity.RESULT_OK){
+            Bundle bundle=data.getExtras();
+            String QRcontent=bundle.getString("result");
+            Toast.makeText(getActivity(),QRcontent,Toast.LENGTH_LONG).show();
+        }
     }
 }

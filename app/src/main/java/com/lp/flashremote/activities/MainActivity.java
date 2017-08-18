@@ -7,15 +7,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.lp.flashremote.R;
 import com.lp.flashremote.adapters.MainTabPagerAdapter;
+import com.lp.flashremote.bean.NetParameter;
 import com.lp.flashremote.fragments.FileFragment;
 import com.lp.flashremote.fragments.RemoteFragments;
 import com.lp.flashremote.fragments.SettingFragment;
+import com.lp.flashremote.utils.IpAddressUtil;
 
 
 import butterknife.ButterKnife;
@@ -60,6 +63,16 @@ public class MainActivity extends AppCompatActivity {
         initFragment();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        String ip=IpAddressUtil.getIPAddress(this);
+        if (ip!=null){
+            NetParameter.IPAddress=getString(R.string.mIp)+ip;
+        }else{
+            NetParameter.IPAddress=getString(R.string.errorIp);
+        }
+    }
 
     @Override
     protected void onResume() {

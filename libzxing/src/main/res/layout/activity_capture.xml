@@ -9,7 +9,6 @@
         android:id="@+id/capture_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
     <RelativeLayout
         android:id="@+id/capture_container"
         android:layout_width="match_parent"
@@ -18,14 +17,13 @@
         <ImageView
             android:id="@+id/capture_mask_top"
             android:layout_width="match_parent"
-            android:layout_height="130dp"
+            android:layout_height="170dp"
             android:layout_alignParentTop="true"
             android:background="@drawable/shadow" />
-
         <RelativeLayout
             android:id="@+id/capture_crop_view"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="230dp"
+            android:layout_height="230dp"
             android:layout_below="@id/capture_mask_top"
             android:layout_centerHorizontal="true"
             android:background="@drawable/zxing_code_bg">
@@ -41,13 +39,25 @@
 
         </RelativeLayout>
 
-        <ImageView
+        <FrameLayout
             android:id="@+id/capture_mask_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:layout_below="@id/capture_crop_view"
-            android:background="@drawable/shadow" />
+            android:layout_alignParentBottom="true">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/shadow" />
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/scanhint"
+                android:gravity="center"
+                android:textColor="#ffffff"/>
+        </FrameLayout>
+
 
         <ImageView
             android:id="@+id/capture_mask_left"
@@ -69,15 +79,40 @@
             android:layout_toRightOf="@id/capture_crop_view"
             android:background="@drawable/shadow" />
     </RelativeLayout>
-
-  <!--  <LinearLayout
+    <LinearLayout
         android:layout_alignParentTop="true"
         android:layout_width="match_parent"
-        android:background="#ffffff"
-        android:layout_height="50dp">
+        android:orientation="horizontal"
+        android:background="#37474f"
+        android:layout_height="70dp">
         <ImageView
-            android:layout_width="match_parent"
+            android:id="@+id/back"
+            android:paddingTop="35dp"
+            android:layout_width="0dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+           android:paddingBottom="15dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
-            android:src="@drawable/zxing_line"/>
-    </LinearLayout>-->
+            android:src="@drawable/back_remote"/>
+        <View
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:layout_marginTop="35dp"
+            android:layout_marginBottom="10dp"
+            android:background="#000000"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="6"
+            android:layout_marginTop="28dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_vertical"
+            android:layout_height="match_parent"
+            android:textSize="20sp"
+            android:textColor="#ffffff"
+            android:text="扫一扫"/>
+
+    </LinearLayout>
+
 </RelativeLayout>
