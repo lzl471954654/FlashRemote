@@ -32,5 +32,13 @@
     <string name="manager_bluetooth">蓝牙</string>
     <string name="manager_download">下载</string>
     <string name="manager_remote">远程</string>
-    
+
+    <string name="file_exp_copy">复制</string>
+    <string name="file_exp_move">移动</string>
+    <string name="file_exp_delete">删除</string>
+    <string name="file_exp_send">发送</string>
+    <string name="file_exp_select_all">全选</string>
+    <string name="file_exp_nofile">没有文件</string>
+    <string name="file_exp_normal_date">-/-/-</string>
+
 </resources>

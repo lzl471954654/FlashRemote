@@ -79,9 +79,10 @@ class FileManagerModel(val context: Context,val handler: Handler) {
                 null
         )
         while (docCR.moveToNext()) {
-            val fileName = docCR.getString(docCR.getColumnIndex(MediaStore.Files.FileColumns.DISPLAY_NAME))
             val fileSize = docCR.getLong(docCR.getColumnIndex(MediaStore.Files.FileColumns.SIZE))
             val filePath = docCR.getString(docCR.getColumnIndex(MediaStore.Files.FileColumns.DATA))
+            val params = filePath.split("/")
+            val fileName = params[params.size-1]
             val baseFile = BaseFile(filePath, fileSize, fileName)
             docList.add(baseFile)
         }
@@ -95,9 +96,10 @@ class FileManagerModel(val context: Context,val handler: Handler) {
                 null
         )
         while (apkCR.moveToNext()) {
-            val fileName = apkCR.getString(apkCR.getColumnIndex(MediaStore.Files.FileColumns.DISPLAY_NAME))
             val fileSize = apkCR.getLong(apkCR.getColumnIndex(MediaStore.Files.FileColumns.SIZE))
             val filePath = apkCR.getString(apkCR.getColumnIndex(MediaStore.Files.FileColumns.DATA))
+            val params = filePath.split("/")
+            val fileName = params[params.size-1]
             val baseFile = BaseFile(filePath, fileSize, fileName)
             apkList.add(baseFile)
         }
@@ -111,9 +113,10 @@ class FileManagerModel(val context: Context,val handler: Handler) {
                 null
         )
         while (zipCR.moveToNext()) {
-            val fileName = zipCR.getString(zipCR.getColumnIndex(MediaStore.Files.FileColumns.DISPLAY_NAME))
             val fileSize = zipCR.getLong(zipCR.getColumnIndex(MediaStore.Files.FileColumns.SIZE))
             val filePath = zipCR.getString(zipCR.getColumnIndex(MediaStore.Files.FileColumns.DATA))
+            val params = filePath.split("/")
+            val fileName = params[params.size-1]
             val baseFile = BaseFile(filePath, fileSize, fileName)
             zipList.add(baseFile)
         }
@@ -125,14 +128,15 @@ class FileManagerModel(val context: Context,val handler: Handler) {
         docCR.close()
 
         val msg = Message()
-        val bundle = Bundle()
-        bundle.putSerializable("videoList", videoList)
-        bundle.putSerializable("musicList", musciList)
-        bundle.putSerializable("imageList", imageList)
-        bundle.putSerializable("docList", docList)
-        bundle.putSerializable("zipList", zipList)
-        bundle.putSerializable("apkList", apkList)
-        msg.data = bundle
+
+
+        FileManagerStatic.musicList = musciList.toList()
+        FileManagerStatic.videoList = videoList.toList()
+        FileManagerStatic.picList = imageList.toList()
+        FileManagerStatic.zipList = zipList.toList()
+        FileManagerStatic.apkList = apkList.toList()
+        FileManagerStatic.docList = docList.toList()
+
         msg.what = FileFragment.REFRESH_COUNT
         handler.sendMessage(msg)
         println("count end!!")
