@@ -3,7 +3,6 @@ package com.lp.flashremote.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -18,7 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lp.flashremote.R;
-import com.lp.flashremote.bean.NetParameter;
+import com.lp.flashremote.beans.NetParameter;
 import com.lp.flashremote.utils.QRcodeutil;
 import com.lp.flashremote.views.CodeDialog;
 import com.xys.libzxing.zxing.activity.CaptureActivity;

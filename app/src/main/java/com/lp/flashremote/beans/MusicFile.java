@@ -47,8 +47,8 @@ public class MusicFile extends BaseFile implements Serializable {
         this.duration = duration;
     }
 
-    public MusicFile(String filePath, String fileName, Long fileSize, String title, String artist, Long duration) {
-        super(filePath,fileSize,fileName);
+    public MusicFile(String filePath, String fileName, Long fileSize, String title, String artist, Long duration,Long date) {
+        super(filePath,fileSize,fileName,date);
         this.title = title;
         this.artist = artist;
         this.duration = duration;

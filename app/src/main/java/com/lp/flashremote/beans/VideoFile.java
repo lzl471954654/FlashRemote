@@ -10,8 +10,8 @@ public class VideoFile extends BaseFile implements Serializable {
     String title;
     Long duration;
 
-    public VideoFile(String filePath, Long fileSize, String fileName, String title, Long duration) {
-        super(filePath, fileSize, fileName);
+    public VideoFile(String filePath, Long fileSize, String fileName, String title, Long duration,Long date) {
+        super(filePath, fileSize, fileName,date);
         this.title = title;
         this.duration = duration;
     }

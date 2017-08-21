@@ -1,4 +1,4 @@
-package com.lp.flashremote.bean;
+package com.lp.flashremote.beans;
 
 /**
  * Created by PUJW on 2017/8/18.

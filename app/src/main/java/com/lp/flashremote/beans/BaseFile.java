@@ -10,6 +10,8 @@ public class BaseFile implements Serializable {
     String filePath;
     Long fileSize;
     String fileName;
+    Long fileCreateDate;
+    boolean isChoosed = false;
 
     @Override
     public String toString() {
@@ -17,7 +19,25 @@ public class BaseFile implements Serializable {
                 "filePath='" + filePath + '\'' +
                 ", fileSize=" + fileSize +
                 ", fileName='" + fileName + '\'' +
+                ", fileCreateDate=" + fileCreateDate +
+                ", isChoosed=" + isChoosed +
                 '}';
+    }
+
+    public Long getFileCreateDate() {
+        return fileCreateDate;
+    }
+
+    public void setFileCreateDate(Long fileCreateDate) {
+        this.fileCreateDate = fileCreateDate;
+    }
+
+    public boolean isChoosed() {
+        return isChoosed;
+    }
+
+    public void setChoosed(boolean choosed) {
+        isChoosed = choosed;
     }
 
     public String getFilePath() {
@@ -44,9 +64,10 @@ public class BaseFile implements Serializable {
         this.fileName = fileName;
     }
 
-    public BaseFile(String filePath, Long fileSize, String fileName) {
+    public BaseFile(String filePath, Long fileSize, String fileName,Long fileCreateDate) {
         this.filePath = filePath;
         this.fileSize = fileSize;
         this.fileName = fileName;
+        this.fileCreateDate = fileCreateDate;
     }
 }

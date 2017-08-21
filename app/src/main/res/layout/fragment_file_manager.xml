@@ -293,6 +293,7 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginStart="16dp"
+            android:id="@+id/m_folder_layout"
             >
             <ImageView
                 android:layout_width="45dp"
@@ -315,21 +316,34 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
+                android:background="@color/divider"
+                android:layout_toRightOf="@id/m_folder"
+                android:layout_alignBottom="@id/m_folder"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:id="@+id/m_storage_base_line"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
                 android:background="@color/green"
                 android:layout_toRightOf="@id/m_folder"
                 android:layout_alignBottom="@id/m_folder"
                 android:layout_marginBottom="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
+                android:id="@+id/m_storage_line"
                 />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/secondary_text"
-                android:text="133G可用"
+                android:text=""
                 android:layout_marginEnd="16dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignBottom="@id/m_store_text"
+                android:id="@+id/m_storage_size"
                 />
         </RelativeLayout>
         <View
