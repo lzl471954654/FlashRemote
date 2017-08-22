@@ -33,20 +33,40 @@ class FIleExplorerAdapter(val dataType:Int,val context: Context) : RecyclerView.
 
     val chooseList = ArrayList<BaseFile>()
     val chooseFile = ArrayList<File>()
-    lateinit var dataList:List<BaseFile>
+    lateinit var fileFlag:BooleanArray
+    lateinit var dataList:ArrayList<BaseFile>
     var rootDir:File by Delegates.observable(File("/")){
         property, oldValue, newValue ->
         fileList = newValue.listFiles()
+        fileFlag = BooleanArray(fileList.size)
     }
     lateinit var fileList:Array<File>
     val stack:Stack<File> = Stack()
 
-    public fun setData(list:List<BaseFile>){
+    public fun setData(list:ArrayList<BaseFile>){
         dataList = list
     }
 
     public fun setData(file:File){
         rootDir = file
+    }
+
+    public fun selectAll(){
+        println("fileList: ${fileList.size}  chooseFile: ${chooseFile.size}")
+        if(fileList.size!=chooseFile.size){
+            for(x in 0 until fileFlag.size)
+                fileFlag[x] = true
+            chooseFile.clear()
+            fileList.forEach { chooseFile.add(it) }
+            println("fileList: ${fileList.size}  chooseFile: ${chooseFile.size}")
+        }
+        else{
+            for(x in 0 until fileFlag.size)
+                fileFlag[x] = false
+            chooseFile.clear()
+            println("clear all")
+        }
+        notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: NormalViewHolder?, position: Int) {
@@ -82,7 +102,6 @@ class FIleExplorerAdapter(val dataType:Int,val context: Context) : RecyclerView.
         return !stack.isEmpty()
     }
     override fun getItemCount(): Int {
-        println("getItemCount")
         return if (dataType == BASE_FILE_EXPLORER)
         {
             fileList.size
@@ -96,7 +115,6 @@ class FIleExplorerAdapter(val dataType:Int,val context: Context) : RecyclerView.
 
 
     class ExplorerFileViewHolder(view: View,context: Context,var adapter: FIleExplorerAdapter):NormalViewHolder(view,context){
-        var isChecked:Boolean = false
         fun onBind(fileArray:Array<File>,position: Int,chooseFile:ArrayList<File>){
             val nowFile = fileArray[position]
             root.setOnClickListener{
@@ -117,21 +135,21 @@ class FIleExplorerAdapter(val dataType:Int,val context: Context) : RecyclerView.
                 root.file_exp_item_icon.setImageResource(R.mipmap.icon_folder)
             }
             else{
-                root.file_exp_item_icon.setImageResource(R.mipmap.icon_item_file)
-                root.file_exp_item_check.setOnCheckedChangeListener {
-                    button, isChecked ->
-                    this.isChecked = isChecked
-                    if(isChecked&&!chooseFile.contains(nowFile)){
-                        chooseFile.add(nowFile)
-                    }
-                    else
-                    {
-                        chooseFile.remove(nowFile)
-                    }
-                    (context as FileExplorerActivity).showBottomBar(chooseFile.size)
-                }
-                root.file_exp_item_check.isChecked = this.isChecked
+                root.file_exp_item_icon.setImageResource(getFileIcon(nowFile.absolutePath))
             }
+            root.file_exp_item_check.setOnCheckedChangeListener {
+                button, isChecked ->
+                adapter.fileFlag[position] = isChecked
+                if(isChecked&&!chooseFile.contains(nowFile)){
+                    chooseFile.add(nowFile)
+                }
+                if(!isChecked&&chooseFile.contains(nowFile))
+                {
+                    chooseFile.remove(nowFile)
+                }
+                (context as FileExplorerActivity).showBottomBar(chooseFile.size)
+            }
+            root.file_exp_item_check.isChecked = adapter.fileFlag[position]
         }
     }
 
@@ -142,34 +160,8 @@ class FIleExplorerAdapter(val dataType:Int,val context: Context) : RecyclerView.
             root = view
             this.context = context
         }
-    }
-    open class BaseFileViewHolder: NormalViewHolder{
-        constructor(view: View,context:Context):super(view,context){
-            root = view
-            this.context = context
-        }
 
-        open fun onBind(position:Int,list:List<BaseFile>,chooseList:ArrayList<BaseFile>){
-            root.setOnClickListener{
-                (context as FileExplorerActivity).openFile(list[position].filePath)
-            }
-            root.file_exp_item_date.text = getStringDate(list[position].fileCreateDate*1000)
-            root.file_exp_item_name.text = list[position].fileName
-            root.file_exp_item_size.text = getSizeText(list[position].fileSize)
-            root.file_exp_item_icon.setImageResource(getFileIcon(list[position].filePath))
-            root.file_exp_item_check.setOnCheckedChangeListener{
-                button: CompoundButton?, isChecked: Boolean ->
-                list[position].isChoosed = isChecked
-                if (isChecked&&!chooseList.contains(list[position]))
-                    chooseList.add(list[position])
-                else
-                    chooseList.remove(list[position])
-                (context as FileExplorerActivity).showBottomBar(chooseList.size)
-            }
-            root.file_exp_item_check.isChecked = list[position].isChoosed
-        }
-
-        private fun getFileIcon(path:String):Int{
+        fun getFileIcon(path:String):Int{
             iconType.forEach {
                 if (path.endsWith(it)){
                     return iconMap[it]!!
@@ -199,6 +191,33 @@ class FIleExplorerAdapter(val dataType:Int,val context: Context) : RecyclerView.
             )
 
         }
+    }
+    open class BaseFileViewHolder: NormalViewHolder{
+        constructor(view: View,context:Context):super(view,context){
+            root = view
+            this.context = context
+        }
+
+        open fun onBind(position:Int,list:ArrayList<BaseFile>,chooseList:ArrayList<BaseFile>){
+            root.setOnClickListener{
+                (context as FileExplorerActivity).openFile(list[position].filePath)
+            }
+            root.file_exp_item_date.text = getStringDate(list[position].fileCreateDate*1000)
+            root.file_exp_item_name.text = list[position].fileName
+            root.file_exp_item_size.text = getSizeText(list[position].fileSize)
+            root.file_exp_item_icon.setImageResource(getFileIcon(list[position].filePath))
+            root.file_exp_item_check.setOnCheckedChangeListener{
+                button: CompoundButton?, isChecked: Boolean ->
+                list[position].isChoosed = isChecked
+                if (isChecked&&!chooseList.contains(list[position]))
+                    chooseList.add(list[position])
+                else
+                    chooseList.remove(list[position])
+                (context as FileExplorerActivity).showBottomBar(chooseList.size)
+            }
+            root.file_exp_item_check.isChecked = list[position].isChoosed
+        }
+
     }
 }
 

@@ -137,12 +137,12 @@ class FileManagerModel(val context: Context,val handler: Handler) {
         val msg = Message()
 
 
-        FileManagerStatic.musicList = musciList.toList()
-        FileManagerStatic.videoList = videoList.toList()
-        FileManagerStatic.picList = imageList.toList()
-        FileManagerStatic.zipList = zipList.toList()
-        FileManagerStatic.apkList = apkList.toList()
-        FileManagerStatic.docList = docList.toList()
+        FileManagerStatic.musicList = musciList
+        FileManagerStatic.videoList = videoList
+        FileManagerStatic.picList = imageList
+        FileManagerStatic.zipList = zipList
+        FileManagerStatic.apkList = apkList
+        FileManagerStatic.docList = docList
 
         msg.what = FileFragment.REFRESH_COUNT
         handler.sendMessage(msg)

@@ -42,7 +42,10 @@ dependencies {
     compile "org.jetbrains.anko:anko-appcompat-v7:0.10.1"
     compile "org.jetbrains.anko:anko-design:0.10.1"
     compile "org.jetbrains.anko:anko-recyclerview-v7:0.10.1"
+
+    compile 'com.github.ybq:Android-SpinKit:1.1.0'
 }
 repositories {
     mavenCentral()
+    maven { url "https://jitpack.io" }
 }
