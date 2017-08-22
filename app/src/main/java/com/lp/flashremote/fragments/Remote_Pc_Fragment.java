@@ -2,6 +2,9 @@ package com.lp.flashremote.fragments;
 
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -11,8 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lp.flashremote.R;
+import com.lp.flashremote.activities.PcOperationActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,31 +99,47 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 }
                 break;
             case R.id.fab1:
-                hideFABMenu();
+                new AlertDialog.Builder(getActivity())
+                        .setIcon(R.mipmap.icon_remote)
+                        .setTitle("可爱的程序员哥哥提示")
+                        .setMessage("您确定要关闭您的电脑吗 ? ")
+                        .setPositiveButton("关了吧", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Toast.makeText(getActivity(),"关闭成功!",Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setNegativeButton("还是等等吧", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Toast.makeText(getActivity(),"嗯，电脑还开着！",Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .show();
                 break;
             case R.id.fab2:
-                hideFABMenu();
+                startPCActivity("screen");
                 break;
             case R.id.fab3:
-                hideFABMenu();
+                startPCActivity("mouse");
                 break;
             case R.id.fab4:
-                hideFABMenu();
+                startPCActivity("disk");
                 break;
             case R.id.fab5:
-                hideFABMenu();
+                startPCActivity("luminance");
                 break;
             case R.id.fab6:
-                hideFABMenu();
+                startPCActivity("tools");
                 break;
             case R.id.fab7:
-                hideFABMenu();
+                startPCActivity("search");
                 break;
             case R.id.fab8:
-                hideFABMenu();
+                startPCActivity("Volume");
                 break;
             case R.id.fab9:
-                hideFABMenu();
+                startPCActivity("yuyin");
                 break;
             case R.id.hide_more_menu:
                 hideFABMenu();
@@ -129,5 +150,11 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     private void hideFABMenu() {
         mFab_Menu.setVisibility(View.GONE);
         isShow = false;
+    }
+
+    private void startPCActivity(String op){
+        Intent Intent=new Intent(getActivity(), PcOperationActivity.class);
+        Intent.putExtra("operation",op);
+        startActivity(Intent);
     }
 }
