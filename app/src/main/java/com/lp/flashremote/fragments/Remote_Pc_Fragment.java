@@ -9,21 +9,29 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.iflytek.cloud.ui.RecognizerDialog;
 import com.lp.flashremote.R;
 import com.lp.flashremote.activities.PcOperationActivity;
+import com.lp.flashremote.utils.VoiceUtil;
+import com.lp.flashremote.views.CodeDialog;
+import com.lp.flashremote.views.VolumwDialog;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by PUJW on 2017/8/14.
+ *
  */
 
 public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener {
@@ -38,6 +46,8 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     private RelativeLayout mFab_Menu;
     private TextView mHideMenuTv;
 
+    private RecognizerDialog iatDialog;
+
     private boolean isShow = false;
 
     @Nullable
@@ -46,6 +56,16 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
         View view = inflater.inflate(R.layout.fragment_pc, container, false);
         initView(view);
         setDefaultValues();
+        //语音长按监听
+        view.findViewById(R.id.fab9).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+               VoiceUtil voiceUtil=VoiceUtil.getInstance();
+                voiceUtil.setMcontext(getActivity());
+                voiceUtil.discern();
+                return false;
+            }
+        });
         return view;
     }
 
@@ -60,6 +80,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         bindEvents();
+
     }
 
     private void bindEvents() {
@@ -136,10 +157,18 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 startPCActivity("search");
                 break;
             case R.id.fab8:
-                startPCActivity("Volume");
+                VolumwDialog dialog=new VolumwDialog(getActivity());
+                Window dialogWindow = dialog.getWindow();
+                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+                dialogWindow.setGravity(Gravity.CENTER | Gravity.TOP);
+                lp.x = 0; // 新位置X坐标
+                lp.y = 250;
+                dialogWindow.setAttributes(lp);
+                dialog.show();
                 break;
             case R.id.fab9:
-                startPCActivity("yuyin");
+                Toast.makeText(getActivity(),"请长按说话！",Toast.LENGTH_SHORT).show();
+               // startPCActivity("yuyin");
                 break;
             case R.id.hide_more_menu:
                 hideFABMenu();
@@ -157,4 +186,5 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
         Intent.putExtra("operation",op);
         startActivity(Intent);
     }
+
 }

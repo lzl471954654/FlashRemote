@@ -28,4 +28,6 @@
     <color name="bluetooth_color">#3f82f6</color>
     <color name="download_color">#fe7158</color>
     <color name="remote_color">#00c093</color>
+
+    <color name="volumedialog_bg">#78353434</color>
 </resources>
