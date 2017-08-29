@@ -30,7 +30,7 @@ class FIleExplorerAdapter(val dataType:Int,val context: Context) : RecyclerView.
         val VIDEO_TYPE = 3
         val BASE_FILE_EXPLORER = 4
     }
-
+    var showSelector = true
     val chooseList = ArrayList<BaseFile>()
     val chooseFile = ArrayList<File>()
     lateinit var fileFlag:BooleanArray
@@ -69,6 +69,10 @@ class FIleExplorerAdapter(val dataType:Int,val context: Context) : RecyclerView.
         notifyDataSetChanged()
     }
 
+    fun hideSelector(){
+        showSelector = false
+    }
+
     override fun onBindViewHolder(holder: NormalViewHolder?, position: Int) {
         if(holder is BaseFileViewHolder)
             holder?.onBind(position,dataList,chooseList)
@@ -82,7 +86,7 @@ class FIleExplorerAdapter(val dataType:Int,val context: Context) : RecyclerView.
         return if(dataType == BASE_FILE_EXPLORER)
             ExplorerFileViewHolder(view,context,this)
         else
-            BaseFileViewHolder(view,context)
+            BaseFileViewHolder(view,context,this)
     }
 
     private fun moveToNextFolder(file: File){
@@ -114,8 +118,9 @@ class FIleExplorerAdapter(val dataType:Int,val context: Context) : RecyclerView.
     }
 
 
-    class ExplorerFileViewHolder(view: View,context: Context,var adapter: FIleExplorerAdapter):NormalViewHolder(view,context){
+    class ExplorerFileViewHolder(view: View,context: Context,adapter: FIleExplorerAdapter):NormalViewHolder(view,context,adapter){
         fun onBind(fileArray:Array<File>,position: Int,chooseFile:ArrayList<File>){
+            super.onBind()
             val nowFile = fileArray[position]
             root.setOnClickListener{
                 if (nowFile.isDirectory){
@@ -156,9 +161,17 @@ class FIleExplorerAdapter(val dataType:Int,val context: Context) : RecyclerView.
     open class NormalViewHolder: RecyclerView.ViewHolder{
         lateinit var root:View
         lateinit var context:Context
-        constructor(view: View,context:Context):super(view){
+        lateinit var adapter:FIleExplorerAdapter
+        constructor(view: View,context:Context,adapter: FIleExplorerAdapter):super(view){
             root = view
             this.context = context
+            this.adapter = adapter
+        }
+
+        open fun onBind(){
+            if(!adapter.showSelector){
+                root.file_exp_item_check.visibility = View.INVISIBLE
+            }
         }
 
         fun getFileIcon(path:String):Int{
@@ -193,12 +206,13 @@ class FIleExplorerAdapter(val dataType:Int,val context: Context) : RecyclerView.
         }
     }
     open class BaseFileViewHolder: NormalViewHolder{
-        constructor(view: View,context:Context):super(view,context){
+        constructor(view: View,context:Context,adapter: FIleExplorerAdapter):super(view,context,adapter){
             root = view
             this.context = context
         }
 
         open fun onBind(position:Int,list:ArrayList<BaseFile>,chooseList:ArrayList<BaseFile>){
+            super.onBind()
             root.setOnClickListener{
                 (context as FileExplorerActivity).openFile(list[position].filePath)
             }

@@ -20,6 +20,7 @@ import com.lp.flashremote.beans.BaseFile
 import com.lp.flashremote.views.MyProgressDialog
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.activity_file_explorer.*
+import kotlinx.android.synthetic.main.view_file_exp_item.*
 import org.jetbrains.anko.*
 import java.io.File
 import java.io.IOException
@@ -31,6 +32,8 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
         val MODE_IN = 1
         val MODE_OUT = 0
         val MODE_EXPLORER = -1
+        lateinit var copyFileList:ArrayList<File>
+        lateinit var copyBaseFileList:ArrayList<BaseFile>
     }
 
     lateinit var progressDialog:MyProgressDialog
@@ -58,13 +61,13 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
             }
             inModeRun()
         } else if(mode == MODE_OUT)
-            outModeRun()
+            outModeRun(intent.getStringExtra("rootPath"))
         else if(mode == MODE_EXPLORER)
             explorerMode(intent.getStringExtra("rootPath"))
     }
 
     private fun initView(){
-        val viewArray = arrayOf(file_exp_copy,file_exp_delete,file_exp_move,file_exp_send,file_exp_select_all)
+        val viewArray = arrayOf(file_exp_copy,file_exp_delete,file_exp_move,file_exp_send,file_exp_select_all,file_exp_paste)
         viewArray.forEach { it.setOnClickListener(this) }
     }
 
@@ -81,25 +84,100 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
     }
 
     private fun explorerMode(rootPath:String){
-        var nowFile = File(rootPath)
+        val nowFile = File(rootPath)
         adapter = FIleExplorerAdapter(FIleExplorerAdapter.BASE_FILE_EXPLORER,this)
         adapter.setData(nowFile)
         file_exp_list.layoutManager = LinearLayoutManager(this)
         file_exp_list.adapter = adapter
-        file_exp_list.recycledViewPool
     }
 
-    private fun outModeRun() {
+    private fun outModeRun(rootPath: String) {
+        val nowFile = File(rootPath)
+        adapter = FIleExplorerAdapter(FIleExplorerAdapter.BASE_FILE_EXPLORER,this)
+        adapter.hideSelector()
+        adapter.setData(nowFile)
+        file_exp_paste.visibility = View.VISIBLE
+        file_exp_list.layoutManager = LinearLayoutManager(this)
+        file_exp_list.adapter = adapter
+    }
 
+    fun copyFile(){
+        showProgressDialog("正在复制")
+        val parentPath = adapter.rootDir.absolutePath
+        doAsync {
+            when(intent.getIntExtra("srcMode",-1)){
+                MODE_EXPLORER->{
+                    copyFileList.forEach {
+                        val file = File(parentPath+File.separator+it.name)
+                        if(it.isDirectory){
+                            it.copyRecursively(file,true){
+                                dir: File, ioException: IOException ->
+                                ioException.printStackTrace()
+                                uiThread { showSnackBar(file_exp_bottom_bar,"文件${file.name}复制失败") }
+                                OnErrorAction.SKIP
+                            }
+                        }else{
+                            it.copyTo(file,true,4096)
+                        }
+                    }
+                }
+                MODE_IN->{
+                    copyBaseFileList.forEach{
+                        val srcFile = File(it.filePath)
+                        val targetFile = File(parentPath+File.separator+it.fileName)
+                        srcFile.copyTo(targetFile,true,4096)
+                    }
+                }
+            }
+            Thread.sleep(1000)
+            uiThread { dissmisProgressDialog();finish() }
+        }
+
+    }
+    fun moveFile(){
+        showProgressDialog("正在移动")
+        val parentPath = adapter.rootDir.absolutePath
+        doAsync {
+            when(intent.getIntExtra("srcMode",-1)){
+                MODE_EXPLORER->{
+                    copyFileList.forEach {
+                        it.renameTo(File(parentPath+File.separator+it.name))
+                    }
+                }
+                MODE_IN->{
+                    copyBaseFileList.forEach {
+                        val file = File(it.filePath)
+                        file.renameTo(File(parentPath+File.separator+it.fileName))
+                    }
+                }
+            }
+            Thread.sleep(1000)
+            uiThread { dissmisProgressDialog();finish()}
+        }
     }
 
     override fun onClick(v: View?) {
         when(v?.id){
+            R.id.file_exp_paste->{
+                when(intent.getStringExtra("action")){
+                    "copy"-> copyFile()
+                    "move"-> moveFile()
+                    else-> showSnackBar(v,"action error")
+                }
+            }
             R.id.file_exp_copy->{
-
+                if(mode == MODE_EXPLORER)
+                    copyFileList = adapter.chooseFile
+                else if(mode == MODE_IN)
+                    copyBaseFileList = adapter.chooseList
+                startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_OUT,"srcMode" to mode,"action" to "copy","dataType" to FIleExplorerAdapter.BASE_FILE_EXPLORER,"title" to "选择粘贴目录","rootPath" to Environment.getExternalStorageDirectory().path)
             }
             R.id.file_exp_move->{
-
+                if(mode == MODE_EXPLORER)
+                    copyFileList = adapter.chooseFile
+                else if(mode == MODE_IN)
+                    copyBaseFileList = adapter.chooseList
+                startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_OUT,"srcMode" to mode,"action" to "move","dataType" to FIleExplorerAdapter.BASE_FILE_EXPLORER,"title" to "选择移动目录","rootPath" to Environment.getExternalStorageDirectory().path)
             }
             R.id.file_exp_select_all->{
                 adapter.selectAll()
@@ -141,8 +219,7 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
     }
 
     fun deleteFiles(){
-        progressDialog = MyProgressDialog(this@FileExplorerActivity,"请稍后正在删除文件")
-        progressDialog.show()
+        showProgressDialog("请稍后正在删除文件")
         if(mode == MODE_EXPLORER){
             doAsync {
                 adapter.chooseFile.forEach {
@@ -154,7 +231,7 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
                 adapter.chooseFile.clear()
                 Thread.sleep(1000)
                 uiThread {
-                    progressDialog.dismiss()
+                    dissmisProgressDialog()
                     adapter.rootDir = adapter.rootDir
                     adapter.notifyDataSetChanged()
                     showSnackBar(file_exp_bottom_bar,"删除完成")
@@ -170,7 +247,7 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
                 adapter.chooseList.clear()
                 Thread.sleep(1000)
                 uiThread {
-                    progressDialog.dismiss()
+                    dissmisProgressDialog()
                     showSnackBar(file_exp_bottom_bar,"删除完成")
                     adapter.notifyDataSetChanged()
                 }
@@ -180,7 +257,12 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
     }
 
     fun showProgressDialog(msg:String){
+        progressDialog = MyProgressDialog(this@FileExplorerActivity,msg)
+        progressDialog.show()
+    }
 
+    fun dissmisProgressDialog(){
+        progressDialog.dismiss()
     }
 
     fun openFile(path:String){

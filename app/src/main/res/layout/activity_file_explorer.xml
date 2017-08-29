@@ -58,6 +58,17 @@
             android:background="@color/divider"
             />
     </FrameLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/paste"
+        android:tintMode="src_in"
+        android:tint="@color/normalBackgroundColor"
+        android:layout_above="@id/file_exp_bottom_bar"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"
+        android:id="@+id/file_exp_paste"
+        />
 
     <TextView
         android:layout_width="wrap_content"
