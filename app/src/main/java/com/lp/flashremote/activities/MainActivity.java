@@ -72,11 +72,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        hideFragment();
-        if(mNowFragment==null)
-            showFragment(mFileFragment);
-        else
-            showFragment(mNowFragment);
+        refreshFragment();
+    }
+
+    private void refreshFragment(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        hideFragment();
+                        if(mNowFragment==null)
+                            showFragment(mFileFragment);
+                        else
+                            showFragment(mNowFragment);
+                    }
+                });
+            }
+        }).start();
     }
 
     public void hideFragment() {
