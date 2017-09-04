@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.RecognizerResult;
