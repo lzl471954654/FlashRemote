@@ -23,7 +23,6 @@ import com.iflytek.cloud.ui.RecognizerDialog;
 import com.lp.flashremote.R;
 import com.lp.flashremote.activities.PcOperationActivity;
 import com.lp.flashremote.utils.VoiceUtil;
-import com.lp.flashremote.views.CodeDialog;
 import com.lp.flashremote.views.VolumwDialog;
 
 import java.util.ArrayList;
