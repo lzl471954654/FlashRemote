@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.lp.flashremote.R;
 import com.lp.flashremote.activities.PcOperationActivity;
+import com.lp.flashremote.utils.ReceiveUtil;
 import com.lp.flashremote.utils.VoiceUtil;
 import com.lp.flashremote.views.VolumwDialog;
 
