@@ -22,7 +22,7 @@ import android.widget.Toast;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.lp.flashremote.R;
 import com.lp.flashremote.activities.PcOperationActivity;
-import com.lp.flashremote.utils.ReceiveUtil;
+import com.lp.flashremote.utils.SocketUtil;
 import com.lp.flashremote.utils.VoiceUtil;
 import com.lp.flashremote.views.VolumwDialog;
 
@@ -45,6 +45,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     private FloatingActionButton mFab_more;
     private RelativeLayout mFab_Menu;
     private TextView mHideMenuTv;
+    private TextView mConnPc;
 
     private RecognizerDialog iatDialog;
 
@@ -93,6 +94,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
 
     private void initView(View view) {
         mFab_more = (FloatingActionButton) view.findViewById(R.id.pcmore);
+        mConnPc=(TextView)view.findViewById(R.id.connpc);
         mFab_Menu = (RelativeLayout) view.findViewById(R.id.fab_menu);
         mHideMenuTv = (TextView) view.findViewById(R.id.hide_more_menu);
         for (int i = 0; i < fabId.length; i++) {
@@ -104,6 +106,10 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.connpc:
+                SocketUtil socketUtil=SocketUtil.getInstance("lzl471954654","Test");
+                socketUtil.connPc();
+                break;
             case R.id.pcmore:
                 isShow = !isShow;
                 mFab_Menu.setVisibility(isShow ? View.VISIBLE : View.GONE);
