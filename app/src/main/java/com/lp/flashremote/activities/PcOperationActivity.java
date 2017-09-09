@@ -9,7 +9,8 @@ import com.lp.flashremote.R;
 
 /**
  * Created by PUJW on 2017/8/22.
- *
+ * 是否使用反射获取上一个活动中的socket??
+ * 或者是传入上一个活动中的socket?????
  */
 
 public class PcOperationActivity extends AppCompatActivity {

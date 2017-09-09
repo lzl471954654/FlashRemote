@@ -23,6 +23,8 @@ import com.iflytek.cloud.ui.RecognizerDialog;
 import com.lp.flashremote.R;
 import com.lp.flashremote.activities.PcOperationActivity;
 import com.lp.flashremote.utils.SocketUtil;
+import com.lp.flashremote.utils.StringUtil;
+import com.lp.flashremote.utils.ToastUtil;
 import com.lp.flashremote.utils.VoiceUtil;
 import com.lp.flashremote.views.VolumwDialog;
 
@@ -40,7 +42,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     private int[] llId = new int[]{R.id.ll01, R.id.ll02, R.id.ll03};
     private FloatingActionButton[] fab = new FloatingActionButton[fabId.length];
     private List<AnimatorSet> mAnimList = new ArrayList<>();
-
+    private SocketUtil mSocketOP;  //已经连接的socket
 
     private FloatingActionButton mFab_more;
     private RelativeLayout mFab_Menu;
@@ -61,7 +63,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
         view.findViewById(R.id.fab9).setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-               VoiceUtil voiceUtil=VoiceUtil.getInstance();
+                VoiceUtil voiceUtil = VoiceUtil.getInstance();
                 voiceUtil.setMcontext(getActivity());
                 voiceUtil.discern();
                 return false;
@@ -85,6 +87,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     }
 
     private void bindEvents() {
+        mConnPc.setOnClickListener(this);
         mFab_more.setOnClickListener(this);
         mHideMenuTv.setOnClickListener(this);
         for (int i = 0; i < fabId.length; i++) {
@@ -94,7 +97,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
 
     private void initView(View view) {
         mFab_more = (FloatingActionButton) view.findViewById(R.id.pcmore);
-        mConnPc=(TextView)view.findViewById(R.id.connpc);
+        mConnPc = (TextView) view.findViewById(R.id.connpc);
         mFab_Menu = (RelativeLayout) view.findViewById(R.id.fab_menu);
         mHideMenuTv = (TextView) view.findViewById(R.id.hide_more_menu);
         for (int i = 0; i < fabId.length; i++) {
@@ -107,8 +110,14 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.connpc:
-                SocketUtil socketUtil=SocketUtil.getInstance("lzl471954654","Test");
-                socketUtil.connPc();
+                mSocketOP = SocketUtil.getInstance("lzl471954654", "Test");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSocketOP.runSocket();
+                    }
+                }).start();
+                ToastUtil.toastText(getContext(),"上线成功!");
                 break;
             case R.id.pcmore:
                 isShow = !isShow;
@@ -120,29 +129,36 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                         animator.setTarget(fab[i]);
                         animator.start();
                     }
-                    animator=mAnimList.get(fab.length);
+                    animator = mAnimList.get(fab.length);
                     animator.setTarget(mHideMenuTv);
                     animator.start();
                 }
                 break;
             case R.id.fab1:
-                new AlertDialog.Builder(getActivity())
-                        .setIcon(R.mipmap.icon_remote)
-                        .setTitle("可爱的程序员哥哥提示")
-                        .setMessage("您确定要关闭您的电脑吗 ? ")
-                        .setPositiveButton("关了吧", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Toast.makeText(getActivity(),"关闭成功!",Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .setNegativeButton("还是等等吧", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Toast.makeText(getActivity(),"嗯，电脑还开着！",Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .show();
+                //发送消息试探是否仍然连接
+                if (mSocketOP!=null && mSocketOP.sendTestMessage(StringUtil.operateCmd("-1", "test"))) {
+                    new AlertDialog.Builder(getActivity())
+                            .setIcon(R.mipmap.icon_remote)
+                            .setTitle("可爱的程序员哥哥提示")
+                            .setMessage("您确定要关闭您的电脑吗 ? ")
+                            .setPositiveButton("关了吧", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    mSocketOP.sendmessage(StringUtil.operateCmd("0","关闭电脑"));
+                                    ToastUtil.toastText(getContext(), "关闭成功!");
+                                }
+                            })
+                            .setNegativeButton("还是等等吧", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                     mSocketOP.sendmessage(StringUtil.operateCmd("3","取消关机"));
+                                     ToastUtil.toastText(getContext(),"电脑还开着呢！");
+                                }
+                            })
+                            .show();
+                }else{
+                    ToastUtil.toastText(getContext(),"请您检查你的连接!");
+                }
                 break;
             case R.id.fab2:
                 startPCActivity("screen");
@@ -163,7 +179,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 startPCActivity("search");
                 break;
             case R.id.fab8:
-                VolumwDialog dialog=new VolumwDialog(getActivity());
+                VolumwDialog dialog = new VolumwDialog(getActivity());
                 Window dialogWindow = dialog.getWindow();
                 WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER | Gravity.TOP);
@@ -173,8 +189,8 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 dialog.show();
                 break;
             case R.id.fab9:
-                Toast.makeText(getActivity(),"请长按说话！",Toast.LENGTH_SHORT).show();
-               // startPCActivity("yuyin");
+                Toast.makeText(getActivity(), "请长按说话！", Toast.LENGTH_SHORT).show();
+                // startPCActivity("yuyin");
                 break;
             case R.id.hide_more_menu:
                 hideFABMenu();
@@ -187,9 +203,9 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
         isShow = false;
     }
 
-    private void startPCActivity(String op){
-        Intent Intent=new Intent(getActivity(), PcOperationActivity.class);
-        Intent.putExtra("operation",op);
+    private void startPCActivity(String op) {
+        Intent Intent = new Intent(getActivity(), PcOperationActivity.class);
+        Intent.putExtra("operation", op);
         startActivity(Intent);
     }
 
