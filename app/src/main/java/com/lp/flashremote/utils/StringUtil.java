@@ -1,12 +1,8 @@
 package com.lp.flashremote.utils;
 
 
-import android.util.Log;
 
 import com.lp.flashremote.beans.ServerProtocol;
-
-import java.io.BufferedReader;
-import java.io.IOException;
 
 public class StringUtil {
 
@@ -33,7 +29,7 @@ public class StringUtil {
      * @return
      */
     public static boolean startAndEnd(String string) {
-        return (string.startsWith(ServerProtocol.ONLINE_SUCCESS) && string.endsWith(ServerProtocol.END_FLAG));
+        return (string.startsWith(ServerProtocol.CONNECTED_SUCCESS) && string.endsWith(ServerProtocol.END_FLAG));
     }
 
     /**
@@ -45,46 +41,6 @@ public class StringUtil {
      */
     public static boolean isBind(String s) {
         return s.startsWith(ServerProtocol.CONNECTED_SUCCESS) && s.endsWith(ServerProtocol.END_FLAG);
-    }
-
-    /**
-     * 读取流中的字符
-     *
-     * @param reader
-     * @return
-     */
-    public static String readLine(final BufferedReader reader) {
-       /* StringBuilder sb = new StringBuilder();
-        String temp = "";
-        try {
-            while (!(temp = reader.readLine()).endsWith(ServerProtocol.END_FLAG)) {
-                sb.append(temp);
-            }
-            sb.append(temp);
-        } catch (IOException e) {
-            System.out.println("读取数据失败。。。");
-            e.printStackTrace();
-        }
-        Log.e("StringUtil", sb.toString() + "=========");*/
-       new Thread(new Runnable() {
-           @Override
-           public void run() {
-               StringBuilder sb = new StringBuilder();
-               String temp = "";
-               try {
-                   while (!(temp = reader.readLine()).endsWith(ServerProtocol.END_FLAG)) {
-                       Log.e("StringUtil",temp);
-                       sb.append(temp);
-                   }
-                   sb.append(temp);
-               } catch (IOException e) {
-                   System.out.println("读取数据失败。。。");
-                   e.printStackTrace();
-               }
-           }
-       }).start();
-        //return sb.toString();
-        return "123";
     }
 
     /**

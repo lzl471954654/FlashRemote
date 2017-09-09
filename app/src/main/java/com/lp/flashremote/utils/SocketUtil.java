@@ -1,5 +1,7 @@
 package com.lp.flashremote.utils;
 
+import android.util.Log;
+
 import com.lp.flashremote.beans.ServerProtocol;
 
 import java.io.BufferedReader;
@@ -10,19 +12,24 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.Queue;
 
-public class SocketUtil {
-
-    private Socket socket;
+public class SocketUtil extends Thread{
+    private Socket mSocket;
     private PrintWriter writer;
     private BufferedReader reader;
     private String username;
     private String password;
     private static SocketUtil mSocketUtil;
+    private static Queue<String> mSendMessaggeQueue;
 
-    private SocketUtil(String u, String pwd) {
+
+
+    private SocketUtil( String u, String pwd) {
         this.username = u;
         this.password = pwd;
+        mSendMessaggeQueue=new LinkedList<>();
     }
 
     public static SocketUtil getInstance(String u, String p) {
@@ -32,27 +39,36 @@ public class SocketUtil {
         return mSocketUtil;
     }
 
-    public boolean runSocket() {
+    @Override
+    public void run() {
+        super.run();
+        if ( initConn() ){
+            //开启消息队列
+            loop();
+        }else{
+
+        }
+    }
+
+    @Override
+    public synchronized void start() {
+        super.start();
+    }
+
+    private boolean initConn() {
         boolean conn_ok = false;
         try {
-            socket = new Socket(ServerProtocol.SERVER_IP, 10086);
-            OutputStream outputStream = socket.getOutputStream();
-            InputStream inputStream = socket.getInputStream();
+            mSocket=new Socket(ServerProtocol.SERVER_IP,10086);
+            OutputStream outputStream = mSocket.getOutputStream();
+            InputStream inputStream = mSocket.getInputStream();
             writer = new PrintWriter(new OutputStreamWriter(outputStream));
             reader = new BufferedReader(new InputStreamReader(inputStream));
             writer.println(StringUtil.stringAddUnderline(ServerProtocol.CONNECTED_TO_USER,
                     username, password, ServerProtocol.END_FLAG));
             writer.flush();
-            String result = StringUtil.readLine(reader);
-
+            String result = readLine(reader);
             if (StringUtil.startAndEnd(result)) {
-                String conn = StringUtil.readLine(reader);
-                if (StringUtil.isBind(conn)) {//绑定成功
-
-                    conn_ok = true;
-                } else if (conn.equals("|CONNECTED@FAILED|")) {//绑定失败
-                    conn_ok = false;
-                }
+                conn_ok = true;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -61,27 +77,54 @@ public class SocketUtil {
     }
 
     /**
-     * 发送测试命令给 pc
      *
+     */
+    private void loop(){
+        while(true){
+            if (!mSendMessaggeQueue.isEmpty()){
+                writer.println(StringUtil.addEnd_flag2Str(mSendMessaggeQueue.remove()));
+                writer.flush();
+                String recive=readLine(reader);
+                if (recive.equals(ServerProtocol.OK)){
+
+                }
+            }
+        }
+    }
+
+    /**
+     * 发送测试命令给 pc
      * @param t
      * @return 是否可以发送
      */
     public boolean sendTestMessage(String t) {
         writer.println(StringUtil.addEnd_flag2Str(t));
         writer.flush();
-        return StringUtil.addEnd_flag2Str(ServerProtocol.OK).equals(StringUtil.readLine(reader));
+        return StringUtil.addEnd_flag2Str(ServerProtocol.OK).equals(readLine(reader));
     }
 
     /**
-     * 发送命令
-     *
-     * @param m
+     * 读取流中的字符
+     * @param reader
      * @return
      */
-    public void sendmessage(String m) {
 
-        writer.println(StringUtil.addEnd_flag2Str(m));
-        writer.flush();
+    private  String readLine( BufferedReader reader) {
+        StringBuilder sb = new StringBuilder();
+        String temp = "";
+        try {
+            while (!(temp = reader.readLine()).endsWith(ServerProtocol.END_FLAG)) {
+                sb.append(temp);
+            }
+            sb.append(temp);
+        } catch (IOException e) {
+            System.out.println("读取数据失败。。。");
+            e.printStackTrace();
+        }
+        return sb.toString();
     }
 
+    public void addMessage(String s){
+        mSendMessaggeQueue.add(s);
+    }
 }

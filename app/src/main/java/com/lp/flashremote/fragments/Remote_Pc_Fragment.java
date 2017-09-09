@@ -22,12 +22,15 @@ import android.widget.Toast;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.lp.flashremote.R;
 import com.lp.flashremote.activities.PcOperationActivity;
+import com.lp.flashremote.beans.ServerProtocol;
 import com.lp.flashremote.utils.SocketUtil;
 import com.lp.flashremote.utils.StringUtil;
 import com.lp.flashremote.utils.ToastUtil;
 import com.lp.flashremote.utils.VoiceUtil;
 import com.lp.flashremote.views.VolumwDialog;
 
+import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +40,7 @@ import java.util.List;
  */
 
 public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener {
+
     private int[] fabId = new int[]{R.id.fab1, R.id.fab2, R.id.fab3, R.id.fab4,
             R.id.fab5, R.id.fab6, R.id.fab7, R.id.fab8, R.id.fab9};
     private int[] llId = new int[]{R.id.ll01, R.id.ll02, R.id.ll03};
@@ -110,13 +114,8 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.connpc:
-                mSocketOP = SocketUtil.getInstance("lzl471954654", "Test");
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSocketOP.runSocket();
-                    }
-                }).start();
+                mSocketOP=SocketUtil.getInstance("lzl471954654", "Test");
+                mSocketOP.start();
                 ToastUtil.toastText(getContext(),"上线成功!");
                 break;
             case R.id.pcmore:
@@ -140,18 +139,18 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                     new AlertDialog.Builder(getActivity())
                             .setIcon(R.mipmap.icon_remote)
                             .setTitle("可爱的程序员哥哥提示")
-                            .setMessage("您确定要关闭您的电脑吗 ? ")
+                            .setMessage("您确定要关闭您的电脑吗 ?")
                             .setPositiveButton("关了吧", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    mSocketOP.sendmessage(StringUtil.operateCmd("0","关闭电脑"));
+                                    mSocketOP.addMessage(StringUtil.operateCmd("0","关闭电脑"));
                                     ToastUtil.toastText(getContext(), "关闭成功!");
                                 }
                             })
                             .setNegativeButton("还是等等吧", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                     mSocketOP.sendmessage(StringUtil.operateCmd("3","取消关机"));
+                                    mSocketOP.addMessage(StringUtil.operateCmd("3","取消关机"));
                                      ToastUtil.toastText(getContext(),"电脑还开着呢！");
                                 }
                             })
