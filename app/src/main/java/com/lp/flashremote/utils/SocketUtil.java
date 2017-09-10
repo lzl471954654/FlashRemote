@@ -125,6 +125,8 @@ public class SocketUtil extends Thread{
     }
 
     public void addMessage(String s){
-        mSendMessaggeQueue.add(s);
+        synchronized (mSendMessaggeQueue){
+            mSendMessaggeQueue.add(s);
+        }
     }
 }

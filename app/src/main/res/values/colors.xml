@@ -5,10 +5,12 @@
     <color name="colorAccent">#9b0be2</color>
 
     <color name="normalBackgroundColor">#ffffff</color>
+    <color name="grayBackgroundColor">#f9f7f7</color>
     <color name="zise">#9b0be2</color>
     <color name="huangse">#ff6e40</color>
     <color name="green">#2e7d32</color>
     <color name="fabcolor">#03a9f4</color>
+    <color name="warning">#f20606</color>
 
     <color name="primary">#00c3b6</color>
     <color name="primary_dark">#00c3a1</color>
