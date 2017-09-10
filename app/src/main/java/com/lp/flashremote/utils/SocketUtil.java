@@ -1,6 +1,5 @@
 package com.lp.flashremote.utils;
 
-import android.util.Log;
 
 import com.lp.flashremote.beans.ServerProtocol;
 
@@ -24,7 +23,7 @@ public class SocketUtil extends Thread{
     private static SocketUtil mSocketUtil;
     private static Queue<String> mSendMessaggeQueue;
 
-
+    private ConnectListener mConnectListener;
 
     private SocketUtil( String u, String pwd) {
         this.username = u;
@@ -97,10 +96,19 @@ public class SocketUtil extends Thread{
      * @param t
      * @return 是否可以发送
      */
-    public boolean sendTestMessage(String t) {
-        writer.println(StringUtil.addEnd_flag2Str(t));
+    private String result="";
+    public void sendTestMessage(ConnectListener connectListener) {
+
+        writer.println(StringUtil.addEnd_flag2Str(StringUtil.operateCmd("-1","test")));
         writer.flush();
-        return StringUtil.addEnd_flag2Str(ServerProtocol.OK).equals(readLine(reader));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                result=readLine(reader);
+            }
+        }).start();
+
+
     }
 
     /**
@@ -125,6 +133,12 @@ public class SocketUtil extends Thread{
     }
 
     public void addMessage(String s){
+
         mSendMessaggeQueue.add(s);
+    }
+
+    public interface ConnectListener{
+        void connectSusess();
+        void connectError();
     }
 }

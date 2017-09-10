@@ -135,29 +135,43 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 break;
             case R.id.fab1:
                 //发送消息试探是否仍然连接
-                if (mSocketOP!=null && mSocketOP.sendTestMessage(StringUtil.operateCmd("-1", "test"))) {
-                    new AlertDialog.Builder(getActivity())
-                            .setIcon(R.mipmap.icon_remote)
-                            .setTitle("可爱的程序员哥哥提示")
-                            .setMessage("您确定要关闭您的电脑吗 ?")
-                            .setPositiveButton("关了吧", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    mSocketOP.addMessage(StringUtil.operateCmd("0","关闭电脑"));
-                                    ToastUtil.toastText(getContext(), "关闭成功!");
-                                }
-                            })
-                            .setNegativeButton("还是等等吧", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    mSocketOP.addMessage(StringUtil.operateCmd("3","取消关机"));
-                                     ToastUtil.toastText(getContext(),"电脑还开着呢！");
-                                }
-                            })
-                            .show();
-                }else{
-                    ToastUtil.toastText(getContext(),"请您检查你的连接!");
+
+                if (mSocketOP!=null ) {
+                    mSocketOP.sendTestMessage(new SocketUtil.ConnectListener() {
+                        @Override
+                        public void connectSusess() {
+                            new AlertDialog.Builder(getActivity())
+                                    .setIcon(R.mipmap.icon_remote)
+                                    .setTitle("可爱的程序员哥哥提示")
+                                    .setMessage("您确定要关闭您的电脑吗 ?")
+                                    .setPositiveButton("关了吧", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            mSocketOP.addMessage(StringUtil.operateCmd("0","关闭电脑"));
+                                            ToastUtil.toastText(getContext(), "关闭成功!");
+                                        }
+                                    })
+                                    .setNegativeButton("还是等等吧", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            mSocketOP.addMessage(StringUtil.operateCmd("3","取消关机"));
+                                            ToastUtil.toastText(getContext(),"电脑还开着呢！");
+                                        }
+                                    })
+                                    .show();
+                        }
+                        @Override
+                        public void connectError() {
+                            ToastUtil.toastText(getContext(),"未连接电脑");
+                        }
+                    });
                 }
+
+               // if (mSocketOP!=null && mSocketOP.sendTestMessage(StringUtil.operateCmd("-1", "test"))) {
+
+               /* }else{
+                    ToastUtil.toastText(getContext(),"请您检查你的连接!");
+                }*/
                 break;
             case R.id.fab2:
                 startPCActivity("screen");
