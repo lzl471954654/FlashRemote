@@ -117,7 +117,8 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
         switch (view.getId()) {
             case R.id.connpc:
                 if (mSocketOP == null){
-                    mSocketOP=SocketUtil.getInstance("lzl471954654", "Test");
+                    mSocketOP=new SocketUtil("lzl471954654", "Test");
+                    Log.e("thread-id",mSocketOP.getId()+"");
                     mSocketOP.start();
                     ToastUtil.toastText(getContext(),"上线成功!");
                 }else{

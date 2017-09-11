@@ -22,28 +22,22 @@ public class SocketUtil extends Thread{
     private BufferedReader reader;
     private String username;
     private String password;
-    private static SocketUtil mSocketUtil;
-    private static Queue<String> mSendMessaggeQueue;
+    private Queue<String> mSendMessaggeQueue;
     private boolean threadStopState=false; //为true则终止，为false则继续
 
-    private SocketUtil( String u, String pwd) {
+    public SocketUtil( String u, String pwd) {
         this.username = u;
         this.password = pwd;
         mSendMessaggeQueue=new LinkedList<>();
     }
 
-    public static SocketUtil getInstance(String u, String p) {
-        if (mSocketUtil == null) {
-            mSocketUtil = new SocketUtil(u, p);
-        }
-        return mSocketUtil;
-    }
 
     @Override
     public void run() {
         super.run();
         if ( initConn() ){
             loop();//开启消息队列
+            Log.e("Thread-exit","exit");
         }else{
 
         }
@@ -76,7 +70,7 @@ public class SocketUtil extends Thread{
     }
 
     private void loop(){
-        while(!Thread.currentThread().isInterrupted()){
+        while(!isInterrupted()){
             if (getThreadState()){
                 break;
             }
