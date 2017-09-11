@@ -1,6 +1,8 @@
 package com.lp.flashremote.utils;
 
 
+import android.util.Log;
+
 import com.lp.flashremote.beans.ServerProtocol;
 
 import java.io.BufferedReader;
@@ -22,8 +24,7 @@ public class SocketUtil extends Thread{
     private String password;
     private static SocketUtil mSocketUtil;
     private static Queue<String> mSendMessaggeQueue;
-
-    private ConnectListener mConnectListener;
+    private boolean threadStopState=false; //为true则终止，为false则继续
 
     private SocketUtil( String u, String pwd) {
         this.username = u;
@@ -42,8 +43,7 @@ public class SocketUtil extends Thread{
     public void run() {
         super.run();
         if ( initConn() ){
-            //开启消息队列
-            loop();
+            loop();//开启消息队列
         }else{
 
         }
@@ -75,17 +75,22 @@ public class SocketUtil extends Thread{
         return conn_ok;
     }
 
-    /**
-     *
-     */
     private void loop(){
-        while(true){
+        while(!Thread.currentThread().isInterrupted()){
+            if (getThreadState()){
+                break;
+            }
             if (!mSendMessaggeQueue.isEmpty()){
-                writer.println(StringUtil.addEnd_flag2Str(mSendMessaggeQueue.remove()));
-                writer.flush();
-                String recive=readLine(reader);
-                if (recive.equals(ServerProtocol.OK)){
-
+                String cmd=mSendMessaggeQueue.remove();
+                String[] cmds=cmd.split("_");
+                if (cmds[1].equals("@@op@@")){
+                    writer.println(StringUtil.addEnd_flag2Str(cmd));
+                    writer.flush();
+                }else{
+                    writer.println(StringUtil.addEnd_flag2Str(cmd));
+                    writer.flush();
+                    String s=readLine(reader);
+                    Log.e("reulst",s);
                 }
             }
         }
@@ -97,18 +102,28 @@ public class SocketUtil extends Thread{
      * @return 是否可以发送
      */
     private String result="";
+
     public void sendTestMessage(ConnectListener connectListener) {
 
         writer.println(StringUtil.addEnd_flag2Str(StringUtil.operateCmd("-1","test")));
         writer.flush();
-        new Thread(new Runnable() {
+        Thread thread= new Thread(new Runnable() {
             @Override
             public void run() {
                 result=readLine(reader);
             }
-        }).start();
-
-
+        });
+        thread.start();
+        try {
+            Thread.sleep(250);
+            if (result.equals(StringUtil.addEnd_flag2Str(ServerProtocol.OK))){
+                connectListener.connectSusess();
+            }else{
+                connectListener.connectError();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -132,9 +147,22 @@ public class SocketUtil extends Thread{
         return sb.toString();
     }
 
-    public void addMessage(String s){
 
+    public void addMessage(String s){
         mSendMessaggeQueue.add(s);
+    }
+
+    public boolean getThreadState(){
+        return threadStopState;
+    }
+
+    public void setThreadStop(){
+        try {
+            mSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        threadStopState=true;
     }
 
     public interface ConnectListener{

@@ -1,11 +1,13 @@
 package com.lp.flashremote.activities;
 
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.TextView;
+
 
 import com.lp.flashremote.R;
+import com.lp.flashremote.fragments.ToolsFragment;
 
 /**
  * Created by PUJW on 2017/8/22.
@@ -14,12 +16,22 @@ import com.lp.flashremote.R;
  */
 
 public class PcOperationActivity extends AppCompatActivity {
+    private ToolsFragment mToolsFragment;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pcoperation);
-         TextView textView=(TextView)findViewById(R.id.tv);
-        textView.setText(getIntent().getStringExtra("operation"));
+        // TextView textView=(TextView)findViewById(R.id.tv);
+        String operation=getIntent().getStringExtra("operation");
+
+       if (operation.equals("tools")){
+            mToolsFragment=new ToolsFragment();
+       }
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_container,mToolsFragment)
+                .commitNow();
 
     }
 }

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,6 +53,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     private RelativeLayout mFab_Menu;
     private TextView mHideMenuTv;
     private TextView mConnPc;
+    private TextView mBreakConnPc;
 
     private RecognizerDialog iatDialog;
 
@@ -87,11 +89,11 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         bindEvents();
-
     }
 
     private void bindEvents() {
         mConnPc.setOnClickListener(this);
+        mBreakConnPc.setOnClickListener(this);
         mFab_more.setOnClickListener(this);
         mHideMenuTv.setOnClickListener(this);
         for (int i = 0; i < fabId.length; i++) {
@@ -101,22 +103,38 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
 
     private void initView(View view) {
         mFab_more = (FloatingActionButton) view.findViewById(R.id.pcmore);
-        mConnPc = (TextView) view.findViewById(R.id.connpc);
+        mConnPc = view.findViewById(R.id.connpc);
+        mBreakConnPc=view.findViewById(R.id.breakConnpc);
         mFab_Menu = (RelativeLayout) view.findViewById(R.id.fab_menu);
         mHideMenuTv = (TextView) view.findViewById(R.id.hide_more_menu);
         for (int i = 0; i < fabId.length; i++) {
             fab[i] = (FloatingActionButton) view.findViewById(fabId[i]);
         }
-
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.connpc:
-                mSocketOP=SocketUtil.getInstance("lzl471954654", "Test");
-                mSocketOP.start();
-                ToastUtil.toastText(getContext(),"上线成功!");
+                if (mSocketOP == null){
+                    mSocketOP=SocketUtil.getInstance("lzl471954654", "Test");
+                    mSocketOP.start();
+                    ToastUtil.toastText(getContext(),"上线成功!");
+                }else{
+                    ToastUtil.toastText(getContext(),"您已经上线了！");
+                }
+                break;
+
+            case R.id.breakConnpc:
+                //中断线程；
+                if (mSocketOP!=null){
+                    mSocketOP.interrupt();
+                    mSocketOP.setThreadStop();
+                    mSocketOP = null;
+                    ToastUtil.toastText(getContext(),"断开成功！");
+                }else{
+                    ToastUtil.toastText(getContext(),"您未上线，谢谢合作！");
+                }
                 break;
             case R.id.pcmore:
                 isShow = !isShow;
@@ -135,7 +153,6 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 break;
             case R.id.fab1:
                 //发送消息试探是否仍然连接
-
                 if (mSocketOP!=null ) {
                     mSocketOP.sendTestMessage(new SocketUtil.ConnectListener() {
                         @Override
@@ -147,14 +164,14 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                                     .setPositiveButton("关了吧", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
-                                            mSocketOP.addMessage(StringUtil.operateCmd("0","关闭电脑"));
+                                            mSocketOP.addMessage(StringUtil.operateCmd("0","@@op@@"));
                                             ToastUtil.toastText(getContext(), "关闭成功!");
                                         }
                                     })
                                     .setNegativeButton("还是等等吧", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
-                                            mSocketOP.addMessage(StringUtil.operateCmd("3","取消关机"));
+                                            mSocketOP.addMessage(StringUtil.operateCmd("3","@@op@@"));
                                             ToastUtil.toastText(getContext(),"电脑还开着呢！");
                                         }
                                     })
@@ -162,34 +179,33 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                         }
                         @Override
                         public void connectError() {
-                            ToastUtil.toastText(getContext(),"未连接电脑");
+                            ToastUtil.toastText(getContext(),"未连接电脑,请重新连接！");
                         }
                     });
                 }
 
-               // if (mSocketOP!=null && mSocketOP.sendTestMessage(StringUtil.operateCmd("-1", "test"))) {
-
-               /* }else{
-                    ToastUtil.toastText(getContext(),"请您检查你的连接!");
-                }*/
                 break;
             case R.id.fab2:
-                startPCActivity("screen");
+                //startPCActivity("screen");
                 break;
             case R.id.fab3:
-                startPCActivity("mouse");
+                //startPCActivity("mouse");
                 break;
             case R.id.fab4:
-                startPCActivity("disk");
+                //获取磁盘分区
+                mSocketOP.addMessage(StringUtil.operateCmd("4","getDisk"));
+               // startPCActivity("disk");
                 break;
             case R.id.fab5:
-                startPCActivity("luminance");
+                //调节亮度
+                mSocketOP.addMessage(StringUtil.operateCmd("5","@@op@@"));
+                //startPCActivity("luminance");
                 break;
             case R.id.fab6:
                 startPCActivity("tools");
                 break;
             case R.id.fab7:
-                startPCActivity("search");
+               // startPCActivity("search");
                 break;
             case R.id.fab8:
                 VolumwDialog dialog = new VolumwDialog(getActivity());

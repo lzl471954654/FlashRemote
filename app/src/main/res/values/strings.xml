@@ -9,6 +9,8 @@
     <string name="setting_manager">设置</string>
     <string name="string_pc">控制电脑</string>
     <string name="string_phone">控制手机</string>
+    <string name="break_coonpc">断开链接</string>
+    <string name="connpc">链接电脑</string>
 
     <string name="pc_power">电源</string>
     <string name="screen">截屏</string>
