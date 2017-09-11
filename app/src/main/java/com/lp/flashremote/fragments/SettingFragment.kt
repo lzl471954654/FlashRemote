@@ -9,14 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.lp.flashremote.R
-import kotlinx.android.synthetic.main.fragment_setting.*
+import kotlinx.android.synthetic.main.fragment_setting.view.*
 
 /**
  * Created by PUJW on 2017/8/14.
  */
 
 class SettingFragment : Fragment(),View.OnClickListener {
-    val viewArray = arrayOf(settings_about_us,settings_clear_cache,settings_clear_folder,settings_feedback,settings_see_accept_folder)
+    lateinit var viewArray:Array<View>
     lateinit var root:View
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         root =  inflater!!.inflate(R.layout.fragment_setting, null)
@@ -24,6 +24,7 @@ class SettingFragment : Fragment(),View.OnClickListener {
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        viewArray  = arrayOf(root.settings_about_us,root.settings_clear_cache,root.settings_clear_folder,root.settings_feedback,root.settings_see_accept_folder)
         viewArray.forEach { it.setOnClickListener(this) }
     }
 
