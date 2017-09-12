@@ -86,8 +86,7 @@ public class SocketUtil extends Thread{
             }
             if (!mSendMessaggeQueue.isEmpty()){
                 String cmd=mSendMessaggeQueue.remove();
-                String[] cmds=cmd.split("_");
-                if (cmds[1].equals(ServerProtocol.NO_RESULT)){
+                if (cmd.endsWith(ServerProtocol.NO_RESULT)){
                     writer.println(StringUtil.addEnd_flag2Str(cmd));
                     writer.flush();
                 }else{

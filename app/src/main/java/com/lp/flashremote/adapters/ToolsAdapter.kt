@@ -46,6 +46,7 @@ class ToolsAdapter(val mContext:Context,val mlists:List<String>,val mSocket:Sock
                     root.open_tool.visibility=View.VISIBLE
                     root.close_tool.visibility=View.GONE
                 }
+
                 val num=100+position
                 mSocket.addMessage(StringUtil.operateCmd(num.toString(),ServerProtocol.NO_RESULT))
 

@@ -3,6 +3,7 @@ package com.lp.flashremote.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.lp.flashremote.R;
 import com.lp.flashremote.beans.UserInfo;
+import com.lp.flashremote.fragments.DiskFragment;
 import com.lp.flashremote.fragments.Remote_Pc_Fragment;
 import com.lp.flashremote.fragments.ToolsFragment;
 import com.lp.flashremote.utils.SocketUtil;
@@ -23,7 +25,7 @@ import com.lp.flashremote.utils.SocketUtil;
  */
 
 public class PcOperationActivity extends AppCompatActivity {
-    private ToolsFragment mToolsFragment;
+    private Fragment mToolsFragment;
     private TextView textView;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,7 +43,11 @@ public class PcOperationActivity extends AppCompatActivity {
            textView.setText(getResources().getString(R.string.pctools));
            SocketUtil mSocketOP=SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword());
             mToolsFragment=new ToolsFragment(mSocketOP);
+       }else if(operation.equals("disk")){
+           textView.setText(getResources().getString(R.string.pcdisk));
+           mToolsFragment=new DiskFragment();
        }
+
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container,mToolsFragment)
                 .commitNow();

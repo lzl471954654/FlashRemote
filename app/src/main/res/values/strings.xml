@@ -55,5 +55,6 @@
     <string name="submitButton">提交</string>
 
     <string name="pctools">工具</string>
+    <string name="pcdisk">磁盘分区</string>
 
 </resources>

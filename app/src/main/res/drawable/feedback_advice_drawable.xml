@@ -3,8 +3,7 @@
 
     <stroke
         android:width="2dp"
-        android:color="@color/accent"
-        />
+        android:color="@color/accent" />
     <solid
         android:color="@color/normalBackgroundColor"/>
 </shape>

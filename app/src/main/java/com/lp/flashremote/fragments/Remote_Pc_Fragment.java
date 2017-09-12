@@ -38,7 +38,6 @@ import java.util.List;
 
 /**
  * Created by PUJW on 2017/8/14.
- *
  */
 
 public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener {
@@ -105,7 +104,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     private void initView(View view) {
         mFab_more = (FloatingActionButton) view.findViewById(R.id.pcmore);
         mConnPc = view.findViewById(R.id.connpc);
-        mBreakConnPc=view.findViewById(R.id.breakConnpc);
+        mBreakConnPc = view.findViewById(R.id.breakConnpc);
         mFab_Menu = (RelativeLayout) view.findViewById(R.id.fab_menu);
         mHideMenuTv = (TextView) view.findViewById(R.id.hide_more_menu);
         for (int i = 0; i < fabId.length; i++) {
@@ -117,26 +116,26 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.connpc:
-                if (mSocketOP == null){
-                    mSocketOP=SocketUtil.getInstance(UserInfo.getUsername(), UserInfo.getPassword());
-                    Log.e("thread-id",mSocketOP.getId()+"");
+                if (mSocketOP == null) {
+                    mSocketOP = SocketUtil.getInstance(UserInfo.getUsername(), UserInfo.getPassword());
+                    Log.e("thread-id", mSocketOP.getId() + "");
                     mSocketOP.start();
-                    ToastUtil.toastText(getContext(),"上线成功!");
-                }else{
-                    ToastUtil.toastText(getContext(),"您已经上线了！");
+                    ToastUtil.toastText(getContext(), "上线成功!");
+                } else {
+                    ToastUtil.toastText(getContext(), "您已经上线了！");
                 }
                 break;
 
             case R.id.breakConnpc:
                 //中断线程；
-                if (mSocketOP!=null){
+                if (mSocketOP != null) {
                     mSocketOP.interrupt();
                     mSocketOP.setThreadStop();
                     mSocketOP.clearSocketCon();
                     mSocketOP = null;
-                    ToastUtil.toastText(getContext(),"断开成功！");
-                }else{
-                    ToastUtil.toastText(getContext(),"您未上线，谢谢合作！");
+                    ToastUtil.toastText(getContext(), "断开成功！");
+                } else {
+                    ToastUtil.toastText(getContext(), "您未上线，谢谢合作！");
                 }
                 break;
             case R.id.pcmore:
@@ -156,7 +155,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 break;
             case R.id.fab1:
                 //发送消息试探是否仍然连接
-                if (mSocketOP!=null ) {
+                if (mSocketOP != null) {
                     mSocketOP.sendTestMessage(new SocketUtil.ConnectListener() {
                         @Override
                         public void connectSusess() {
@@ -167,28 +166,54 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                                     .setPositiveButton("关了吧", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
-                                            mSocketOP.addMessage(StringUtil.operateCmd("0","@@op@@"));
+                                            mSocketOP.addMessage(StringUtil.operateCmd("0", ServerProtocol.NO_RESULT));
                                             ToastUtil.toastText(getContext(), "关闭成功!");
                                         }
                                     })
                                     .setNegativeButton("还是等等吧", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
-                                            mSocketOP.addMessage(StringUtil.operateCmd("3","@@op@@"));
-                                            ToastUtil.toastText(getContext(),"电脑还开着呢！");
+                                            mSocketOP.addMessage(StringUtil.operateCmd("1", ServerProtocol.NO_RESULT));
+                                            ToastUtil.toastText(getContext(), "电脑还开着呢！");
                                         }
                                     })
                                     .show();
                         }
+
                         @Override
                         public void connectError() {
-                            ToastUtil.toastText(getContext(),"未连接电脑,请重新连接！");
+                            ToastUtil.toastText(getContext(), "未连接电脑,请重新连接！");
                         }
                     });
                 }
 
                 break;
             case R.id.fab2:
+                if(mSocketOP!=null){
+                    final String screenShotTime=System.currentTimeMillis()+"";
+                   // Log.e("screenShotTime",screenShotTime);
+                    mSocketOP.addMessage(StringUtil.operateCmd("2",
+                            StringUtil.operateCmd(screenShotTime,ServerProtocol.NO_RESULT)));
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("提示")
+                            .setMessage("屏幕已经截取，是否回传?")
+                            .setPositiveButton("确定" ,new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    ToastUtil.toastText(getContext(),"确定");
+                                    mSocketOP.addMessage(StringUtil.operateCmd("2",screenShotTime));
+                                }
+                            })
+                            .setNeutralButton("取消", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                   // mSocketOP.addMessage(StringUtil.operateCmd("2",ServerProtocol.NO_RESULT));
+                                }
+                            })
+                            .show();
+                }else{
+                    ToastUtil.toastText(getContext(), "您未上线，谢谢合作！");
+                }
                 //startPCActivity("screen");
                 break;
             case R.id.fab3:
@@ -196,23 +221,23 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 break;
             case R.id.fab4:
                 //获取磁盘分区
-                mSocketOP.addMessage(StringUtil.operateCmd("4","getDisk"));
-               // startPCActivity("disk");
+                // mSocketOP.addMessage(StringUtil.operateCmd("4","getDisk"));
+                startPCActivity("disk");
                 break;
             case R.id.fab5:
                 //调节亮度
-                mSocketOP.addMessage(StringUtil.operateCmd("5",ServerProtocol.NO_RESULT));
+                mSocketOP.addMessage(StringUtil.operateCmd("5", ServerProtocol.NO_RESULT));
                 //startPCActivity("luminance");
                 break;
             case R.id.fab6:
-                if (mSocketOP==null){
-                    ToastUtil.toastText(getContext(),"您已断开，请重新连接后操作！");
-                }else{
+                if (mSocketOP == null) {
+                    ToastUtil.toastText(getContext(), "您已断开，请重新连接后操作！");
+                } else {
                     startPCActivity("tools");
                 }
                 break;
             case R.id.fab7:
-               // startPCActivity("search");
+                // startPCActivity("search");
                 break;
             case R.id.fab8:
                 VolumwDialog dialog = new VolumwDialog(getActivity());

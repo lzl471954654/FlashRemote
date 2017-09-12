@@ -7,15 +7,15 @@
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:background="@color/primary"
-        android:layout_height="74dp">
+        android:layout_height="78dp">
 
         <ImageView
             android:id="@+id/back_tools"
-            android:paddingTop="38dp"
+            android:paddingTop="40dp"
             android:layout_width="0dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="15dp"
-            android:paddingBottom="15dp"
+            android:paddingBottom="20dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:src="@drawable/back_remote"/>
