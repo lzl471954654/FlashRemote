@@ -10,11 +10,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.lp.flashremote.FlashApplication
 
 import com.lp.flashremote.R
+import com.lp.flashremote.activities.FeedbackActivity
 import com.lp.flashremote.activities.FileExplorerActivity
 import com.lp.flashremote.adapters.FIleExplorerAdapter
 import com.lp.flashremote.adapters.getSizeText
+import com.lp.flashremote.views.MyProgressDialog
 import kotlinx.android.synthetic.main.fragment_setting.view.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.support.v4.startActivity
@@ -48,6 +51,16 @@ class SettingFragment : Fragment(),View.OnClickListener {
         refreshCacheSize()
     }
 
+    override fun onStart() {
+        super.onStart()
+        println("start")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        println("pause")
+    }
+
     fun refreshCacheSize(){
         doAsync {
             fun countSize(parent:File):Long{
@@ -60,7 +73,7 @@ class SettingFragment : Fragment(),View.OnClickListener {
                 }
                 return size
             }
-            cacheSize = countSize(context.filesDir.parentFile)
+            cacheSize = countSize(context.cacheDir)
             uiThread { root.settings_cache_size.text = getSizeText(cacheSize) }
         }
     }
@@ -71,16 +84,16 @@ class SettingFragment : Fragment(),View.OnClickListener {
 
             }
             R.id.settings_feedback->{
-
+                startActivity<FeedbackActivity>()
             }
             R.id.settings_clear_cache->{
-
+                clearCache()
             }
             R.id.settings_clear_folder->{
 
             }
             R.id.settings_see_accept_folder->{
-                startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_EXPLORER,"dataType" to FIleExplorerAdapter.BASE_FILE_EXPLORER,"title" to "目录浏览","rootPath" to context.filesDir.parentFile.absolutePath)
+                startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_EXPLORER,"dataType" to FIleExplorerAdapter.BASE_FILE_EXPLORER,"title" to "目录浏览","rootPath" to context.filesDir.absolutePath+File.separator+"accept")
             }
             R.id.settings_exit->{
                 val dialog = AlertDialog.Builder(context)
@@ -90,6 +103,21 @@ class SettingFragment : Fragment(),View.OnClickListener {
 
                 }
             }
+        }
+    }
+
+    private fun clearCache(){
+        val dialog = MyProgressDialog(context,"请稍后正在清除缓存")
+        dialog.show()
+        doAsync {
+            context.cacheDir.listFiles().forEach {
+                if (it.isDirectory)
+                    it.deleteRecursively()
+                else
+                    it.delete()
+            }
+            Thread.sleep(2000)
+            uiThread { dialog.dismiss();root.settings_cache_size.text = getSizeText(0L) }
         }
     }
 }

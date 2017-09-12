@@ -64,8 +64,11 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.codeimage:
-                final String filepath=getFileRoot(getContext())
-                        + File.separator+"qr"+System.currentTimeMillis()+".jpg";
+                /*final String filepath=getFileRoot(getContext())
+                        + File.separator+"qr"+System.currentTimeMillis()+".jpg";*/
+                final String filepath=getContext().getCacheDir().getAbsolutePath()
+                        +File.separator+"qr"+System.currentTimeMillis()+".jpg";
+                System.out.println("code_path:\t"+filepath);
                 Bitmap bitmap=null;
                 if (QRcodeutil.createQRcode(NetParameter.IPAddress,600,600,filepath)){
                     bitmap= BitmapFactory.decodeFile(filepath);
