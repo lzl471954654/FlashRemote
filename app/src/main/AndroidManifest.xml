@@ -35,8 +35,10 @@
         <activity android:name=".activities.FileExplorerActivity" />
         <activity
             android:name=".activities.PcOperationActivity"
-            android:launchMode="singleTask"></activity>
-        <activity android:name=".activities.FeedbackActivity"></activity>
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+        </activity>
+        <activity android:name=".activities.FeedbackActivity"/>
     </application>
 
 </manifest>

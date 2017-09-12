@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.lp.flashremote.R
 import com.lp.flashremote.adapters.ToolsAdapter
+import com.lp.flashremote.utils.SocketUtil
 import com.lp.flashremote.utils.ToastUtil
 import kotlinx.android.synthetic.main.fragment_tools_manager.view.*
 
@@ -15,11 +16,12 @@ import kotlinx.android.synthetic.main.fragment_tools_manager.view.*
  * Created by PUJW on 2017/9/11.
  *  工具操作
  */
-class ToolsFragment : Fragment(), View.OnClickListener {
+class ToolsFragment(val mSocket:SocketUtil) : Fragment(), View.OnClickListener {
 
     lateinit var rootView: View
     lateinit var adapter: ToolsAdapter
     lateinit var mStringLists: MutableList<String>
+
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.fragment_tools_manager, container, false)
@@ -33,7 +35,7 @@ class ToolsFragment : Fragment(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initData()
-        adapter = ToolsAdapter(activity, mStringLists)
+        adapter = ToolsAdapter(activity, mStringLists,mSocket)
     }
 
     fun initData() {

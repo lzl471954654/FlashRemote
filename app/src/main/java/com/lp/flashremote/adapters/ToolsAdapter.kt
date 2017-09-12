@@ -5,19 +5,19 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import com.lp.flashremote.R
+import com.lp.flashremote.beans.ServerProtocol
+import com.lp.flashremote.utils.SocketUtil
+import com.lp.flashremote.utils.StringUtil
 import kotlinx.android.synthetic.main.toolrecycleview_item.view.*
 
 /**
  * Created by PUJW on 2017/9/11.
  * tools 操作 adapter
  */
-class ToolsAdapter(val mContext:Context,val mlists:List<String>):
+class ToolsAdapter(val mContext:Context,val mlists:List<String>,val mSocket:SocketUtil):
         RecyclerView.Adapter<ToolsAdapter.MyViewHolder>() {
-
-
 
     override fun getItemCount(): Int {
         return mlists?.size
@@ -25,7 +25,7 @@ class ToolsAdapter(val mContext:Context,val mlists:List<String>):
 
     override fun onBindViewHolder(holder: MyViewHolder?, position: Int) {
         when(holder){
-            is MyViewHolder-> holder.onBind(position,mlists)
+            is MyViewHolder-> holder.onBind(position,mlists,mSocket)
         }
     }
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): MyViewHolder {
@@ -35,11 +35,21 @@ class ToolsAdapter(val mContext:Context,val mlists:List<String>):
 
     inner class MyViewHolder(var root: View) : RecyclerView.ViewHolder(root) {
 
-        fun onBind(position: Int,list:List<String>)
+        fun onBind(position: Int,list:List<String>,mSocket: SocketUtil)
         {
-            root.tool_item.text=list.get(position)
-            root.setOnClickListener {
-                Toast.makeText(mContext,list[position],Toast.LENGTH_SHORT).show()
+            root.text_tool.text=list.get(position)
+            root.tool_item.setOnClickListener {
+                if (root.close_tool.visibility == View.GONE){
+                    root.close_tool.visibility=View.VISIBLE
+                    root.open_tool.visibility=View.GONE
+                }else{
+                    root.open_tool.visibility=View.VISIBLE
+                    root.close_tool.visibility=View.GONE
+                }
+                val num=100+position
+                mSocket.addMessage(StringUtil.operateCmd(num.toString(),ServerProtocol.NO_RESULT))
+
+                Toast.makeText(mContext,"打开成功",Toast.LENGTH_SHORT).show()
             }
         }
     }

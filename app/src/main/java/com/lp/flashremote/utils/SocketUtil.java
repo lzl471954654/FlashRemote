@@ -22,16 +22,26 @@ public class SocketUtil extends Thread{
     private BufferedReader reader;
     private String username;
     private String password;
-    private Queue<String> mSendMessaggeQueue;
+    private static Queue<String> mSendMessaggeQueue;
     private boolean threadStopState=false; //为true则终止，为false则继续
 
-    public SocketUtil( String u, String pwd) {
+    private static SocketUtil mSocketUtil;
+
+    private SocketUtil( String u, String pwd) {
         this.username = u;
         this.password = pwd;
         mSendMessaggeQueue=new LinkedList<>();
     }
 
-
+    public static SocketUtil getInstance(String u, String p){
+        if (mSocketUtil==null){
+            mSocketUtil=new SocketUtil(u,p);
+        }
+        return mSocketUtil;
+    }
+    public void clearSocketCon(){
+        mSocketUtil=null;
+    }
     @Override
     public void run() {
         super.run();
@@ -77,7 +87,7 @@ public class SocketUtil extends Thread{
             if (!mSendMessaggeQueue.isEmpty()){
                 String cmd=mSendMessaggeQueue.remove();
                 String[] cmds=cmd.split("_");
-                if (cmds[1].equals("@@op@@")){
+                if (cmds[1].equals(ServerProtocol.NO_RESULT)){
                     writer.println(StringUtil.addEnd_flag2Str(cmd));
                     writer.flush();
                 }else{

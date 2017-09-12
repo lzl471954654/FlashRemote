@@ -54,4 +54,6 @@
     <string name="settings_feedback_tips">请提出您宝贵的意见，谢谢（最多300字）</string>
     <string name="submitButton">提交</string>
 
+    <string name="pctools">工具</string>
+
 </resources>

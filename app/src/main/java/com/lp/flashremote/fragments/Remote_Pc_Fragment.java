@@ -24,6 +24,7 @@ import com.iflytek.cloud.ui.RecognizerDialog;
 import com.lp.flashremote.R;
 import com.lp.flashremote.activities.PcOperationActivity;
 import com.lp.flashremote.beans.ServerProtocol;
+import com.lp.flashremote.beans.UserInfo;
 import com.lp.flashremote.utils.SocketUtil;
 import com.lp.flashremote.utils.StringUtil;
 import com.lp.flashremote.utils.ToastUtil;
@@ -47,7 +48,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     private int[] llId = new int[]{R.id.ll01, R.id.ll02, R.id.ll03};
     private FloatingActionButton[] fab = new FloatingActionButton[fabId.length];
     private List<AnimatorSet> mAnimList = new ArrayList<>();
-    private SocketUtil mSocketOP;  //已经连接的socket
+    public SocketUtil mSocketOP;  //已经连接的socket
 
     private FloatingActionButton mFab_more;
     private RelativeLayout mFab_Menu;
@@ -117,7 +118,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
         switch (view.getId()) {
             case R.id.connpc:
                 if (mSocketOP == null){
-                    mSocketOP=new SocketUtil("lzl471954654", "Test");
+                    mSocketOP=SocketUtil.getInstance(UserInfo.getUsername(), UserInfo.getPassword());
                     Log.e("thread-id",mSocketOP.getId()+"");
                     mSocketOP.start();
                     ToastUtil.toastText(getContext(),"上线成功!");
@@ -131,6 +132,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 if (mSocketOP!=null){
                     mSocketOP.interrupt();
                     mSocketOP.setThreadStop();
+                    mSocketOP.clearSocketCon();
                     mSocketOP = null;
                     ToastUtil.toastText(getContext(),"断开成功！");
                 }else{
@@ -199,11 +201,15 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 break;
             case R.id.fab5:
                 //调节亮度
-                mSocketOP.addMessage(StringUtil.operateCmd("5","@@op@@"));
+                mSocketOP.addMessage(StringUtil.operateCmd("5",ServerProtocol.NO_RESULT));
                 //startPCActivity("luminance");
                 break;
             case R.id.fab6:
-                startPCActivity("tools");
+                if (mSocketOP==null){
+                    ToastUtil.toastText(getContext(),"您已断开，请重新连接后操作！");
+                }else{
+                    startPCActivity("tools");
+                }
                 break;
             case R.id.fab7:
                // startPCActivity("search");

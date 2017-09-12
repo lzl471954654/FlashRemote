@@ -3,12 +3,40 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="60dp">
-
-    <TextView
-        android:gravity="center"
-        android:id="@+id/tool_item"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/tool_item"
+        android:layout_marginStart="10dp"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/text_tool"
+            android:gravity="center_vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:layout_height="match_parent"
+            android:text="写字板" />
+        <ImageView
+            android:id="@+id/close_tool"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="20dp"
+            android:src="@mipmap/close"/>
+        <ImageView
+            android:id="@+id/open_tool"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="20dp"
+            android:src="@mipmap/open"/>
+    </LinearLayout>
 
+    <View
+        android:background="#6b6b6b"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"/>
 </LinearLayout>

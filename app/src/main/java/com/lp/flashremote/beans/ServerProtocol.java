@@ -60,4 +60,6 @@ public class ServerProtocol {
 
     public static final String SERVER_IP = "139.199.20.248";
     public static final String OK = "@@TEST@@";
+
+    public static final String NO_RESULT = "@@op@@";
 }
