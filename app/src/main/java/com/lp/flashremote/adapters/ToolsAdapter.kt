@@ -38,18 +38,19 @@ class ToolsAdapter(val mContext:Context,val mlists:List<String>,val mSocket:Sock
         fun onBind(position: Int,list:List<String>,mSocket: SocketUtil)
         {
             root.text_tool.text=list.get(position)
+            val num=100+position
+            val num2=200+position
             root.tool_item.setOnClickListener {
                 if (root.close_tool.visibility == View.GONE){
                     root.close_tool.visibility=View.VISIBLE
                     root.open_tool.visibility=View.GONE
+                    mSocket.addMessage(StringUtil.operateCmd(num2.toString(),ServerProtocol.NO_RESULT))
+
                 }else{
                     root.open_tool.visibility=View.VISIBLE
                     root.close_tool.visibility=View.GONE
+                    mSocket.addMessage(StringUtil.operateCmd(num.toString(),ServerProtocol.NO_RESULT))
                 }
-
-                val num=100+position
-                mSocket.addMessage(StringUtil.operateCmd(num.toString(),ServerProtocol.NO_RESULT))
-
                 Toast.makeText(mContext,"打开成功",Toast.LENGTH_SHORT).show()
             }
         }

@@ -43,14 +43,10 @@ class ToolsFragment(val mSocket:SocketUtil) : Fragment(), View.OnClickListener {
         mStringLists.add("任务管理器")
         mStringLists.add("写字板")
         mStringLists.add("画图")
-        mStringLists.add("控制台")
-        mStringLists.add("设备管理器")
         mStringLists.add("DVD播放器")
         mStringLists.add("记事本")
         mStringLists.add("讲述人")
-        mStringLists.add("事件查看器")
         mStringLists.add("资源管理器")
-        mStringLists.add("性能查看器")
         mStringLists.add("注册表")
         mStringLists.add("计算器")
         mStringLists.add("SQL SERVER 客户端网络实用程序")
@@ -60,9 +56,7 @@ class ToolsFragment(val mSocket:SocketUtil) : Fragment(), View.OnClickListener {
         mStringLists.add("注销命令")
         mStringLists.add("共享文件夹管理器")
         mStringLists.add("辅助工具管理器")
-        mStringLists.add("30秒后关机")
-        mStringLists.add("30后重启")
-        mStringLists.add("取消关机")
+       
     }
 
     override fun onClick(p0: View?) {
