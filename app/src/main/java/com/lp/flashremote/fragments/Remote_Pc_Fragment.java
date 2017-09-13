@@ -69,9 +69,12 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
         view.findViewById(R.id.fab9).setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                VoiceUtil voiceUtil = VoiceUtil.getInstance();
-                voiceUtil.setMcontext(getActivity());
-                voiceUtil.discern();
+                if (mSocketOP!=null){
+                    VoiceUtil voiceUtil = VoiceUtil.getInstance();
+                    voiceUtil.setMcontext(getActivity(),mSocketOP);
+                    voiceUtil.discern();
+                }
+
                 return false;
             }
         });

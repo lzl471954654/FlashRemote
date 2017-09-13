@@ -1,7 +1,6 @@
 package com.lp.flashremote.utils;
 
 import android.content.Context;
-import android.content.Intent;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -15,7 +14,7 @@ import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
-import com.lp.flashremote.activities.PcOperationActivity;
+import com.lp.flashremote.beans.ServerProtocol;
 import com.lp.flashremote.beans.Voice;
 
 import java.util.ArrayList;
@@ -30,6 +29,7 @@ public class VoiceUtil {
     private static final String appip="=59a1265e";
 
     private Context mcontext=null;
+    private SocketUtil mSocket;
 
     private  static VoiceUtil voiceId=null;
 
@@ -40,9 +40,10 @@ public class VoiceUtil {
         return voiceId;
     }
 
-    public void setMcontext(Context context) {
+    public void setMcontext(Context context,SocketUtil socket) {
         if (mcontext==null){
             this.mcontext = context;
+            this.mSocket=socket;
         }
     }
 
@@ -57,9 +58,8 @@ public class VoiceUtil {
                 if (!b){
                     result=parse_Voice(recognizerResult.getResultString());
                     if (!TextUtils.isEmpty(result)){
-                        Intent intent=new Intent(mcontext,PcOperationActivity.class);
-                        intent.putExtra("operation",result);
-                        mcontext.startActivity(intent);
+                        mSocket.addMessage(StringUtil.operateCmd("7",
+                                StringUtil.operateCmd(result,ServerProtocol.NO_RESULT)));
                     }
                 }
             }
