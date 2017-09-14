@@ -48,6 +48,8 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile files('src/libs/Msc.jar')
     compile files('src/libs/Sunflower.jar')
+
+    compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
 }
 repositories {
     mavenCentral()

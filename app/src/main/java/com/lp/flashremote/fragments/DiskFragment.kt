@@ -1,8 +1,6 @@
 package com.lp.flashremote.fragments
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Message
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -36,7 +34,6 @@ class DiskFragment(val mdiskSocket:SocketUtil): Fragment(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -45,6 +42,7 @@ class DiskFragment(val mdiskSocket:SocketUtil): Fragment(){
         doAsync {
             result=mdiskSocket.readLine(mdiskSocket.reader)
             uiThread {
+
                 rootView.textView.text=result
             }
 
@@ -54,6 +52,10 @@ class DiskFragment(val mdiskSocket:SocketUtil): Fragment(){
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+
+    }
+
+    fun init(){
 
     }
 }
