@@ -19,6 +19,8 @@ import java.util.Queue;
 public class SocketUtil extends Thread{
     private Socket mSocket;
     private PrintWriter writer;
+    public InputStream socketInput;
+    public OutputStream socketOutput;
     public BufferedReader reader;
     private String username;
     private String password;
@@ -41,6 +43,12 @@ public class SocketUtil extends Thread{
     }
     public void clearSocketCon(){
         mSocketUtil=null;
+        writer = null;
+        reader = null;
+        socketInput = null;
+        socketOutput = null;
+        mSendMessaggeQueue.clear();
+        mSendMessaggeQueue = null;
     }
     @Override
     public void run() {
@@ -64,6 +72,8 @@ public class SocketUtil extends Thread{
             mSocket=new Socket(ServerProtocol.SERVER_IP,10086);
             OutputStream outputStream = mSocket.getOutputStream();
             InputStream inputStream = mSocket.getInputStream();
+            socketInput = inputStream;
+            socketOutput = outputStream;
             writer = new PrintWriter(new OutputStreamWriter(outputStream));
             reader = new BufferedReader(new InputStreamReader(inputStream));
             writer.println(StringUtil.stringAddUnderline(ServerProtocol.CONNECTED_TO_USER,
@@ -87,6 +97,7 @@ public class SocketUtil extends Thread{
 
             if (!mSendMessaggeQueue.isEmpty()){
                 String cmd=mSendMessaggeQueue.remove();
+                System.out.println("SocketSend : "+cmd);
                 if (cmd.endsWith(ServerProtocol.NO_RESULT)){
                     writer.println(StringUtil.addEnd_flag2Str(cmd));
                     writer.flush();

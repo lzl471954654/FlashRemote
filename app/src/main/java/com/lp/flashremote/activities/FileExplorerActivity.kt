@@ -12,16 +12,23 @@ import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.FrameLayout
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.lp.flashremote.Model.FileManagerModel
 import com.lp.flashremote.Model.FileManagerStatic
 import com.lp.flashremote.R
 import com.lp.flashremote.adapters.FIleExplorerAdapter
 import com.lp.flashremote.beans.BaseFile
+import com.lp.flashremote.beans.FileDescribe
+import com.lp.flashremote.beans.ServerProtocol
+import com.lp.flashremote.beans.UserInfo
+import com.lp.flashremote.utils.SocketUtil
 import com.lp.flashremote.views.MyProgressDialog
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.activity_file_explorer.*
 import kotlinx.android.synthetic.main.view_file_exp_item.*
 import org.jetbrains.anko.*
+import org.json.JSONObject
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -183,7 +190,7 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
                 adapter.selectAll()
             }
             R.id.file_exp_send->{
-
+                sendFile()
             }
             R.id.file_exp_delete->{
                 try {
@@ -194,6 +201,26 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
                     if(progressDialog.isShowing)
                         progressDialog.dismiss()
                 }
+            }
+        }
+    }
+
+    private fun sendFile(){
+        val s = "hello World!"
+        val bytes = s.toByteArray()
+        val desc = FileDescribe("hello","txt",bytes.size.toLong())
+        val socket = SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword())
+        val gson = Gson()
+        val cmd = "201_${gson.toJson(desc)}_${ServerProtocol.END_FLAG}"
+        doAsync {
+            socket.addMessage(cmd)
+            println("cmd : $cmd")
+            val resp = socket.readLine(socket.reader)
+            println("resp : $resp")
+            if(resp.startsWith(ServerProtocol.FILE_READY))
+            {
+                socket.socketOutput.write(bytes)
+                uiThread { showSnackBar(file_exp_copy,"发送成功！") }
             }
         }
     }
