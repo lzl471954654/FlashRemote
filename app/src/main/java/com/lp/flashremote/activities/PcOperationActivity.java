@@ -41,11 +41,14 @@ public class PcOperationActivity extends AppCompatActivity {
 
        if (operation.equals("tools")){
            textView.setText(getResources().getString(R.string.pctools));
-           SocketUtil mSocketOP=SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword());
+           SocketUtil mSocketOP=SocketUtil
+                   .getInstance(UserInfo.getUsername(),UserInfo.getPassword());
             mToolsFragment=new ToolsFragment(mSocketOP);
        }else if(operation.equals("disk")){
            textView.setText(getResources().getString(R.string.pcdisk));
-           mToolsFragment=new DiskFragment();
+           SocketUtil mDiskSocket=SocketUtil
+                   .getInstance(UserInfo.getUsername(),UserInfo.getPassword());
+           mToolsFragment=new DiskFragment(mDiskSocket);
        }
 
         getSupportFragmentManager().beginTransaction()

@@ -19,7 +19,7 @@ import java.util.Queue;
 public class SocketUtil extends Thread{
     private Socket mSocket;
     private PrintWriter writer;
-    private BufferedReader reader;
+    public BufferedReader reader;
     private String username;
     private String password;
     private static Queue<String> mSendMessaggeQueue;
@@ -84,6 +84,7 @@ public class SocketUtil extends Thread{
             if (getThreadState()){
                 break;
             }
+
             if (!mSendMessaggeQueue.isEmpty()){
                 String cmd=mSendMessaggeQueue.remove();
                 if (cmd.endsWith(ServerProtocol.NO_RESULT)){
@@ -92,8 +93,8 @@ public class SocketUtil extends Thread{
                 }else{
                     writer.println(StringUtil.addEnd_flag2Str(cmd));
                     writer.flush();
-                    String s=readLine(reader);
-                    Log.e("reulst",s);
+                   /* String s=readLine(reader);
+                    Log.e("reulst",s);*/
                 }
             }
         }
@@ -135,7 +136,7 @@ public class SocketUtil extends Thread{
      * @return
      */
 
-    private  String readLine( BufferedReader reader) {
+    public   String readLine( BufferedReader reader) {
         StringBuilder sb = new StringBuilder();
         String temp = "";
         try {
