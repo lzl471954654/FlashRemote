@@ -42,14 +42,15 @@ dependencies {
     compile 'org.jetbrains.anko:anko-design:0.10.1'
     compile 'org.jetbrains.anko:anko-recyclerview-v7:0.10.1'
     compile 'com.github.ybq:Android-SpinKit:1.1.0'
-    //Gson
-    compile 'com.google.code.gson:gson:2.2.4'
+
     //Okhttp
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile files('src/libs/Msc.jar')
     compile files('src/libs/Sunflower.jar')
-
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+    //Gson
+    compile 'com.google.code.gson:gson-parent:2.8.1'
+    compile 'com.google.code.gson:gson:2.8.1'
 }
 repositories {
     mavenCentral()

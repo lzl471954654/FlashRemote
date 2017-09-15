@@ -20,11 +20,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.lp.flashremote.R;
 import com.lp.flashremote.activities.PcOperationActivity;
+import com.lp.flashremote.beans.Command;
 import com.lp.flashremote.beans.ServerProtocol;
 import com.lp.flashremote.beans.UserInfo;
+import com.lp.flashremote.utils.Command2JsonUtil;
 import com.lp.flashremote.utils.SocketUtil;
 import com.lp.flashremote.utils.StringUtil;
 import com.lp.flashremote.utils.ToastUtil;
@@ -169,14 +172,16 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                                     .setPositiveButton("关了吧", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
-                                            mSocketOP.addMessage(StringUtil.operateCmd("0", ServerProtocol.NO_RESULT));
+                                            mSocketOP.addMessage(StringUtil
+                                                    .operateCmd(Command2JsonUtil.getJson("0",null,false)));
                                             ToastUtil.toastText(getContext(), "关闭成功!");
                                         }
                                     })
                                     .setNegativeButton("还是等等吧", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
-                                            mSocketOP.addMessage(StringUtil.operateCmd("1", ServerProtocol.NO_RESULT));
+                                            mSocketOP.addMessage(StringUtil
+                                                    .operateCmd(Command2JsonUtil.getJson("1",null,false)));
                                             ToastUtil.toastText(getContext(), "电脑还开着呢！");
                                         }
                                     })
@@ -194,9 +199,8 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
             case R.id.fab2:
                 if(mSocketOP!=null){
                     final String screenShotTime=System.currentTimeMillis()+"";
-                   // Log.e("screenShotTime",screenShotTime);
-                    mSocketOP.addMessage(StringUtil.operateCmd("2",
-                            StringUtil.operateCmd(screenShotTime,ServerProtocol.NO_RESULT)));
+                    mSocketOP.addMessage(StringUtil
+                            .operateCmd(Command2JsonUtil.getJson("2",screenShotTime,false)));
                     new AlertDialog.Builder(getActivity())
                             .setTitle("提示")
                             .setMessage("屏幕已经截取，是否回传?")
@@ -204,13 +208,13 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     ToastUtil.toastText(getContext(),"确定");
-                                    mSocketOP.addMessage(StringUtil.operateCmd("2",screenShotTime));
+                                    mSocketOP.addMessage(StringUtil.operateCmd(
+                                            Command2JsonUtil.getJson("2",screenShotTime,true)));
                                 }
                             })
                             .setNeutralButton("取消", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                   // mSocketOP.addMessage(StringUtil.operateCmd("2",ServerProtocol.NO_RESULT));
                                 }
                             })
                             .show();
@@ -229,7 +233,8 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 break;
             case R.id.fab5:
                 //调节亮度
-                mSocketOP.addMessage(StringUtil.operateCmd("5", ServerProtocol.NO_RESULT));
+                mSocketOP.addMessage(StringUtil
+                        .operateCmd(Command2JsonUtil.getJson("5",null,false)));
                 //startPCActivity("luminance");
                 break;
             case R.id.fab6:

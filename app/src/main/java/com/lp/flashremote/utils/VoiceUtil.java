@@ -58,8 +58,8 @@ public class VoiceUtil {
                 if (!b){
                     result=parse_Voice(recognizerResult.getResultString());
                     if (!TextUtils.isEmpty(result)){
-                        mSocket.addMessage(StringUtil.operateCmd("7",
-                                StringUtil.operateCmd(result,ServerProtocol.NO_RESULT)));
+                        mSocket.addMessage(StringUtil.operateCmd(
+                                Command2JsonUtil.getJson("7",result,false)));
                     }
                 }
             }

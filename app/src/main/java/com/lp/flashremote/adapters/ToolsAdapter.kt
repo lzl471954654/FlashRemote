@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.lp.flashremote.R
 import com.lp.flashremote.beans.ServerProtocol
+import com.lp.flashremote.utils.Command2JsonUtil
 import com.lp.flashremote.utils.SocketUtil
 import com.lp.flashremote.utils.StringUtil
 import kotlinx.android.synthetic.main.toolrecycleview_item.view.*
@@ -44,12 +45,17 @@ class ToolsAdapter(val mContext:Context,val mlists:List<String>,val mSocket:Sock
                 if (root.close_tool.visibility == View.GONE){
                     root.close_tool.visibility=View.VISIBLE
                     root.open_tool.visibility=View.GONE
-                    mSocket.addMessage(StringUtil.operateCmd(num2.toString(),ServerProtocol.NO_RESULT))
+                    mSocket.addMessage(StringUtil
+                            .operateCmd(Command2JsonUtil
+                                    .getJson(num2.toString(),null,false)))
 
                 }else{
                     root.open_tool.visibility=View.VISIBLE
                     root.close_tool.visibility=View.GONE
-                    mSocket.addMessage(StringUtil.operateCmd(num.toString(),ServerProtocol.NO_RESULT))
+                    mSocket.addMessage(StringUtil
+                            .operateCmd(Command2JsonUtil
+                                    .getJson(num.toString(),null,false)))
+
                 }
                 Toast.makeText(mContext,"打开成功",Toast.LENGTH_SHORT).show()
             }

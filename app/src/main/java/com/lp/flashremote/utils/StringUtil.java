@@ -50,8 +50,8 @@ public class StringUtil {
      * @param cmd
      * @return
      */
-    public static String operateCmd(String s, String cmd) {
-        return s + "_" + cmd;
+    public static String operateCmd( String cmd) {
+        return ServerProtocol.COMMAND + "_" + cmd;
     }
 
     /**

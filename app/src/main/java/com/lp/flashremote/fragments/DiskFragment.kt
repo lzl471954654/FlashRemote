@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.lp.flashremote.R
+import com.lp.flashremote.utils.Command2JsonUtil
 import com.lp.flashremote.utils.SocketUtil
 import com.lp.flashremote.utils.StringUtil
 import kotlinx.android.synthetic.main.disk_fagment.view.*
@@ -38,7 +39,7 @@ class DiskFragment(val mdiskSocket:SocketUtil): Fragment(){
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView=inflater!!.inflate(R.layout.disk_fagment,container,false)
-        mdiskSocket.addMessage(StringUtil.operateCmd("4","getDisk"))
+        mdiskSocket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("4",null,true)))
         doAsync {
             result=mdiskSocket.readLine(mdiskSocket.reader)
             uiThread {
