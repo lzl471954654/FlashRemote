@@ -18,17 +18,17 @@ import com.lp.flashremote.Model.FileManagerModel
 import com.lp.flashremote.Model.FileManagerStatic
 import com.lp.flashremote.R
 import com.lp.flashremote.adapters.FIleExplorerAdapter
-import com.lp.flashremote.beans.BaseFile
-import com.lp.flashremote.beans.FileDescribe
-import com.lp.flashremote.beans.ServerProtocol
-import com.lp.flashremote.beans.UserInfo
+import com.lp.flashremote.beans.*
+import com.lp.flashremote.utils.Command2JsonUtil
 import com.lp.flashremote.utils.SocketUtil
+import com.lp.flashremote.utils.StringUtil
 import com.lp.flashremote.views.MyProgressDialog
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.activity_file_explorer.*
 import kotlinx.android.synthetic.main.view_file_exp_item.*
 import org.jetbrains.anko.*
 import org.json.JSONObject
+import java.io.BufferedOutputStream
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -211,7 +211,8 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
         val desc = FileDescribe("hello","txt",bytes.size.toLong())
         val socket = SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword())
         val gson = Gson()
-        val cmd = "201_${gson.toJson(desc)}_${ServerProtocol.END_FLAG}"
+        val command = FileCommand("20", arrayOf(desc),true)
+        val cmd = "${ServerProtocol.FILE_LIST_FLAG}_${gson.toJson(command)}_${ServerProtocol.END_FLAG}"
         doAsync {
             socket.addMessage(cmd)
             println("cmd : $cmd")
@@ -219,7 +220,9 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
             println("resp : $resp")
             if(resp.startsWith(ServerProtocol.FILE_READY))
             {
-                socket.socketOutput.write(bytes)
+                println("FIle ready!")
+                socket.addMessage(bytes.toString())
+                println("send success!")
                 uiThread { showSnackBar(file_exp_copy,"发送成功！") }
             }
         }

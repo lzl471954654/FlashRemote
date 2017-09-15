@@ -13,14 +13,6 @@ public class FileDescribe {
         this.fileSize = fileSize;
     }
 
-    @Override
-    public String toString() {
-        return "FileDescribe{" +
-                "fileName='" + fileName + '\'' +
-                ", fileType='" + fileType + '\'' +
-                ", fileSize=" + fileSize +
-                '}';
-    }
 
     public String getFileName() {
         return fileName;

@@ -58,7 +58,8 @@ public class ServerProtocol {
     public static final String FILE_LIST_FLAG = "|FILE@LIST@FLAG|";     //发送文件列表标志
     public static final String FILE_READY = "|FILE@READY|"; //已经准备好接收文件
 
-    public static final String SERVER_IP = "139.199.20.248";
+    //public static final String SERVER_IP = "139.199.20.248";
+    public static final String SERVER_IP = "172.20.0.242";
     public static final String OK = "@@TEST@@";
 
 
