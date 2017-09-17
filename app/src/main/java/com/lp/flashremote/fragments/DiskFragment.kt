@@ -62,7 +62,7 @@ class DiskFragment(val mdiskSocket: SocketUtil) : Fragment() {
         mdiskSocket.addMessage(StringUtil.operateCmd(Command2JsonUtil
                 .getJson("4", null, true)))
         doAsync {
-            result = mdiskSocket.readLine(mdiskSocket.reader)
+            result = mdiskSocket.readLine()
             uiThread {
                 if (result != null) {
                     val diskinfos = DiskinfoUtil.getDisklist(result!!.split("_")[0])

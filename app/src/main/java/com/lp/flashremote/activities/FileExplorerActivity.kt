@@ -16,6 +16,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.lp.flashremote.Model.FileManagerModel
 import com.lp.flashremote.Model.FileManagerStatic
+import com.lp.flashremote.Model.times
 import com.lp.flashremote.R
 import com.lp.flashremote.adapters.FIleExplorerAdapter
 import com.lp.flashremote.beans.*
@@ -206,22 +207,30 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
     }
 
     private fun sendFile(){
-        val s = "hello World!"
-        val bytes = s.toByteArray()
-        val desc = FileDescribe("hello","txt",bytes.size.toLong())
-        val socket = SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword())
-        val gson = Gson()
-        val command = FileCommand("20", arrayOf(desc),true)
-        val cmd = "${ServerProtocol.FILE_LIST_FLAG}_${gson.toJson(command)}_${ServerProtocol.END_FLAG}"
         doAsync {
+
+            var s = "hello World!"
+
+            /*val builder = StringBuilder()
+            for(i in 1..2000)
+                builder.append(i.toString()+s)
+            s = builder.toString()*/
+
+            val bytes = s.toByteArray()
+            val desc = FileDescribe("hello","txt",bytes.size.toLong())
+            val socket = SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword())
+            val gson = Gson()
+            val command = FileCommand("20", arrayOf(desc),true)
+            val cmd = "${ServerProtocol.FILE_LIST_FLAG}_${gson.toJson(command)}"
+
             socket.addMessage(cmd)
             println("cmd : $cmd")
-            val resp = socket.readLine(socket.reader)
+            val resp = socket.readLine()
             println("resp : $resp")
             if(resp.startsWith(ServerProtocol.FILE_READY))
             {
                 println("FIle ready!")
-                socket.addMessage(bytes.toString())
+                socket.addBytes(bytes)
                 println("send success!")
                 uiThread { showSnackBar(file_exp_copy,"发送成功！") }
             }

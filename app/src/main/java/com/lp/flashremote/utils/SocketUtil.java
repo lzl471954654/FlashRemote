@@ -12,19 +12,18 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class SocketUtil extends Thread {
     private Socket mSocket;
-    private PrintWriter writer;
     public InputStream socketInput;
     public OutputStream socketOutput;
-    public BufferedReader reader;
     private String username;
     private String password;
-    private static Queue<String> mSendMessaggeQueue;
+    private static Queue<byte[]> mSendMessaggeQueue;
     private boolean threadStopState = false; //为true则终止，为false则继续
 
     private static SocketUtil mSocketUtil;
@@ -44,8 +43,6 @@ public class SocketUtil extends Thread {
 
     public void clearSocketCon() {
         mSocketUtil = null;
-        writer = null;
-        reader = null;
         socketInput = null;
         socketOutput = null;
         mSendMessaggeQueue.clear();
@@ -56,7 +53,11 @@ public class SocketUtil extends Thread {
     public void run() {
         super.run();
         if (initConn()) {
-            loop();//开启消息队列
+            try {
+                loop();//开启消息队列
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             Log.e("Thread-exit", "exit");
         } else {
 
@@ -76,12 +77,12 @@ public class SocketUtil extends Thread {
             InputStream inputStream = mSocket.getInputStream();
             socketInput = inputStream;
             socketOutput = outputStream;
-            writer = new PrintWriter(new OutputStreamWriter(outputStream));
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-            writer.println(StringUtil.stringAddUnderline(ServerProtocol.CONNECTED_TO_USER,
-                    username, password, ServerProtocol.END_FLAG));
-            writer.flush();
-            String result = readLine(reader);
+            String logonString = StringUtil.stringAddUnderline(ServerProtocol.CONNECTED_TO_USER,
+                    username, password, ServerProtocol.END_FLAG);
+            byte[] bytes = logonString.getBytes();
+            socketOutput.write(IntConvertUtils.getIntegerBytes(bytes.length));
+            socketOutput.write(bytes);
+            String result = readLine();
             if (StringUtil.startAndEnd(result)) {
                 conn_ok = true;
             }
@@ -91,18 +92,18 @@ public class SocketUtil extends Thread {
         return conn_ok;
     }
 
-    private void loop() {
+    private void loop() throws IOException {
         while (!isInterrupted()) {
             if (getThreadState()) {
                 break;
             }
 
             if (!mSendMessaggeQueue.isEmpty()) {
-                String cmd = mSendMessaggeQueue.remove();
-                writer.println(StringUtil.addEnd_flag2Str(cmd));
-                writer.flush();
-
+                byte[] bytes = mSendMessaggeQueue.remove();
+                socketOutput.write(bytes);
+                socketOutput.flush();
             }
+            socketOutput.flush();
         }
     }
 
@@ -116,13 +117,12 @@ public class SocketUtil extends Thread {
 
     public void sendTestMessage(ConnectListener connectListener) {
 
-        writer.println(StringUtil.addEnd_flag2Str(StringUtil
+        addMessage(StringUtil.addEnd_flag2Str(StringUtil
                 .operateCmd(Command2JsonUtil.getJson("-1", null, true))));
-        writer.flush();
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                result = readLine(reader);
+                result = readLine();
             }
         });
         thread.start();
@@ -141,28 +141,55 @@ public class SocketUtil extends Thread {
     /**
      * 读取流中的字符
      *
-     * @param reader
-     * @return
      */
 
-    public String readLine(BufferedReader reader) {
-        StringBuilder sb = new StringBuilder();
-        String temp = "";
+    public String readLine() {
+        String s = "";
         try {
-            while (!(temp = reader.readLine()).endsWith(ServerProtocol.END_FLAG)) {
-                sb.append(temp);
+            int msgSize = 0;
+            byte[] msgSizeBytes = new byte[4];
+            socketInput.read(msgSizeBytes);
+            msgSize = IntConvertUtils.getIntegerByByteArray(msgSizeBytes);
+            System.out.println("msgSize is "+msgSize);
+
+            int i = 0;
+            byte[] dataBytes = new byte[msgSize];
+            while(i<msgSize){
+                dataBytes[i] = (byte)socketInput.read();
+                i++;
             }
-            sb.append(temp);
+            s = new String(dataBytes);
+            System.out.println("msg is "+s);
         } catch (IOException e) {
-            System.out.println("读取数据失败。。。");
             e.printStackTrace();
         }
-        return sb.toString();
+        return s;
     }
 
 
+    public void addBytes(byte[] bytes){
+        mSendMessaggeQueue.add(bytes);
+    }
+
     public void addMessage(String s) {
-        mSendMessaggeQueue.add(s);
+        s = StringUtil.addEnd_flag2Str(s);
+        try {
+            byte[] stringData = s.getBytes("UTF-8");
+            mSendMessaggeQueue.add(getIntegerBytes(stringData.length));
+            mSendMessaggeQueue.add(stringData);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public byte[] getIntegerBytes(int data){
+        byte[] s = {(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff};
+        s[3] = (byte)((data)&s[3]);
+        for(int i = 2;i>=0;i--){
+            data = data>>8;
+            s[i] = (byte)((data)&s[i]);
+        }
+        return s;
     }
 
     public boolean getThreadState() {
