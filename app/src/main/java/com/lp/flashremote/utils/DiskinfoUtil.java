@@ -14,8 +14,6 @@ import java.util.List;
 public class DiskinfoUtil {
     public static List<DiskInfo> getDisklist(String diskinfo){
         Gson gson=new Gson();
-      /* return gson.fromJson(diskinfo,
-                new TypeToken<List<DiskInfo>>(){}.getType());*/
         List<DiskInfo> retList = gson.fromJson(diskinfo,
                 new TypeToken<List<DiskInfo>>() {
                 }.getType());

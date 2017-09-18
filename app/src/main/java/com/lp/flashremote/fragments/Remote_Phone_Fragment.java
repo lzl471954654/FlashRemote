@@ -18,8 +18,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.lp.flashremote.R;
 import com.lp.flashremote.beans.NetParameter;
+import com.lp.flashremote.beans.WifiInfo;
+import com.lp.flashremote.utils.IpAddressUtil;
 import com.lp.flashremote.utils.QRcodeutil;
 import com.lp.flashremote.utils.WifiHostBiz;
 import com.lp.flashremote.views.CodeDialog;
@@ -77,21 +80,20 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                  * 3 等待对方连接
                  */
                 WifiHostBiz wifiHostBiz=new WifiHostBiz(getContext());
-                wifiHostBiz.setWifiAPEnable(true);
-
-                /*if (wifiHostBiz.isWifiApEnable()){
+                String hotIp;
+                if (wifiHostBiz.isWifiApEnable()){
                     wifiHostBiz.setWifiAPEnable(false);
-                    wifiHostBiz.setWifiAPEnable(true);
+                    hotIp=wifiHostBiz.setWifiAPEnable(true);
                 }else{
-                    wifiHostBiz.setWifiAPEnable(true);
-
-                }*/
+                    hotIp=wifiHostBiz.setWifiAPEnable(true);
+                }
 
                 final String filepath=getContext().getCacheDir().getAbsolutePath()
                         +File.separator+"qr"+System.currentTimeMillis()+".jpg";
                 System.out.println("code_path:\t"+filepath);
+
                 Bitmap bitmap=null;
-                if (QRcodeutil.createQRcode(NetParameter.IPAddress,600,600,filepath)){
+                if (QRcodeutil.createQRcode(new Gson().toJson(new WifiInfo(hotIp)),600,600,filepath)){
                     bitmap= BitmapFactory.decodeFile(filepath);
                 }else{
                     bitmap=BitmapFactory.decodeResource(getResources(),R.drawable.code);

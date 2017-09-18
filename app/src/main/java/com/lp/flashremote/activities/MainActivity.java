@@ -10,10 +10,12 @@ import android.view.MenuItem;
 
 import com.lp.flashremote.R;
 import com.lp.flashremote.beans.NetParameter;
+import com.lp.flashremote.beans.PropertiesUtil;
 import com.lp.flashremote.fragments.FileFragment;
 import com.lp.flashremote.fragments.RemoteFragments;
 import com.lp.flashremote.fragments.SettingFragment;
 import com.lp.flashremote.utils.IpAddressUtil;
+import com.lp.flashremote.utils.PhoneSocketUtil;
 
 
 import butterknife.ButterKnife;
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        PropertiesUtil.getProperties(getApplication());
         ButterKnife.bind(this);
         mNavigation = (BottomNavigationView) findViewById(R.id.navigation_bar);
         mNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);

@@ -6,6 +6,9 @@ import android.net.wifi.WifiManager;
 import android.util.Log;
 
 
+import com.lp.flashremote.beans.PropertiesUtil;
+import com.lp.flashremote.beans.WifiInfo;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Properties;
@@ -19,25 +22,12 @@ import java.util.Properties;
 public class WifiHostBiz {
     private static final String TAG="WifiHostBiz";
     private WifiManager wifiManager;
-    private String WIFI_HOST_SSID;
-    private String WIFI_HOST_PRESHARED_KEY;
 
     public enum WIFI_AP_STATE{
         WIFI_AP_STATE_ENABLED,//能用状态
         WIFI_AP_STATE_FAILED  //失败
     }
     public WifiHostBiz(Context context){
-
-         Properties pp=new Properties();
-        try {
-            pp.load(context.getAssets().open("appConfig/wifiinfo"));
-        } catch (IOException e) {
-            Log.e(TAG,"打开配置文件异常"+e.getCause());
-            e.printStackTrace();
-        }
-
-        WIFI_HOST_SSID=pp.getProperty("wifiname");
-        WIFI_HOST_PRESHARED_KEY=pp.getProperty("wifipwd");
         wifiManager=(WifiManager) context.getSystemService(context.WIFI_SERVICE);
     }
 
@@ -66,8 +56,9 @@ public class WifiHostBiz {
     }
 
 
-    public boolean setWifiAPEnable(boolean enable){
+    public String setWifiAPEnable(boolean enable){
        Log.e(TAG, ":开启热点");
+        String ipSerult;
         if (enable){
             wifiManager.setWifiEnabled(false);
         }else{
@@ -79,16 +70,17 @@ public class WifiHostBiz {
             WifiConfiguration wifiConfig=new WifiConfiguration();
 
 
-            wifiConfig.SSID=WIFI_HOST_SSID;//wifi名称
-            wifiConfig.preSharedKey=WIFI_HOST_PRESHARED_KEY;//密码
+            wifiConfig.SSID= PropertiesUtil.WIFINAME; //wifi名称
+            wifiConfig.preSharedKey=PropertiesUtil.WIFIPWD; //密码
             wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
 
-            return (boolean)method.invoke(wifiManager, wifiConfig, enable);
+            method.invoke(wifiManager, wifiConfig, enable);
+            ipSerult=IpAddressUtil.intIP2StringIP(wifiManager.getDhcpInfo().serverAddress);
+            return ipSerult;
         } catch (Exception e) {
             Log.e(TAG,"wifimanger反射设置异常"+e.getCause());
             e.printStackTrace();
         }
-
-        return false;
+        return null;
     }
 }
