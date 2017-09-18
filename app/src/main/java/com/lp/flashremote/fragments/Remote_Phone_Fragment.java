@@ -36,7 +36,8 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
     private TextView myIpAddress;
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_phone,container,false);
         iniView(view);
         return view;
@@ -54,10 +55,10 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
     }
 
     private void iniView(View view) {
-        myIpAddress=(TextView)view.findViewById(R.id.ipaddress);
+        myIpAddress=view.findViewById(R.id.ipaddress);
         myIpAddress.setText(NetParameter.IPAddress);
-        mQRcode=(LinearLayout)view.findViewById(R.id.codeimage);
-        mScanQR=(TextView)view.findViewById(R.id.scanQR);
+        mQRcode=view.findViewById(R.id.codeimage);
+        mScanQR=view.findViewById(R.id.scanQR);
     }
 
     @Override
@@ -94,6 +95,7 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                 return external.getAbsolutePath();
             }
         }
+
         return context.getFilesDir().getAbsolutePath();
     }
 

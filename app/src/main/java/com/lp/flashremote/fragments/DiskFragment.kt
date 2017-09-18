@@ -38,16 +38,6 @@ class DiskFragment(val mdiskSocket: SocketUtil) : Fragment() {
     lateinit var rootView: View
     var result: String? = null
 
-    /*val handle: Handler = object :Handler(){
-        override fun handleMessage(msg: Message?) {
-            super.handleMessage(msg)
-            when(msg!!.what){
-                1->rootView.textView.text=msg.obj.toString()
-
-                0->rootView.textView.text="网络不好，请重新加载。。。"
-            }
-        }
-    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -118,7 +108,7 @@ class DiskFragment(val mdiskSocket: SocketUtil) : Fragment() {
         mChart.setHoleColor(Color.WHITE)
         mChart.setDrawCenterText(true)
 
-        mChart.centerText = diskInfo.drive+"盘"
+        mChart.centerText = diskInfo.drive
         mChart.setCenterTextSize(10f)
         mChart.setCenterTextColor(Color.RED)
         setData(mChart, diskInfo)
