@@ -1,10 +1,12 @@
 package com.lp.flashremote.fragments;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 import com.lp.flashremote.R;
 import com.lp.flashremote.beans.NetParameter;
 import com.lp.flashremote.utils.QRcodeutil;
+import com.lp.flashremote.utils.WifiHostBiz;
 import com.lp.flashremote.views.CodeDialog;
 import com.xys.libzxing.zxing.activity.CaptureActivity;
 
@@ -67,6 +70,23 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
             case R.id.codeimage:
                 /*final String filepath=getFileRoot(getContext())
                         + File.separator+"qr"+System.currentTimeMillis()+".jpg";*/
+
+                /**
+                 * 1 开启热点
+                 * 2 本机WiFi ip
+                 * 3 等待对方连接
+                 */
+                WifiHostBiz wifiHostBiz=new WifiHostBiz(getContext());
+                wifiHostBiz.setWifiAPEnable(true);
+
+                /*if (wifiHostBiz.isWifiApEnable()){
+                    wifiHostBiz.setWifiAPEnable(false);
+                    wifiHostBiz.setWifiAPEnable(true);
+                }else{
+                    wifiHostBiz.setWifiAPEnable(true);
+
+                }*/
+
                 final String filepath=getContext().getCacheDir().getAbsolutePath()
                         +File.separator+"qr"+System.currentTimeMillis()+".jpg";
                 System.out.println("code_path:\t"+filepath);
