@@ -211,10 +211,10 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
 
             var s = "hello World!"
 
-            /*val builder = StringBuilder()
+            val builder = StringBuilder()
             for(i in 1..2000)
                 builder.append(i.toString()+s)
-            s = builder.toString()*/
+            s = builder.toString()
 
             val bytes = s.toByteArray()
             val desc = FileDescribe("hello","txt",bytes.size.toLong())
