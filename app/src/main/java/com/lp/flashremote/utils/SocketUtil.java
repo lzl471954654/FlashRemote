@@ -81,8 +81,10 @@ public class SocketUtil extends Thread {
                     username, password, ServerProtocol.END_FLAG);
             byte[] bytes = logonString.getBytes();
             socketOutput.write(IntConvertUtils.getIntegerBytes(bytes.length));
+            Log.e("111111111",bytes.length+"");
             socketOutput.write(bytes);
             String result = readLine();
+            Log.e("22222222",result);
             if (StringUtil.startAndEnd(result)) {
                 conn_ok = true;
             }

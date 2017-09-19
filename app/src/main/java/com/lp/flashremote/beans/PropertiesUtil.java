@@ -15,6 +15,9 @@ public class PropertiesUtil {
     public static String WIFINAME;
     public static String WIFIPWD;
 
+    public static String HELLOSERVER;
+    public static String HELLOCLIENT;
+
     public static void getProperties(Context context){
         Properties pp=new Properties();
         try {
@@ -25,5 +28,8 @@ public class PropertiesUtil {
 
         WIFINAME=pp.getProperty("WIFINAME");
         WIFIPWD=pp.getProperty("WIFIPWD");
+
+        HELLOSERVER=pp.getProperty("HELLOSERVER");
+        HELLOCLIENT=pp.getProperty("HELLOCLIENT");
     }
 }
