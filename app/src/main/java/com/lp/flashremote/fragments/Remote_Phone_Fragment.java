@@ -71,38 +71,14 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.codeimage:
-                /*final String filepath=getFileRoot(getContext())
-                        + File.separator+"qr"+System.currentTimeMillis()+".jpg";*/
 
                 /**
                  * 1 开启热点
                  * 2 本机WiFi ip
                  * 3 等待对方连接
                  */
-                WifiHostBiz wifiHostBiz=new WifiHostBiz(getContext());
-                String hotIp;
-                if (wifiHostBiz.isWifiApEnable()){
-                    wifiHostBiz.setWifiAPEnable(false);
-                    hotIp=wifiHostBiz.setWifiAPEnable(true);
-                }else{
-                    hotIp=wifiHostBiz.setWifiAPEnable(true);
-                }
-
-                final String filepath=getContext().getCacheDir().getAbsolutePath()
-                        +File.separator+"qr"+System.currentTimeMillis()+".jpg";
-                System.out.println("code_path:\t"+filepath);
-
-                Bitmap bitmap=null;
-                if (QRcodeutil.createQRcode(new Gson().toJson(new WifiInfo(hotIp)),600,600,filepath)){
-                    bitmap= BitmapFactory.decodeFile(filepath);
-                }else{
-                    bitmap=BitmapFactory.decodeResource(getResources(),R.drawable.code);
-                }
-                CodeDialog.Builder dialogbuilder=new CodeDialog.Builder(getContext());
-                dialogbuilder.setBitmap(bitmap);
-                CodeDialog dialog=dialogbuilder.create();
-                dialog.setCanceledOnTouchOutside(true);
-                dialog.show();
+                String hotIp=setwifiHot(true);   //打开热点，并开启socket
+                initQRCode(hotIp);               //弹出二维码等待连接
                 break;
             case R.id.scanQR:
                 Intent intent=new Intent(getActivity(), CaptureActivity.class);
@@ -110,6 +86,37 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                 break;
         }
     }
+
+    private void initQRCode(String hotIp) {
+        final String filepath=getContext().getCacheDir().getAbsolutePath()
+                +File.separator+"qr"+System.currentTimeMillis()+".jpg";
+        System.out.println("code_path:\t"+filepath);
+
+        Bitmap bitmap=null;
+        if (QRcodeutil.createQRcode(new Gson().toJson(new WifiInfo(hotIp)),600,600,filepath)){
+            bitmap= BitmapFactory.decodeFile(filepath);
+        }else{
+            bitmap=BitmapFactory.decodeResource(getResources(),R.drawable.code);
+        }
+        CodeDialog.Builder dialogbuilder=new CodeDialog.Builder(getContext());
+        dialogbuilder.setBitmap(bitmap);
+        CodeDialog dialog=dialogbuilder.create();
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.show();
+    }
+
+    private String setwifiHot(boolean b) {
+        WifiHostBiz wifiHostBiz=new WifiHostBiz(getContext());
+        String hotIp;
+        if (wifiHostBiz.isWifiApEnable()){
+            wifiHostBiz.setWifiAPEnable(!b);
+            hotIp=wifiHostBiz.setWifiAPEnable(b);
+        }else{
+            hotIp=wifiHostBiz.setWifiAPEnable(b);
+        }
+        return hotIp;
+    }
+
     private String getFileRoot(Context context) {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
             File external=context.getExternalFilesDir(null);

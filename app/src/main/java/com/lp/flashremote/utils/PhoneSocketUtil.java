@@ -6,10 +6,12 @@ import com.lp.flashremote.beans.ServerProtocol;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
  * Created by xiyou3g on 2017/9/18.
+ *  手机远程操作手机时使用的工具
  *
  */
 
@@ -37,8 +39,12 @@ public class PhoneSocketUtil {
     public void clearSocketConn(){
         mPhoneSocketUtil=null;
     }
-    private boolean initPhoneSocket(){
 
+    /**
+     * 初始化扫码端
+     * @return
+     */
+    private boolean initPhoneSocketClient(){
         try {
 
             mPhoneSocket=new Socket(ServerProtocol.SERVER_IP,10085);
@@ -67,6 +73,8 @@ public class PhoneSocketUtil {
 
         return false;
     }
+
+
 
     public String readLine() {
         String s = "";
