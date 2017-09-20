@@ -3,6 +3,7 @@ package com.lp.flashremote.fragments;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -43,6 +44,7 @@ import java.util.List;
 
 /**
  * Created by PUJW on 2017/8/14.
+ * 6666666666
  */
 
 public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener {
@@ -52,7 +54,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     private int[] llId = new int[]{R.id.ll01, R.id.ll02, R.id.ll03};
     private FloatingActionButton[] fab = new FloatingActionButton[fabId.length];
     private List<AnimatorSet> mAnimList = new ArrayList<>();
-    public SocketUtil mSocketOP;  //已经连接的socket
+    public static SocketUtil mSocketOP;  //已经连接的socket
 
     private FloatingActionButton mFab_more;
     private RelativeLayout mFab_Menu;
@@ -61,20 +63,30 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     private TextView mBreakConnPc;
 
     private RecognizerDialog iatDialog;
-
+    private static Context mContext;
     private boolean isShow = false;
 
     private static Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
            if (msg.what==1){
-              Log.e("Handler","上线成功!");
-               //ToastUtil.toastText(, "上线成功!");
+               ToastUtil.toastText(mContext, "上线成功!");
            }else if (msg.what==2){
-               Log.e("Handler","上线失败!");
+
+               mSocketOP.interrupt();
+               mSocketOP.setThreadStop();
+               mSocketOP.clearSocketCon();
+               mSocketOP=null;
+               ToastUtil.toastText(mContext, "上线失败!");
            }
         }
     };
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mContext=getContext();
+    }
 
     @Nullable
     @Override
@@ -140,7 +152,6 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 if (mSocketOP == null) {
                     mSocketOP = SocketUtil.getInstance(UserInfo.getUsername(), UserInfo.getPassword());
                     mSocketOP.start();
-                    //ToastUtil.toastText(getContext(), "上线成功!");
                 } else {
                     ToastUtil.toastText(getContext(), "您已经上线了！");
                 }
@@ -276,11 +287,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
 
     public static void connisok( boolean b) {
         Message m=new Message();
-        if (b){
-            m.what=1;
-        }else {
-            m.what=2;
-        }
+        m.what=b?1:2;
         handler.sendMessage(m);
 
     }
@@ -303,7 +310,6 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
         }
 
     }
-
 
 
 }

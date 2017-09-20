@@ -26,31 +26,32 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    compile project(':libzxing')
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    // So here it's 15 too
+    
+
+    //Okhttp
+    compile files('src/libs/Msc.jar')
+    compile files('src/libs/Sunflower.jar')
+    //Gson
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support:design:26.+'
-    testCompile 'junit:junit:4.12'
     compile 'com.jakewharton:butterknife:8.5.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.0'
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.zxing:core:3.2.1'
-    compile project(':libzxing')
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile 'org.jetbrains.anko:anko-sdk15:0.10.1'
-    // So here it's 15 too
     compile 'org.jetbrains.anko:anko-appcompat-v7:0.10.1'
     compile 'org.jetbrains.anko:anko-design:0.10.1'
     compile 'org.jetbrains.anko:anko-recyclerview-v7:0.10.1'
     compile 'com.github.ybq:Android-SpinKit:1.1.0'
-
-    //Okhttp
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
-    compile files('src/libs/Msc.jar')
-    compile files('src/libs/Sunflower.jar')
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
-    //Gson
     compile 'com.google.code.gson:gson-parent:2.8.1'
     compile 'com.google.code.gson:gson:2.8.1'
+    testCompile 'junit:junit:4.12'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.0'
 }
 repositories {
     mavenCentral()

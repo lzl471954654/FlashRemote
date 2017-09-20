@@ -2,7 +2,7 @@ package com.lp.flashremote.beans;
 
 
 public class DiskInfo {
-
+    private String path;
     private String drive;//盘符
     private String useInfo;//使用情况
 
@@ -25,5 +25,14 @@ public class DiskInfo {
     @Override
     public String toString() {
         return drive+useInfo;
+    }
+
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

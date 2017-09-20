@@ -1,5 +1,6 @@
 package com.lp.flashremote.fragments
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -21,6 +22,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 
 import com.lp.flashremote.R
+import com.lp.flashremote.activities.PcFileDirActivity
 import com.lp.flashremote.beans.DiskInfo
 import com.lp.flashremote.utils.*
 
@@ -54,7 +56,7 @@ class DiskFragment(val mdiskSocket: SocketUtil) : Fragment() ,OnChartValueSelect
         rootView = inflater!!.inflate(R.layout.disk_fagment, container, false)
 
         mdiskSocket.addMessage(StringUtil.operateCmd(Command2JsonUtil
-                .getJson("4", null, true)))
+                .getJson("4", "", true)))
         doAsync {
             result = mdiskSocket.readLine()
 
@@ -160,11 +162,24 @@ class DiskFragment(val mdiskSocket: SocketUtil) : Fragment() ,OnChartValueSelect
             if (it.useInfo.equals(exOry.toInt().toString())||
                     it.useInfo.equals((100.0-exOry).toInt().toString())){
                diskinfo.drive=it.drive
+                diskinfo.path=it.path
                 diskinfo.useInfo=it.useInfo
                 return@forEach
             }
         }
+        val intent=Intent(activity,PcFileDirActivity::class.java)
+        intent.putExtra("ROOTPATH",diskinfo.path)
+        activity.startActivityFromFragment(DiskFragment(mdiskSocket),intent,1)
+       /* mdiskSocket.addMessage(StringUtil.operateCmd(Command2JsonUtil
+                .getJson("4", diskinfo.path, true)))
+        doAsync {
+            result = mdiskSocket.readLine()
+            uiThread {
+                if (result != null) {
+                    Log.e("diskInfo",result);
+                }
+            }
+        }*/
         ToastUtil.toastText(activity,diskinfo.drive)
-
     }
 }

@@ -58,6 +58,8 @@ public class SocketUtil extends Thread {
         super.run();
         if (initConn()) {
             try {
+                setmConnOk(true);
+                Remote_Pc_Fragment.connisok(mConnOk);
                 loop();//开启消息队列
             } catch (IOException e) {
                 e.printStackTrace();
