@@ -6,6 +6,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -61,6 +63,18 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     private RecognizerDialog iatDialog;
 
     private boolean isShow = false;
+
+    private static Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+           if (msg.what==1){
+              Log.e("Handler","上线成功!");
+               //ToastUtil.toastText(, "上线成功!");
+           }else if (msg.what==2){
+               Log.e("Handler","上线失败!");
+           }
+        }
+    };
 
     @Nullable
     @Override
@@ -118,15 +132,15 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
         }
     }
 
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.connpc:
                 if (mSocketOP == null) {
                     mSocketOP = SocketUtil.getInstance(UserInfo.getUsername(), UserInfo.getPassword());
-                    Log.e("thread-id", mSocketOP.getId() + "");
                     mSocketOP.start();
-                    ToastUtil.toastText(getContext(), "上线成功!");
+                    //ToastUtil.toastText(getContext(), "上线成功!");
                 } else {
                     ToastUtil.toastText(getContext(), "您已经上线了！");
                 }
@@ -221,14 +235,12 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 }else{
                     ToastUtil.toastText(getContext(), "您未上线，谢谢合作！");
                 }
-                //startPCActivity("screen");
                 break;
             case R.id.fab3:
                 //startPCActivity("mouse");
                 break;
             case R.id.fab4:
                 //获取磁盘分区
-                // mSocketOP.addMessage(StringUtil.operateCmd("4","getDisk"));
                 startPCActivity("disk");
                 break;
             case R.id.fab5:
@@ -238,11 +250,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 //startPCActivity("luminance");
                 break;
             case R.id.fab6:
-                if (mSocketOP == null) {
-                    ToastUtil.toastText(getContext(), "您已断开，请重新连接后操作！");
-                } else {
-                    startPCActivity("tools");
-                }
+                startPCActivity("tools");
                 break;
             case R.id.fab7:
                 // startPCActivity("search");
@@ -259,7 +267,6 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 break;
             case R.id.fab9:
                 Toast.makeText(getActivity(), "请长按说话！", Toast.LENGTH_SHORT).show();
-                // startPCActivity("yuyin");
                 break;
             case R.id.hide_more_menu:
                 hideFABMenu();
@@ -267,15 +274,36 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
         }
     }
 
+    public static void connisok( boolean b) {
+        Message m=new Message();
+        if (b){
+            m.what=1;
+        }else {
+            m.what=2;
+        }
+        handler.sendMessage(m);
+
+    }
+
+
+
+
     private void hideFABMenu() {
         mFab_Menu.setVisibility(View.GONE);
         isShow = false;
     }
 
     private void startPCActivity(String op) {
-        Intent Intent = new Intent(getActivity(), PcOperationActivity.class);
-        Intent.putExtra("operation", op);
-        startActivity(Intent);
+        if (mSocketOP!=null){
+            Intent Intent = new Intent(getActivity(), PcOperationActivity.class);
+            Intent.putExtra("operation", op);
+            startActivity(Intent);
+        }else{
+            ToastUtil.toastText(getActivity(),"请先连接!!!");
+        }
+
     }
+
+
 
 }

@@ -4,6 +4,7 @@ package com.lp.flashremote.utils;
 import android.util.Log;
 
 import com.lp.flashremote.beans.ServerProtocol;
+import com.lp.flashremote.fragments.Remote_Pc_Fragment;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,6 +26,9 @@ public class SocketUtil extends Thread {
     private String password;
     private static Queue<byte[]> mSendMessaggeQueue;
     private boolean threadStopState = false; //为true则终止，为false则继续
+
+    private boolean mConnOk=false;
+
 
     private static SocketUtil mSocketUtil;
 
@@ -60,7 +64,8 @@ public class SocketUtil extends Thread {
             }
             Log.e("Thread-exit", "exit");
         } else {
-
+            setmConnOk(false);
+            Remote_Pc_Fragment.connisok(mConnOk);
         }
     }
 
@@ -86,7 +91,7 @@ public class SocketUtil extends Thread {
             if (StringUtil.startAndEnd(result)) {
                 conn_ok = true;
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return conn_ok;
@@ -211,4 +216,13 @@ public class SocketUtil extends Thread {
 
         void connectError();
     }
+
+    public void setmConnOk(boolean mConnOk) {
+        this.mConnOk = mConnOk;
+    }
+
+    public boolean getmConnOk() {
+        return mConnOk;
+    }
+
 }
