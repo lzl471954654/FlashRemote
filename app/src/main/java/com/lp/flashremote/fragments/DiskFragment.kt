@@ -12,18 +12,18 @@ import android.widget.FrameLayout
 
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 
 import com.lp.flashremote.R
 import com.lp.flashremote.beans.DiskInfo
-import com.lp.flashremote.utils.Command2JsonUtil
-import com.lp.flashremote.utils.DiskinfoUtil
+import com.lp.flashremote.utils.*
 
-import com.lp.flashremote.utils.SocketUtil
-import com.lp.flashremote.utils.StringUtil
 import kotlinx.android.synthetic.main.disk_fagment.view.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
@@ -34,9 +34,13 @@ import java.util.ArrayList
  * Created by PUJW on 2017/9/12.
  * 磁盘分区
  */
-class DiskFragment(val mdiskSocket: SocketUtil) : Fragment() {
+class DiskFragment(val mdiskSocket: SocketUtil) : Fragment() ,OnChartValueSelectedListener{
+
+
+
     lateinit var rootView: View
     var result: String? = null
+    lateinit var diskInfos:MutableList<DiskInfo>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,10 +57,11 @@ class DiskFragment(val mdiskSocket: SocketUtil) : Fragment() {
                 .getJson("4", null, true)))
         doAsync {
             result = mdiskSocket.readLine()
+
             uiThread {
                 if (result != null) {
-                    val diskinfos = DiskinfoUtil.getDisklist(result!!.split("_")[0])
-                    diskinfos.forEach {
+                    diskInfos = DiskinfoUtil.getDisklist(result!!.split("_")[0])
+                    diskInfos.forEach {
                         val piechart = PieChart(activity)
                         val layoutParams = FrameLayout.LayoutParams(
                                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -112,6 +117,7 @@ class DiskFragment(val mdiskSocket: SocketUtil) : Fragment() {
         mChart.setCenterTextSize(10f)
         mChart.setCenterTextColor(Color.RED)
         setData(mChart, diskInfo)
+        mChart.setOnChartValueSelectedListener(this)
     }
 
     private fun setData(mChart: PieChart, diskInfo: DiskInfo) {
@@ -141,5 +147,24 @@ class DiskFragment(val mdiskSocket: SocketUtil) : Fragment() {
         mChart.setData(pieData)
         mChart.highlightValues(null)
         mChart.invalidate()
+    }
+    override fun onNothingSelected() {
+
+    }
+
+    override fun onValueSelected(e: Entry?, h: Highlight?) {
+
+        val exOry=e!!.y
+        val diskinfo=DiskInfo()
+        diskInfos.forEach {
+            if (it.useInfo.equals(exOry.toInt().toString())||
+                    it.useInfo.equals((100.0-exOry).toInt().toString())){
+               diskinfo.drive=it.drive
+                diskinfo.useInfo=it.useInfo
+                return@forEach
+            }
+        }
+        ToastUtil.toastText(activity,diskinfo.drive)
+
     }
 }

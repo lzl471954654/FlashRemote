@@ -81,10 +81,8 @@ public class SocketUtil extends Thread {
                     username, password, ServerProtocol.END_FLAG);
             byte[] bytes = logonString.getBytes();
             socketOutput.write(IntConvertUtils.getIntegerBytes(bytes.length));
-            Log.e("111111111",bytes.length+"");
             socketOutput.write(bytes);
             String result = readLine();
-            Log.e("22222222",result);
             if (StringUtil.startAndEnd(result)) {
                 conn_ok = true;
             }
@@ -152,7 +150,7 @@ public class SocketUtil extends Thread {
             byte[] msgSizeBytes = new byte[4];
             socketInput.read(msgSizeBytes);
             msgSize = IntConvertUtils.getIntegerByByteArray(msgSizeBytes);
-            System.out.println("msgSize is "+msgSize);
+
 
             int i = 0;
             byte[] dataBytes = new byte[msgSize];
@@ -160,8 +158,9 @@ public class SocketUtil extends Thread {
                 dataBytes[i] = (byte)socketInput.read();
                 i++;
             }
+
             s = new String(dataBytes);
-            System.out.println("msg is "+s);
+            Log.e("pppppppppppppp",s);
         } catch (IOException e) {
             e.printStackTrace();
         }
