@@ -3,8 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/FlashRemote.iml" filepath="$PROJECT_DIR$/FlashRemote.iml" />
+      <module fileurl="file://$PROJECT_DIR$/FlashRemote.iml" filepath="$PROJECT_DIR$/FlashRemote.iml" />
       <module fileurl="file://$PROJECT_DIR$/FlashRemote2.iml" filepath="$PROJECT_DIR$/FlashRemote2.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libzxing/libzxing.iml" filepath="$PROJECT_DIR$/libzxing/libzxing.iml" />
       <module fileurl="file://$PROJECT_DIR$/libzxing/libzxing.iml" filepath="$PROJECT_DIR$/libzxing/libzxing.iml" />
     </modules>
   </component>

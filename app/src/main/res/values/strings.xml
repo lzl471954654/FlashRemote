@@ -56,5 +56,7 @@
 
     <string name="pctools">工具</string>
     <string name="pcdisk">磁盘分区</string>
+    <string name="send_to_pc">发送给电脑</string>
+    <string name="send_to_phone">发送给手机</string>
 
 </resources>

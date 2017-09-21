@@ -24,6 +24,7 @@ import com.lp.flashremote.utils.Command2JsonUtil
 import com.lp.flashremote.utils.SocketUtil
 import com.lp.flashremote.utils.StringUtil
 import com.lp.flashremote.views.MyProgressDialog
+import com.lp.flashremote.views.SendChoiceDialog
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.activity_file_explorer.*
 import kotlinx.android.synthetic.main.view_file_exp_item.*
@@ -207,6 +208,45 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
     }
 
     private fun sendFile(){
+        var containFolder = false
+        val list = ArrayList<File>()
+        if (mode == MODE_EXPLORER){
+            adapter.chooseFile.forEach {
+                list.add(it)
+                if(it.isDirectory)
+                {
+                    containFolder = true
+                    return@forEach
+                }
+            }
+        }else{
+            adapter.chooseList.forEach {
+                val file = File(it.filePath)
+                list.add(file)
+                if(file.isDirectory){
+                    containFolder = true
+                    return@forEach
+                }
+            }
+        }
+        if(containFolder){
+            showSnackBar(file_exp_send,"对不起无法发送文件夹")
+            return
+        }
+        val progress = MyProgressDialog(this,"正在发送文件")
+        progress.show()
+        val dialog = SendChoiceDialog(this,{
+            view ->
+            doAsync {
+                list.forEach {
+
+                }
+            }
+        },{
+            view ->
+
+        })
+        dialog.show()
         doAsync {
 
             var s = "hello World!"
@@ -332,7 +372,6 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
     fun showSnackBar(view:View,msg:String){
         Snackbar.make(view,msg,Snackbar.LENGTH_SHORT).show()
     }
-
 }
 
 
