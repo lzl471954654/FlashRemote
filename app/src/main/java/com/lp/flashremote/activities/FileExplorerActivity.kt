@@ -28,10 +28,12 @@ import com.lp.flashremote.views.SendChoiceDialog
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.activity_file_explorer.*
 import kotlinx.android.synthetic.main.view_file_exp_item.*
+import kotlinx.android.synthetic.main.view_my_progress_dialog.*
 import org.jetbrains.anko.*
 import org.json.JSONObject
 import java.io.BufferedOutputStream
 import java.io.File
+import java.io.FileInputStream
 import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
@@ -208,46 +210,80 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
     }
 
     private fun sendFile(){
-        var containFolder = false
-        val list = ArrayList<File>()
-        if (mode == MODE_EXPLORER){
-            adapter.chooseFile.forEach {
-                list.add(it)
-                if(it.isDirectory)
-                {
-                    containFolder = true
-                    return@forEach
-                }
+        SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword()).sendTestMessage(object : SocketUtil.ConnectListener {
+            override fun connectError() {
+                showSnackBar(file_exp_send,"对不起您没有链接")
             }
-        }else{
-            adapter.chooseList.forEach {
-                val file = File(it.filePath)
-                list.add(file)
-                if(file.isDirectory){
-                    containFolder = true
-                    return@forEach
-                }
-            }
-        }
-        if(containFolder){
-            showSnackBar(file_exp_send,"对不起无法发送文件夹")
-            return
-        }
-        val progress = MyProgressDialog(this,"正在发送文件")
-        progress.show()
-        val dialog = SendChoiceDialog(this,{
-            view ->
-            doAsync {
-                list.forEach {
 
+            override fun connectSusess() {
+                var containFolder = false
+                val list = ArrayList<File>()
+                if (mode == MODE_EXPLORER){
+                    adapter.chooseFile.forEach {
+                        list.add(it)
+                        if(it.isDirectory)
+                        {
+                            containFolder = true
+                            return@forEach
+                        }
+                    }
+                }else{
+                    adapter.chooseList.forEach {
+                        val file = File(it.filePath)
+                        list.add(file)
+                        if(file.isDirectory){
+                            containFolder = true
+                            return@forEach
+                        }
+                    }
                 }
-            }
-        },{
-            view ->
+                if(containFolder){
+                    showSnackBar(file_exp_send,"对不起无法发送文件夹")
+                    return
+                }
+                val progress = MyProgressDialog(this@FileExplorerActivity,"正在发送文件")
+                progress.show()
+                val dialog = SendChoiceDialog(this@FileExplorerActivity,{
+                    view ->
+                    doAsync {
+                        val instruction = "${ServerProtocol.FILE_LIST_FLAG}_${getFileDescribeArray(list)}"
+                        var socket = SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword())
+                        socket.addMessage(instruction)
+                        val resp = socket.readLine()
+                        println("resp : $resp")
+                        if(resp.startsWith(ServerProtocol.FILE_READY)){
+                            println("file Ready!")
+                            list.forEach {
+                                val bytes = ByteArray(4096)
+                                val fileInput = FileInputStream(it)
+                                var count = 0
+                                while(true){
+                                    count = fileInput.read(bytes)
+                                    if(count == -1)
+                                        break
+                                    if(count==4096)
+                                        socket.addBytes(bytes)
+                                    else{
+                                        var newBytes = ByteArray(count)
+                                        for(i in 0 until count){
+                                            newBytes[i] = bytes[i]
+                                        }
+                                        socket.addBytes(newBytes)
+                                    }
+                                }
+                            }
+                            println("send success!")
+                        }
+                        uiThread { progress.dismiss();showSnackBar(file_exp_send,"发送成功！") }
+                    }
+                },{
+                    view ->
 
+                })
+                dialog.show()
+            }
         })
-        dialog.show()
-        doAsync {
+        /*doAsync {
 
             var s = "hello World!"
 
@@ -274,7 +310,24 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
                 println("send success!")
                 uiThread { showSnackBar(file_exp_copy,"发送成功！") }
             }
+        }*/
+    }
+
+    public fun getFileDescribeArray(fileList : ArrayList<File>):String{
+        val command = FileCommand()
+        val data = ArrayList<FileDescribe>()
+        fileList.forEach {
+            val name = it.name.substring(0..it.name.lastIndexOf("."))
+            val type = it.name.substring(it.name.lastIndexOf(".") until it.name.length)
+            val desc = FileDescribe(name,type,it.length())
+            data.add(desc)
         }
+        command.describe = data.toTypedArray()
+        command.isBack = false
+        command.type = "20"
+        val s = Gson().toJson(command)
+        println(s)
+        return s
     }
 
     public fun showNoFileImage(){

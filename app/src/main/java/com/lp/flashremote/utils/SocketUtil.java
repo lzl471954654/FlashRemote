@@ -123,7 +123,10 @@ public class SocketUtil extends Thread {
     private String result = "";
 
     public void sendTestMessage(ConnectListener connectListener) {
-
+        if(!mConnOk){
+            connectListener.connectError();
+            return;
+        }
         addMessage(StringUtil.addEnd_flag2Str(StringUtil
                 .operateCmd(Command2JsonUtil.getJson("-1", null, true))));
         Thread thread = new Thread(new Runnable() {
