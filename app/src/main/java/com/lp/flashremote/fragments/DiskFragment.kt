@@ -4,7 +4,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +27,7 @@ import com.lp.flashremote.utils.*
 
 import kotlinx.android.synthetic.main.disk_fagment.view.*
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.uiThread
 import java.util.ArrayList
 
@@ -62,7 +62,7 @@ class DiskFragment(val mdiskSocket: SocketUtil) : Fragment() ,OnChartValueSelect
 
             uiThread {
                 if (result != null) {
-                    diskInfos = DiskinfoUtil.getDisklist(result!!.split("_")[0])
+                    diskInfos = GsonAnalysiUtil.getDisklist(result!!.split("_")[0])
                     diskInfos.forEach {
                         val piechart = PieChart(activity)
                         val layoutParams = FrameLayout.LayoutParams(
@@ -167,19 +167,8 @@ class DiskFragment(val mdiskSocket: SocketUtil) : Fragment() ,OnChartValueSelect
                 return@forEach
             }
         }
-        val intent=Intent(activity,PcFileDirActivity::class.java)
-        intent.putExtra("ROOTPATH",diskinfo.path)
-        activity.startActivityFromFragment(DiskFragment(mdiskSocket),intent,1)
-       /* mdiskSocket.addMessage(StringUtil.operateCmd(Command2JsonUtil
-                .getJson("4", diskinfo.path, true)))
-        doAsync {
-            result = mdiskSocket.readLine()
-            uiThread {
-                if (result != null) {
-                    Log.e("diskInfo",result);
-                }
-            }
-        }*/
-        ToastUtil.toastText(activity,diskinfo.drive)
+        startActivity<PcFileDirActivity>("ROOTPATH" to diskinfo.path )
+
+
     }
 }

@@ -1,16 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.lp.flashremote.activities.PcFileDirActivity">
-
-    <TextView
-        android:id="@+id/ppppp"
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text=""
-        android:gravity="center"/>
+        android:id="@+id/file_pc__list"/>
 
-</LinearLayout>
+    <FrameLayout
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/file_pc_bottom_bar"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="47dp"
+            >
+            <TextView
+                android:id="@+id/file_pc_copy"
+                style="@style/file_exp_bottom_bar_item_style"
+                android:text="@string/file_exp_copy"
+                android:drawableTop="@mipmap/icon_cpoy"
+                />
+            <TextView
+                android:id="@+id/file_pc_move"
+                style="@style/file_exp_bottom_bar_item_style"
+                android:text="@string/file_exp_move"
+                android:drawableTop="@mipmap/icon_file_move"
+                />
+            <TextView
+                android:id="@+id/file_pc_delete"
+                style="@style/file_exp_bottom_bar_item_style"
+                android:text="@string/file_exp_delete"
+                android:drawableTop="@mipmap/icon_delete"
+                />
+            <TextView
+                android:id="@+id/file_pc_send"
+                style="@style/file_exp_bottom_bar_item_style"
+                android:text="@string/file_exp_send"
+                android:drawableTop="@mipmap/icon_send"
+                />
+            <TextView
+                android:id="@+id/file_pc_select_all"
+                style="@style/file_exp_bottom_bar_item_style"
+                android:text="@string/file_exp_select_all"
+                android:drawableTop="@mipmap/icon_select_all"
+                />
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_gravity="top"
+            android:background="@color/divider"
+            />
+    </FrameLayout>
+   <!-- <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/paste"
+        android:tintMode="src_in"
+        android:tint="@color/normalBackgroundColor"
+        android:layout_above="@id/file_exp_bottom_bar"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"
+        android:id="@+id/file_exp_paste"
+        />-->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableTop="@mipmap/icon_no_file"
+        android:drawableTintMode="src_in"
+        android:drawableTint="@color/divider"
+        android:text="@string/file_exp_nofile"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:drawablePadding="8dp"
+        android:id="@+id/file_pc_no_file_image"
+        android:visibility="gone"
+        />
+
+
+</RelativeLayout>

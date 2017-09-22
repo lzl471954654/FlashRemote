@@ -109,10 +109,14 @@ class FileFragment : Fragment(), View.OnClickListener {
                 startFileExplorer(getString(R.string.manager_apk))
             }
             R.id.m_download -> {
-                startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_EXPLORER,"dataType" to FIleExplorerAdapter.BASE_FILE_EXPLORER,"title" to "下载","rootPath" to Environment.getExternalStorageDirectory().path+"/Download")
+                startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_EXPLORER,
+                        "dataType" to FIleExplorerAdapter.BASE_FILE_EXPLORER,"title" to "下载",
+                        "rootPath" to Environment.getExternalStorageDirectory().path+"/Download")
             }
             R.id.m_bluetooth -> {
-                startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_EXPLORER,"dataType" to FIleExplorerAdapter.BASE_FILE_EXPLORER,"title" to "蓝牙文件","rootPath" to Environment.getExternalStorageDirectory().path+"/bluetooth")
+                startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_EXPLORER,
+                        "dataType" to FIleExplorerAdapter.BASE_FILE_EXPLORER,"title" to "蓝牙文件",
+                        "rootPath" to Environment.getExternalStorageDirectory().path+"/bluetooth")
             }
             R.id.m_remote -> {
 
@@ -121,7 +125,9 @@ class FileFragment : Fragment(), View.OnClickListener {
                 startFileExplorer(getString(R.string.manager_zip))
             }
             R.id.m_folder_layout->{
-                startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_EXPLORER,"dataType" to FIleExplorerAdapter.BASE_FILE_EXPLORER,"title" to "目录浏览","rootPath" to Environment.getExternalStorageDirectory().path)
+                startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_EXPLORER,
+                        "dataType" to FIleExplorerAdapter.BASE_FILE_EXPLORER,"title" to "目录浏览",
+                        "rootPath" to Environment.getExternalStorageDirectory().path)
             }
 
         }
