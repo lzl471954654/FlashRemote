@@ -184,6 +184,7 @@ public class SocketUtil extends Thread {
 
     public void addMessage(String s) {
         s = StringUtil.addEnd_flag2Str(s);
+        Log.e("addMessage",s);
         try {
             byte[] stringData = s.getBytes("UTF-8");
             mSendMessaggeQueue.add(getIntegerBytes(stringData.length));

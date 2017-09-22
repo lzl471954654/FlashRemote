@@ -1,6 +1,9 @@
 package com.lp.flashremote.adapters
 
+import android.os.Build
+import android.support.annotation.RequiresApi
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,22 +11,28 @@ import android.view.ViewGroup
 import com.lp.flashremote.R
 import com.lp.flashremote.activities.PcFileDirActivity
 import com.lp.flashremote.beans.FileInfo
-import kotlinx.android.synthetic.main.activity_pc_file_dir.view.*
-import kotlinx.android.synthetic.main.activity_pcoperation.view.*
-import kotlinx.android.synthetic.main.view_file_exp_item.view.*
+import com.lp.flashremote.utils.Command2JsonUtil
+import com.lp.flashremote.utils.GsonAnalysiUtil
+import com.lp.flashremote.utils.SocketUtil
+import com.lp.flashremote.utils.StringUtil
 import kotlinx.android.synthetic.main.view_file_pc_item.view.*
 import org.jetbrains.anko.AnkoAsyncContext
-import org.jetbrains.anko.image
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
+import java.util.*
 
 /**
  * Created by xiyou3g on 2017/9/21.
  *
  */
-class FilePcAdapter(val data:List<FileInfo>, val context: AnkoAsyncContext<PcFileDirActivity>):
+class FilePcAdapter(var data:List<FileInfo>, val context: AnkoAsyncContext<PcFileDirActivity>, val socket:SocketUtil):
         RecyclerView.Adapter<FilePcAdapter.ViewHolder>(){
+
+
+    val stack: Stack<List<FileInfo>> = Stack() //存储各级列表的栈
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
         val view=LayoutInflater.from(parent?.context).inflate(R.layout.view_file_pc_item,parent,false)
-        return ViewHolder(view)
+        return ViewHolder(view,this,socket)
     }
 
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
@@ -36,18 +45,47 @@ class FilePcAdapter(val data:List<FileInfo>, val context: AnkoAsyncContext<PcFil
         return data.size
     }
 
-    class ViewHolder(val view: View):RecyclerView.ViewHolder(view) {
-        fun onBind(position: Int,list: List<FileInfo>){
-            val b:Boolean
-            b=list.get(position).isType
+    private fun moveToNextFolder(nextPath:String,socket: SocketUtil){
+
+        var result:String
+        socket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("4",nextPath,true)))
+        doAsync {
+            result=socket.readLine()
+            uiThread {
+                if (result!=null){
+                    data=GsonAnalysiUtil.getFileList(StringUtil.rmEnd_flagstr(result))
+                    notifyDataSetChanged()
+                }
+            }
+        }
+    }
+
+    public fun canBack():Boolean{
+        return !stack.isEmpty()
+    }
+    public fun backToMother(){
+        data=stack.pop()
+        notifyDataSetChanged()
+    }
+
+    class ViewHolder(val view: View ,val adapter:FilePcAdapter,val socket: SocketUtil ):
+            RecyclerView.ViewHolder(view) {
+
+        fun onBind(position: Int, list: List<FileInfo>){
             if (list.get(position).isType){
                 view.file_pc_item_icon.setImageResource(R.mipmap.icon_folder)
             }else{
-                view.file_pc_item_icon.setImageResource(R.mipmap.icon_item_file)
+                view.file_pc_item_icon.setImageResource(R.mipmap.nofloer)
             }
-
             view.file_pc_item_name.text=list.get(position).name
+            view.setOnClickListener {
+                if (list.get(position).isType){
+                    adapter.stack.push(list)
+                    adapter.moveToNextFolder(list.get(position).path,socket)
+                }
+            }
         }
+
     }
 
 }

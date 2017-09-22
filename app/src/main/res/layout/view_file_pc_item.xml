@@ -15,8 +15,8 @@
         android:id="@+id/file_pc_item_check"
         />
     <ImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_centerVertical="true"
         android:id="@+id/file_pc_item_icon"
         android:src="@mipmap/icon_item_file"
@@ -32,17 +32,16 @@
         android:layout_height="match_parent"
         android:text="fileName"
         android:id="@+id/file_pc_item_name"
+        android:gravity="center_vertical"
         android:layout_alignTop="@id/file_pc_item_icon"
         android:layout_toRightOf="@id/file_pc_item_icon"
         android:layout_toLeftOf="@id/file_pc_item_check"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="8dp"
         android:textSize="14sp"
-        android:gravity="center_vertical"
         android:textColor="@color/primary_text"
+        android:layout_marginBottom="10dp"
         android:maxLines="1"
         />
-
-
 
 </RelativeLayout>

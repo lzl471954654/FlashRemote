@@ -33,11 +33,12 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pc_file_dir)
         val rootPath = intent.getStringExtra("ROOTPATH")
-        supportActionBar?.title=rootPath
+        supportActionBar?.title="目录浏览"
         mContext=this
         initView()
         initData(rootPath)
     }
+
 
     private fun initView() {
         val viewArray = arrayOf(file_pc_copy,file_pc_delete,file_pc_move,file_pc_send,file_pc_select_all)
@@ -52,15 +53,21 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
             result = mSocket.readLine()
             uiThread {
                 if (result!=null){
-                    val endflag=result.lastIndexOf("_")
-                    fileinfos=GsonAnalysiUtil.getFileList(result.substring(0,endflag))
-                    adapter= FilePcAdapter(fileinfos,this)
+                    fileinfos=GsonAnalysiUtil.getFileList(StringUtil.rmEnd_flagstr(result))
+                    adapter= FilePcAdapter(fileinfos,this,mSocket)
                     file_pc__list.layoutManager= LinearLayoutManager(mContext)
                     file_pc__list.adapter=adapter
                 }
             }
         }
 
+    }
+
+    override fun onBackPressed() {
+        if(adapter.canBack())
+            adapter.backToMother()
+        else
+            super.onBackPressed()
     }
 
     override fun onClick(p0: View?) {

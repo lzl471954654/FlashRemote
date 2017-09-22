@@ -63,4 +63,9 @@ public class StringUtil {
     public static String addEnd_flag2Str(String s) {
         return s + "_" + ServerProtocol.END_FLAG;
     }
+
+    public static String rmEnd_flagstr(String s){
+        int endflagindex=s.lastIndexOf("_");
+        return s.substring(0,endflagindex);
+    }
 }
