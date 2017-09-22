@@ -264,7 +264,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 startPCActivity("tools");
                 break;
             case R.id.fab7:
-                // startPCActivity("search");
+                 startPCActivity("search");
                 break;
             case R.id.fab8:
                 VolumwDialog dialog = new VolumwDialog(getActivity());

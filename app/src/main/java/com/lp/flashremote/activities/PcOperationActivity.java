@@ -7,14 +7,13 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 
 import com.lp.flashremote.R;
 import com.lp.flashremote.beans.UserInfo;
 import com.lp.flashremote.fragments.DiskFragment;
-import com.lp.flashremote.fragments.Remote_Pc_Fragment;
+import com.lp.flashremote.fragments.SearchFragment;
 import com.lp.flashremote.fragments.ToolsFragment;
 import com.lp.flashremote.utils.SocketUtil;
 
@@ -49,6 +48,9 @@ public class PcOperationActivity extends AppCompatActivity {
            SocketUtil mDiskSocket=SocketUtil
                    .getInstance(UserInfo.getUsername(),UserInfo.getPassword());
            mToolsFragment=new DiskFragment(mDiskSocket);
+       }else if (operation.equals("search")){
+            textView.setText(getResources().getString(R.string.search));
+           mToolsFragment=new SearchFragment();
        }
 
         getSupportFragmentManager().beginTransaction()
