@@ -1,38 +1,27 @@
 package com.lp.flashremote.activities
 
-import android.app.Activity
-import android.content.Context
+
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
-import android.os.storage.StorageManager
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.FrameLayout
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.lp.flashremote.Model.FileManagerModel
 import com.lp.flashremote.Model.FileManagerStatic
-import com.lp.flashremote.Model.times
 import com.lp.flashremote.R
 import com.lp.flashremote.adapters.FIleExplorerAdapter
 import com.lp.flashremote.beans.*
-import com.lp.flashremote.utils.Command2JsonUtil
 import com.lp.flashremote.utils.SocketUtil
-import com.lp.flashremote.utils.StringUtil
 import com.lp.flashremote.views.MyProgressDialog
-import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.activity_file_explorer.*
-import kotlinx.android.synthetic.main.view_file_exp_item.*
 import org.jetbrains.anko.*
-import org.json.JSONObject
-import java.io.BufferedOutputStream
 import java.io.File
 import java.io.IOException
-import java.util.*
 import kotlin.collections.ArrayList
 
 class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
@@ -178,14 +167,18 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
                     copyFileList = adapter.chooseFile
                 else if(mode == MODE_IN)
                     copyBaseFileList = adapter.chooseList
-                startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_OUT,"srcMode" to mode,"action" to "copy","dataType" to FIleExplorerAdapter.BASE_FILE_EXPLORER,"title" to "选择粘贴目录","rootPath" to Environment.getExternalStorageDirectory().path)
+                startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_OUT,
+                        "srcMode" to mode,"action" to "copy","dataType" to FIleExplorerAdapter.BASE_FILE_EXPLORER,
+                        "title" to "选择粘贴目录","rootPath" to Environment.getExternalStorageDirectory().path)
             }
             R.id.file_exp_move->{
                 if(mode == MODE_EXPLORER)
                     copyFileList = adapter.chooseFile
                 else if(mode == MODE_IN)
                     copyBaseFileList = adapter.chooseList
-                startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_OUT,"srcMode" to mode,"action" to "move","dataType" to FIleExplorerAdapter.BASE_FILE_EXPLORER,"title" to "选择移动目录","rootPath" to Environment.getExternalStorageDirectory().path)
+                startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_OUT,
+                        "srcMode" to mode,"action" to "move","dataType" to FIleExplorerAdapter.BASE_FILE_EXPLORER,
+                        "title" to "选择移动目录","rootPath" to Environment.getExternalStorageDirectory().path)
             }
             R.id.file_exp_select_all->{
                 adapter.selectAll()
