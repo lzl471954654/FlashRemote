@@ -248,7 +248,10 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 }
                 break;
             case R.id.fab3:
-                startPCActivity("mouse");
+               // startPCActivity("mouse");
+                Intent Intent = new Intent(getActivity(), PcOperationActivity.class);
+                Intent.putExtra("operation", "mouse");
+                startActivity(Intent);
                 break;
             case R.id.fab4:
                 //获取磁盘分区

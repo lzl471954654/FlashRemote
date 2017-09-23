@@ -4,9 +4,13 @@ package com.lp.flashremote.activities;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -25,6 +29,7 @@ import com.lp.flashremote.utils.SocketUtil;
  */
 
 public class PcOperationActivity extends AppCompatActivity {
+    private LinearLayout bar;
     private Fragment mToolsFragment;
     private TextView textView;
     @Override
@@ -37,6 +42,7 @@ public class PcOperationActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_pcoperation);
         String operation=getIntent().getStringExtra("operation");
+        bar=(LinearLayout)findViewById(R.id.linear_op_bar);
         textView=(TextView) findViewById(R.id.text);
 
        if (operation.equals("tools")){
@@ -54,8 +60,8 @@ public class PcOperationActivity extends AppCompatActivity {
            mToolsFragment=new SearchFragment();
        }else if (operation.equals("mouse")){
            textView.setText(getResources().getString(R.string.wcg));
+          bar.setVisibility(View.GONE);
            mToolsFragment=new MouseFragment();
-
        }
 
         getSupportFragmentManager().beginTransaction()
@@ -69,4 +75,6 @@ public class PcOperationActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }
