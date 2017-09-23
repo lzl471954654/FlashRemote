@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.lp.flashremote.R;
 import com.lp.flashremote.beans.UserInfo;
 import com.lp.flashremote.fragments.DiskFragment;
+import com.lp.flashremote.fragments.MouseFragment;
 import com.lp.flashremote.fragments.SearchFragment;
 import com.lp.flashremote.fragments.ToolsFragment;
 import com.lp.flashremote.utils.SocketUtil;
@@ -51,6 +52,10 @@ public class PcOperationActivity extends AppCompatActivity {
        }else if (operation.equals("search")){
             textView.setText(getResources().getString(R.string.search));
            mToolsFragment=new SearchFragment();
+       }else if (operation.equals("mouse")){
+           textView.setText(getResources().getString(R.string.wcg));
+           mToolsFragment=new MouseFragment();
+
        }
 
         getSupportFragmentManager().beginTransaction()
