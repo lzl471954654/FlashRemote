@@ -71,6 +71,8 @@ public class MouseTouchView extends View {
                 upY=event.getY();
                 if ((upY-downY<TOUCHSLOP) | upY-downY<TOUCHSLOP){
                     mInTouchEventCount.touchCount++;
+                }else{
+                    mInTouchEventCount.touchCount=0;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
