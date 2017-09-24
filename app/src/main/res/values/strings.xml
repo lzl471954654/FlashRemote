@@ -58,5 +58,6 @@
     <string name="pcdisk">磁盘分区</string>
     <string name="send_to_pc">发送给电脑</string>
     <string name="send_to_phone">发送给手机</string>
+    <string name="right">右击</string>
 
 </resources>

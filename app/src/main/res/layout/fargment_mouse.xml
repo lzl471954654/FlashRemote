@@ -18,9 +18,9 @@
         android:id="@+id/right_click"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:text="右击"
+        android:text="@string/right"
         android:gravity="center"
         android:textSize="20sp"
-        android:background="@color/primary"/>
+        android:background="@drawable/right_click_bg"/>
 
 </LinearLayout>
