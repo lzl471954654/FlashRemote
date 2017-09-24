@@ -14,5 +14,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
+    <TextView
+        android:id="@+id/right_click"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="右击"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:background="@color/primary"/>
 
 </LinearLayout>
