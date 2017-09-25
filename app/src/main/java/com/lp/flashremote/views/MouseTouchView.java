@@ -8,10 +8,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+
+import com.lp.flashremote.beans.UserInfo;
+import com.lp.flashremote.utils.Command2JsonUtil;
 import com.lp.flashremote.utils.SocketUtil;
+import com.lp.flashremote.utils.StringUtil;
 
 
 public class MouseTouchView extends View {
@@ -38,6 +44,7 @@ public class MouseTouchView extends View {
 
     public static float currentX = -100;
     public static float currentY = -100;
+
     @Override
     protected void onDraw(Canvas canvas) {
         Paint p = new Paint();
@@ -59,10 +66,6 @@ public class MouseTouchView extends View {
                 if (0==mInTouchEventCount.touchCount){
                     postDelayed(mInTouchEventCount,600);
                 }
-               //mSocket=SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword());
-               /**
-                 * 判断是否连接成功？？
-                 **/
                 break;
             case MotionEvent.ACTION_UP:
                 upX=0;
@@ -80,12 +83,10 @@ public class MouseTouchView extends View {
                 break;
         }
 
-      /*  String mouseop=Command2JsonUtil.getMouseJson(currentX,currentY,false,false,false,false);
-        mSocket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",mouseop,false)));*/
-
         invalidate();//重绘组件
         return true;
     }
+
 
     public void setClickListener(MouseTouchView.OnClickListener l) {
         mOnClickListener = l;
@@ -108,6 +109,7 @@ public class MouseTouchView extends View {
         return result;
     }
 
+
     /**
      * 点击事件的接口
      */
@@ -115,6 +117,7 @@ public class MouseTouchView extends View {
         void onDoubleClick(View v);
         void onSingleClick(View v);
     }
+
 
     /**
      * 计时器
@@ -142,6 +145,7 @@ public class MouseTouchView extends View {
                 performDoubleClick();
             if (1 == msg.arg1)
                 performSingleClick();
+
         }
     }
 

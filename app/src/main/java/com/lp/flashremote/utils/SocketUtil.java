@@ -127,8 +127,8 @@ public class SocketUtil extends Thread {
             connectListener.connectError();
             return;
         }
-        addMessage(StringUtil.addEnd_flag2Str(StringUtil
-                .operateCmd(Command2JsonUtil.getJson("-1", null, true))));
+        addMessage(StringUtil
+                .operateCmd(Command2JsonUtil.getJson("-1", "", true)));
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -137,10 +137,12 @@ public class SocketUtil extends Thread {
         });
         thread.start();
         try {
-            Thread.sleep(250);
-            if (result.equals(StringUtil.addEnd_flag2Str(ServerProtocol.OK))) {
+            Thread.sleep(1000);
+            Log.e("result",result);
+            if (result.equals(StringUtil.addEnd_flag2Str(ServerProtocol.CONNECTED_SUCCESS))) {
                 connectListener.connectSusess();
             } else {
+                Log.e("111111111","2222222222");
                 connectListener.connectError();
             }
         } catch (InterruptedException e) {
