@@ -15,23 +15,12 @@
         android:layout_height="48dp"
         android:layout_alignParentBottom="true"
         android:id="@+id/file_pc_bottom_bar"
+        android:background="@color/normalBackgroundColor"
         >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="47dp"
             >
-            <TextView
-                android:id="@+id/file_pc_copy"
-                style="@style/file_exp_bottom_bar_item_style"
-                android:text="@string/file_exp_copy"
-                android:drawableTop="@mipmap/icon_cpoy"
-                />
-            <TextView
-                android:id="@+id/file_pc_move"
-                style="@style/file_exp_bottom_bar_item_style"
-                android:text="@string/file_exp_move"
-                android:drawableTop="@mipmap/icon_file_move"
-                />
             <TextView
                 android:id="@+id/file_pc_delete"
                 style="@style/file_exp_bottom_bar_item_style"
@@ -41,14 +30,8 @@
             <TextView
                 android:id="@+id/file_pc_send"
                 style="@style/file_exp_bottom_bar_item_style"
-                android:text="@string/file_exp_send"
+                android:text="@string/file_exp_download"
                 android:drawableTop="@mipmap/icon_send"
-                />
-            <TextView
-                android:id="@+id/file_pc_select_all"
-                style="@style/file_exp_bottom_bar_item_style"
-                android:text="@string/file_exp_select_all"
-                android:drawableTop="@mipmap/icon_select_all"
                 />
         </LinearLayout>
         <View

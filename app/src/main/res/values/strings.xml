@@ -43,6 +43,7 @@
     <string name="file_exp_nofile">没有文件</string>
     <string name="file_exp_normal_date">-/-/-</string>
     <string name="file_exp_no_open_style">对不起找不到打开该文件的方式</string>
+    <string name="file_exp_download">下载</string>
 
     <string name="setting_see_folder">查看接收文件夹</string>
     <string name="setting_clear_folder">清空接收文件夹</string>
