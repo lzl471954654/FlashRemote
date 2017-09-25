@@ -16,6 +16,8 @@ import com.lp.flashremote.utils.GsonAnalysiUtil
 import com.lp.flashremote.utils.SocketUtil
 import com.lp.flashremote.utils.StringUtil
 import kotlinx.android.synthetic.main.activity_pc_file_dir.*
+import org.jetbrains.anko.bottomPadding
+import org.jetbrains.anko.dip
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
@@ -41,7 +43,7 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
 
 
     private fun initView() {
-        val viewArray = arrayOf(file_pc_copy,file_pc_delete,file_pc_move,file_pc_send,file_pc_select_all)
+        val viewArray = arrayOf(file_pc_delete,file_pc_send)
         viewArray.forEach { it.setOnClickListener(this) }
     }
 
@@ -54,13 +56,27 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
             uiThread {
                 if (result!=null){
                     fileinfos=GsonAnalysiUtil.getFileList(StringUtil.rmEnd_flagstr(result))
-                    adapter= FilePcAdapter(fileinfos,this,mSocket)
+                    adapter= FilePcAdapter(fileinfos,this@PcFileDirActivity,mSocket)
                     file_pc__list.layoutManager= LinearLayoutManager(mContext)
                     file_pc__list.adapter=adapter
                 }
             }
         }
 
+    }
+
+    public fun changeBottomBarState(size:Int){
+        file_pc_bottom_bar.visibility =
+                if (size==0)
+                {
+                    file_pc_bottom_bar.bottomPadding = dip(48)
+                    View.INVISIBLE
+                }
+                else
+                {
+                    file_pc_bottom_bar.bottomPadding = 0
+                    View.VISIBLE
+                }
     }
 
     override fun onBackPressed() {
