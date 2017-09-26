@@ -29,7 +29,7 @@ dependencies {
     compile project(':libzxing')
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     // So here it's 15 too
-    
+
 
     //Okhttp
     compile files('src/libs/Msc.jar')

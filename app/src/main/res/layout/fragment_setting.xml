@@ -9,6 +9,17 @@
 
     <RelativeLayout
         style="@style/setting_item_style"
+        android:id="@+id/settings_account"
+        android:layout_marginTop="16dp"
+        android:background="@color/normalBackgroundColor"
+        >
+        <TextView
+            style="@style/setting_item_text_style"
+            android:text="@string/setting_account"
+            />
+    </RelativeLayout>
+    <RelativeLayout
+        style="@style/setting_item_style"
         android:id="@+id/settings_see_accept_folder"
         android:layout_marginTop="16dp"
         android:background="@color/normalBackgroundColor"

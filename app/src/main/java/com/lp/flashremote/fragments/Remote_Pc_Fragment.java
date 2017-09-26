@@ -149,6 +149,10 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.connpc:
+                if(UserInfo.getPassword().equals("") || UserInfo.getUsername().equals("") ){
+                    ToastUtil.toastText(getContext(),"请您先设置账户");
+                    return;
+                }
                 if (mSocketOP == null) {
                     mSocketOP = SocketUtil.getInstance(UserInfo.getUsername(), UserInfo.getPassword());
                     mSocketOP.start();

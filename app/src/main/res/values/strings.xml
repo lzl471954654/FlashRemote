@@ -45,12 +45,17 @@
     <string name="file_exp_no_open_style">对不起找不到打开该文件的方式</string>
     <string name="file_exp_download">下载</string>
 
+    <string name="account_ac_username">请输入用户名</string>
+    <string name="account_ac_password">请输入密码</string>
+    <string name="account_ac_set_account">设置账号</string>
+
     <string name="setting_see_folder">查看接收文件夹</string>
     <string name="setting_clear_folder">清空接收文件夹</string>
     <string name="setting_clear_cache">清除缓存</string>
     <string name="setting_about_us">关于我们</string>
     <string name="setting_feedback">问题反馈</string>
     <string name="setting_exit">退出</string>
+    <string name="setting_account">设置账号</string>
 
     <string name="settings_feedback_tips">请提出您宝贵的意见，谢谢（最多300字）</string>
     <string name="submitButton">提交</string>

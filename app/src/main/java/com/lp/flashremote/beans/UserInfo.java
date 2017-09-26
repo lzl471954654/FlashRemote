@@ -5,8 +5,8 @@ package com.lp.flashremote.beans;
  */
 
 public class UserInfo {
-    private static String username="PJW";
-    private static String password="Test";
+    private static String username="";
+    private static String password="";
 
     public static String getPassword() {
         return password;

@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import com.lp.flashremote.FlashApplication
 
 import com.lp.flashremote.R
+import com.lp.flashremote.activities.AccountActivity
 import com.lp.flashremote.activities.FeedbackActivity
 import com.lp.flashremote.activities.FileExplorerActivity
 import com.lp.flashremote.adapters.FIleExplorerAdapter
@@ -38,7 +39,7 @@ class SettingFragment : Fragment(),View.OnClickListener {
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        viewArray  = arrayOf(root.settings_about_us,root.settings_clear_cache,root.settings_clear_folder,root.settings_feedback,root.settings_see_accept_folder)
+        viewArray  = arrayOf(root.settings_about_us,root.settings_clear_cache,root.settings_clear_folder,root.settings_feedback,root.settings_see_accept_folder,root.settings_account)
         viewArray.forEach { it.setOnClickListener(this) }
         Log.i("dir:",context.filesDir.absolutePath)
         Log.i("size:",context.filesDir.length().toString())
@@ -100,8 +101,11 @@ class SettingFragment : Fragment(),View.OnClickListener {
                 dialog.setMessage("你要走吗")
                 dialog.setNegativeButton("再见") {
                     p0, p1 ->
-
+                    System.exit(0)
                 }
+            }
+            R.id.settings_account->{
+                startActivity<AccountActivity>()
             }
         }
     }

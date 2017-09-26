@@ -49,8 +49,10 @@ public class SocketUtil extends Thread {
         mSocketUtil = null;
         socketInput = null;
         socketOutput = null;
-        mSendMessaggeQueue.clear();
-        mSendMessaggeQueue = null;
+        if(mSendMessaggeQueue!=null){
+            mSendMessaggeQueue.clear();
+            mSendMessaggeQueue = null;
+        }
     }
 
     @Override
@@ -63,6 +65,8 @@ public class SocketUtil extends Thread {
                 loop();//开启消息队列
             } catch (IOException e) {
                 e.printStackTrace();
+                setmConnOk(false);
+                Remote_Pc_Fragment.connisok(false);
             }
             Log.e("Thread-exit", "exit");
         } else {
