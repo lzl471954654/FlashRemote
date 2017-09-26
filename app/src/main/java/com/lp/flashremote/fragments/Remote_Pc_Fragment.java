@@ -6,12 +6,20 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.iflytek.cloud.resource.Resource;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.lp.flashremote.R;
 import com.lp.flashremote.activities.PcOperationActivity;
@@ -37,10 +46,15 @@ import com.lp.flashremote.utils.ToastUtil;
 import com.lp.flashremote.utils.VoiceUtil;
 import com.lp.flashremote.views.VolumwDialog;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by PUJW on 2017/8/14.
@@ -62,6 +76,10 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     private TextView mConnPc;
     private TextView mBreakConnPc;
 
+    private static CircleImageView mUserImage;//用户头像
+    private static TextView mUserName;
+    private static TextView mConnTv;//是否连接
+
     private RecognizerDialog iatDialog;
     private static Context mContext;
     private boolean isShow = false;
@@ -70,9 +88,10 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
         @Override
         public void handleMessage(Message msg) {
            if (msg.what==1){
-               ToastUtil.toastText(mContext, "上线成功!");
+               mConnTv.setText("已上线");
+               mUserName.setText(UserInfo.getUsername());
+               mUserImage.setImageDrawable(mContext.getResources().getDrawable(R.mipmap.uesr_bg));
            }else if (msg.what==2){
-
                mSocketOP.interrupt();
                mSocketOP.setThreadStop();
                mSocketOP.clearSocketCon();
@@ -81,6 +100,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
            }
         }
     };
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -134,6 +154,9 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     }
 
     private void initView(View view) {
+        mUserImage=view.findViewById(R.id.user_image);
+        mConnTv=view.findViewById(R.id.login_text);
+        mUserName=view.findViewById(R.id.user_name);
         mFab_more = (FloatingActionButton) view.findViewById(R.id.pcmore);
         mConnPc = view.findViewById(R.id.connpc);
         mBreakConnPc = view.findViewById(R.id.breakConnpc);
@@ -168,7 +191,9 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                     mSocketOP.setThreadStop();
                     mSocketOP.clearSocketCon();
                     mSocketOP = null;
-                    ToastUtil.toastText(getContext(), "断开成功！");
+                    mConnTv.setText("未上线");
+                    mUserName.setText("");
+                    mUserImage.setImageDrawable(mContext.getResources().getDrawable(R.mipmap.defualt_image));
                 } else {
                     ToastUtil.toastText(getContext(), "您未上线，谢谢合作！");
                 }

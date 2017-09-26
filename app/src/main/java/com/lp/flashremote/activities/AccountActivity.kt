@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import com.lp.flashremote.R
 import com.lp.flashremote.beans.UserInfo
+import com.lp.flashremote.utils.SharePerferenceUtil
 import kotlinx.android.synthetic.main.activity_account.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
@@ -31,7 +32,9 @@ class AccountActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 UserInfo.setUsername(account_ac_id.text.toString())
                 UserInfo.setPassword(account_ac_pass.text.toString())
+                SharePerferenceUtil.saveUserInfo(applicationContext,UserInfo.getUsername(),UserInfo.getPassword());
                 showSnackBar(account_ac_commit, "设置完成！")
+
                 doAsync {
                     Thread.sleep(500)
                     uiThread { finish() }
