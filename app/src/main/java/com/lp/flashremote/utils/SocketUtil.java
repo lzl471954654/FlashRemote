@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -63,7 +64,7 @@ public class SocketUtil extends Thread {
                 setmConnOk(true);
                 Remote_Pc_Fragment.connisok(mConnOk);
                 loop();//开启消息队列
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
                 setmConnOk(false);
                 Remote_Pc_Fragment.connisok(false);
@@ -103,12 +104,13 @@ public class SocketUtil extends Thread {
         return conn_ok;
     }
 
-    private void loop() throws IOException {
+    private void loop() throws IOException,InterruptedException {
         while (!isInterrupted()) {
             if (getThreadState()) {
                 break;
             }
 
+            Thread.sleep(100);
             if (!mSendMessaggeQueue.isEmpty()) {
                 byte[] bytes = mSendMessaggeQueue.remove();
                 socketOutput.write(bytes);
