@@ -7,6 +7,7 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.os.storage.StorageManager
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
@@ -25,11 +26,13 @@ import com.lp.flashremote.utils.SocketUtil
 import com.lp.flashremote.utils.StringUtil
 import com.lp.flashremote.views.MyProgressDialog
 import com.lp.flashremote.views.SendChoiceDialog
+import junit.framework.Test
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.activity_file_explorer.*
 import kotlinx.android.synthetic.main.view_file_exp_item.*
 import kotlinx.android.synthetic.main.view_my_progress_dialog.*
 import org.jetbrains.anko.*
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedOutputStream
 import java.io.File
@@ -48,6 +51,7 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
     }
 
     lateinit var progressDialog:MyProgressDialog
+    lateinit var sendDialog:SendChoiceDialog
     var mode: Int = MODE_IN
     var dataType: Int = FIleExplorerAdapter.BASE_FILE_TYPE
     var title = ""
@@ -241,10 +245,15 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
                     showSnackBar(file_exp_send,"对不起无法发送文件夹")
                     return
                 }
-                val progress = MyProgressDialog(this@FileExplorerActivity,"正在发送文件")
-                progress.show()
-                val dialog = SendChoiceDialog(this@FileExplorerActivity,{
+
+                progressDialog = MyProgressDialog(this@FileExplorerActivity,"正在发送文件")
+                sendDialog = SendChoiceDialog(this@FileExplorerActivity,{
                     view ->
+                    /*
+                    * 发送给电脑
+                    * */
+                    sendDialog.dismiss()
+                    progressDialog.show()
                     doAsync {
                         val instruction = "${ServerProtocol.FILE_LIST_FLAG}_${getFileDescribeArray(list)}"
                         var socket = SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword())
@@ -274,13 +283,21 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
                             }
                             println("send success!")
                         }
-                        uiThread { progress.dismiss();showSnackBar(file_exp_send,"发送成功！") }
+                        uiThread { progressDialog.dismiss();showSnackBar(file_exp_send,"发送成功！") }
                     }
                 },{
                     view ->
+                    /*
+                    * 发送给手机
+                    * */
+                    sendDialog.dismiss()
+                    progressDialog.show()
+                    doAsync {
 
+                        uiThread { progressDialog.dismiss();showSnackBar(file_exp_send,"发送成功！")}
+                    }
                 })
-                dialog.show()
+                sendDialog.show()
             }
         })
         /*doAsync {
