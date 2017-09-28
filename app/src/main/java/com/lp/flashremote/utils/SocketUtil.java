@@ -58,7 +58,6 @@ public class SocketUtil extends Thread {
 
     @Override
     public void run() {
-        super.run();
         if (initConn()) {
             try {
                 setmConnOk(true);
@@ -74,11 +73,6 @@ public class SocketUtil extends Thread {
             setmConnOk(false);
             Remote_Pc_Fragment.connisok(mConnOk);
         }
-    }
-
-    @Override
-    public synchronized void start() {
-        super.start();
     }
 
     private boolean initConn() {
@@ -110,13 +104,14 @@ public class SocketUtil extends Thread {
                 break;
             }
 
-            Thread.sleep(100);
-            if (!mSendMessaggeQueue.isEmpty()) {
-                byte[] bytes = mSendMessaggeQueue.remove();
-                socketOutput.write(bytes);
-                socketOutput.flush();
+            Thread.sleep(50);
+            synchronized (mSendMessaggeQueue){
+                if (!mSendMessaggeQueue.isEmpty()) {
+                    byte[] bytes = mSendMessaggeQueue.remove();
+                    socketOutput.write(bytes);
+                    socketOutput.flush();
+                }
             }
-            socketOutput.flush();
         }
     }
 
@@ -187,18 +182,25 @@ public class SocketUtil extends Thread {
 
 
     public void addBytes(byte[] bytes){
-        mSendMessaggeQueue.add(bytes);
+        synchronized (mSendMessaggeQueue){
+            if(mSendMessaggeQueue!=null)
+                mSendMessaggeQueue.add(bytes);
+        }
     }
 
     public void addMessage(String s) {
-        s = StringUtil.addEnd_flag2Str(s);
-        Log.e("addMessage",s);
-        try {
-            byte[] stringData = s.getBytes("UTF-8");
-            mSendMessaggeQueue.add(getIntegerBytes(stringData.length));
-            mSendMessaggeQueue.add(stringData);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        synchronized (mSendMessaggeQueue){
+            if(mSendMessaggeQueue==null)
+                return;
+            s = StringUtil.addEnd_flag2Str(s);
+            Log.e("addMessage",s);
+            try {
+                byte[] stringData = s.getBytes("UTF-8");
+                mSendMessaggeQueue.add(getIntegerBytes(stringData.length));
+                mSendMessaggeQueue.add(stringData);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
     }
 

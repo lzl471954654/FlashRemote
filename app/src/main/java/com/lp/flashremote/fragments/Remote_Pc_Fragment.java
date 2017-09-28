@@ -92,10 +92,12 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                mUserName.setText(UserInfo.getUsername());
                mUserImage.setImageDrawable(mContext.getResources().getDrawable(R.mipmap.uesr_bg));
            }else if (msg.what==2){
-               mSocketOP.interrupt();
-               mSocketOP.setThreadStop();
-               mSocketOP.clearSocketCon();
-               mSocketOP=null;
+               if(mSocketOP!=null){
+                   mSocketOP.interrupt();
+                   mSocketOP.setThreadStop();
+                   mSocketOP.clearSocketCon();
+                   mSocketOP=null;
+               }
                ToastUtil.toastText(mContext, "上线失败!");
            }
         }
