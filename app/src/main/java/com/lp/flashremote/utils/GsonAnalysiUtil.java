@@ -26,7 +26,6 @@ public class GsonAnalysiUtil {
     }
 
     public static List<FileInfo> getFileList(String fileinfo){
-
         List<FileInfo> fileInfos=gson.fromJson(fileinfo,
                 new TypeToken<List<FileInfo>>(){
                 }.getType());

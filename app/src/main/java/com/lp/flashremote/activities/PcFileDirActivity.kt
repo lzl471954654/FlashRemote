@@ -3,23 +3,29 @@ package com.lp.flashremote.activities
 import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.View
+import com.google.gson.Gson
 
 import com.lp.flashremote.R
 import com.lp.flashremote.adapters.FilePcAdapter
 import com.lp.flashremote.beans.FileInfo
+import com.lp.flashremote.beans.ServerProtocol
 import com.lp.flashremote.beans.UserInfo
 import com.lp.flashremote.utils.Command2JsonUtil
 import com.lp.flashremote.utils.GsonAnalysiUtil
 import com.lp.flashremote.utils.SocketUtil
 import com.lp.flashremote.utils.StringUtil
+import com.lp.flashremote.views.MyProgressDialog
 import kotlinx.android.synthetic.main.activity_pc_file_dir.*
 import org.jetbrains.anko.bottomPadding
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
+import java.util.*
+import kotlin.properties.Delegates
 
 class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
 
@@ -30,6 +36,9 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
     lateinit var result:String
     lateinit var adapter: FilePcAdapter
     lateinit var mContext:Context
+
+    lateinit var progress:MyProgressDialog
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +65,7 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
             uiThread {
                 if (result!=null){
                     fileinfos=GsonAnalysiUtil.getFileList(StringUtil.rmEnd_flagstr(result))
-                    adapter= FilePcAdapter(fileinfos,this@PcFileDirActivity,mSocket)
+                    adapter= FilePcAdapter(fileinfos.toMutableList(),this@PcFileDirActivity,mSocket)
                     file_pc__list.layoutManager= LinearLayoutManager(mContext)
                     file_pc__list.adapter=adapter
                 }
@@ -86,8 +95,62 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
             super.onBackPressed()
     }
 
-    override fun onClick(p0: View?) {
+    override fun onClick(v: View?) {
+        when(v?.id){
+            R.id.file_pc_delete->{
+                deleteFileOrDirs()
+            }
+            R.id.file_pc_send->{
+                downloadFile()
+            }
+        }
+    }
 
+    fun downloadFile(){
+        progress = MyProgressDialog(this@PcFileDirActivity,"正在下载文件，请稍后")
+        progress.show()
+        doAsync {
+            SocketUtil.getInstance().sendTestMessage(object : SocketUtil.ConnectListener {
+                override fun connectError() {
+                    uiThread { progress.dismiss();showSnackBar(file_pc_send,"对不起连接中断") }
+                }
+
+                override fun connectSusess() {
+
+                }
+            })
+        }
+    }
+
+    fun deleteFileOrDirs(){
+        progress = MyProgressDialog(this@PcFileDirActivity,"正在删除，请稍后")
+        progress.show()
+        doAsync {
+            SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword()).sendTestMessage(object : SocketUtil.ConnectListener {
+                override fun connectError() {
+                    uiThread { progress.dismiss();showSnackBar(file_pc_send,"对不起连接中断") }
+                }
+
+                override fun connectSusess() {
+                    val list = LinkedList<String>()
+                    adapter.chooseFile.forEach { list.add(it.path) }
+                    val command = "${ServerProtocol.FILE_DELETE}_${Gson().toJson(list)}"
+                    val socket = SocketUtil.getInstance()
+                    socket.addMessage(command)
+                    val result = socket.readLine()
+                    val size = result.split("_")[1].toInt()
+                    println(result)
+                    if(size==0){
+                        uiThread { progress.dismiss();showSnackBar(file_pc_send,"删除失败") }
+                    }else{
+                        adapter.data.removeAll(adapter.chooseFile)
+                        adapter.chooseFile.clear()
+                        uiThread { progress.dismiss();showSnackBar(file_pc_send,"成功删除${size}个文件"); adapter.notifyDataSetChanged();changeBottomBarState(0)}
+                    }
+
+                }
+            })
+        }
     }
 
 }

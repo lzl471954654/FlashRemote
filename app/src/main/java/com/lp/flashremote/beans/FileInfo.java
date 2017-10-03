@@ -1,9 +1,16 @@
 package com.lp.flashremote.beans;
 
+import java.io.File;
+
 public class FileInfo {
     private String path;
     private String name;
     private boolean type;
+
+    @Override
+    public String toString() {
+        return path + File.separator + name;
+    }
 
     public String getPath() {
         return path;

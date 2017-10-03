@@ -4,6 +4,7 @@ package com.lp.flashremote.utils;
 import android.util.Log;
 
 import com.lp.flashremote.beans.ServerProtocol;
+import com.lp.flashremote.beans.UserInfo;
 import com.lp.flashremote.fragments.Remote_Pc_Fragment;
 
 import java.io.BufferedReader;
@@ -44,6 +45,10 @@ public class SocketUtil extends Thread {
             mSocketUtil = new SocketUtil(u, p);
         }
         return mSocketUtil;
+    }
+
+    public static SocketUtil getInstance(){
+        return getInstance(UserInfo.getUsername(),UserInfo.getPassword());
     }
 
     public void clearSocketCon() {
@@ -163,7 +168,12 @@ public class SocketUtil extends Thread {
             byte[] msgSizeBytes = new byte[4];
             socketInput.read(msgSizeBytes);
             msgSize = IntConvertUtils.getIntegerByByteArray(msgSizeBytes);
-
+            if(msgSize<=0&&msgSize>=40*1024){
+                setThreadStop();
+                setmConnOk(false);
+                interrupt();
+                return "";
+            }
 
             int i = 0;
             byte[] dataBytes = new byte[msgSize];

@@ -26,11 +26,11 @@ import java.util.*
  * Created by xiyou3g on 2017/9/21.
  *
  */
-class FilePcAdapter(var data:List<FileInfo>, val context: Context, val socket:SocketUtil):
+class FilePcAdapter(var data:MutableList<FileInfo>, val context: Context, val socket:SocketUtil):
         RecyclerView.Adapter<FilePcAdapter.ViewHolder>(){
 
 
-    val stack: Stack<List<FileInfo>> = Stack() //存储各级列表的栈
+    val stack: Stack<MutableList<FileInfo>> = Stack() //存储各级列表的栈
     val chooseFile : LinkedList<FileInfo> = LinkedList<FileInfo>() //存储被选中的文件
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
         val view=LayoutInflater.from(parent?.context).inflate(R.layout.view_file_pc_item,parent,false)
@@ -73,7 +73,7 @@ class FilePcAdapter(var data:List<FileInfo>, val context: Context, val socket:So
     inner class ViewHolder(val view: View ,val adapter:FilePcAdapter,val socket: SocketUtil ):
             RecyclerView.ViewHolder(view) {
 
-        fun onBind(position: Int, list: List<FileInfo>){
+        fun onBind(position: Int, list: MutableList<FileInfo>){
             if (list.get(position).isType){
                 view.file_pc_item_icon.setImageResource(R.mipmap.icon_folder)
             }else{
