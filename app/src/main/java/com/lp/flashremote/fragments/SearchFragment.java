@@ -118,7 +118,7 @@ public class SearchFragment   extends Fragment implements View.OnClickListener {
                 final int id=i;
                 new AlertDialog.Builder(getActivity())
                         .setTitle("提示")
-                        .setMessage("你确定要删除--"+mList.get(i)+"--?")
+                        .setMessage("你确定要删除{"+mList.get(i)+"}?")
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -128,7 +128,7 @@ public class SearchFragment   extends Fragment implements View.OnClickListener {
                             }
                         })
                         .show();
-                return false;
+                return true;
             }
         });
     }

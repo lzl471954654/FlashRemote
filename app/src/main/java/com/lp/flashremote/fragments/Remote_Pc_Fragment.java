@@ -289,28 +289,38 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 break;
             case R.id.fab5:
                 //调节亮度
-                mSocketOP.addMessage(StringUtil
-                        .operateCmd(Command2JsonUtil.getJson("5",null,false)));
+               /* mSocketOP.addMessage(StringUtil
+                        .operateCmd(Command2JsonUtil.getJson("5",null,false)));*/
                 //startPCActivity("luminance");
                 break;
             case R.id.fab6:
                 startPCActivity("tools");
                 break;
             case R.id.fab7:
-                 //startPCActivity("search");
-                Intent Intentqq = new Intent(getActivity(), PcOperationActivity.class);
-                Intentqq.putExtra("operation", "search");
-                startActivity(Intentqq);
+                startPCActivity("search");
                 break;
             case R.id.fab8:
-                VolumwDialog dialog = new VolumwDialog(getActivity());
-                Window dialogWindow = dialog.getWindow();
-                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-                dialogWindow.setGravity(Gravity.CENTER | Gravity.TOP);
-                lp.x = 0; // 新位置X坐标
-                lp.y = 250;
-                dialogWindow.setAttributes(lp);
-                dialog.show();
+                if (mSocketOP!=null){
+                    mSocketOP.sendTestMessage(new SocketUtil.ConnectListener() {
+                        @Override
+                        public void connectSusess() {
+                            VolumwDialog dialog = new VolumwDialog(getActivity(),mSocketOP);
+                            Window dialogWindow = dialog.getWindow();
+                            WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+                            dialogWindow.setGravity(Gravity.CENTER | Gravity.TOP);
+                            lp.x = 0; // 新位置X坐标
+                            lp.y = 250;
+                            dialogWindow.setAttributes(lp);
+                            dialog.show();
+                        }
+
+                        @Override
+                        public void connectError() {
+                            ToastUtil.toastText(getActivity(),"连接失败，请重新连接！");
+                        }
+                    });
+                }
+
                 break;
             case R.id.fab9:
                 Toast.makeText(getActivity(), "请长按说话！", Toast.LENGTH_SHORT).show();
@@ -325,7 +335,6 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
         Message m=new Message();
         m.what=b?1:2;
         handler.sendMessage(m);
-
     }
 
 

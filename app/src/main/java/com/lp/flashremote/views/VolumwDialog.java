@@ -12,8 +12,15 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.lp.flashremote.R;
+import com.lp.flashremote.utils.Command2JsonUtil;
+import com.lp.flashremote.utils.SocketUtil;
+import com.lp.flashremote.utils.StringUtil;
+
+import java.util.Random;
 
 /**
  * Created by PUJW on 2017/8/23.
@@ -22,9 +29,13 @@ import com.lp.flashremote.R;
 
 public class VolumwDialog  extends Dialog{
 
-    private ProgressBar mProgressBar;
-    public VolumwDialog(@NonNull Context context) {
+    private SeekBar mProgressBar;
+    private Context mContext;
+    private SocketUtil socket;
+    public VolumwDialog(@NonNull Context context, SocketUtil s) {
         super(context,R.style.VolumeDialog);
+        mContext=context;
+        this.socket=s;
     }
 
     @Override
@@ -39,40 +50,35 @@ public class VolumwDialog  extends Dialog{
 
 
     private void initView() {
-        mProgressBar=(ProgressBar)findViewById(R.id.progressbar);
+        mProgressBar=(SeekBar)findViewById(R.id.progressbar);
     }
 
     private void initData() {
+        Random random = new Random();
+        int s = random.nextInt(50)%(50-10+1) + 10;
+        mProgressBar.setProgress(s);
     }
 
     private void initEvent() {
+        mProgressBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            private int preProgress=0;
+            private int progress = 0;
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                progress=i;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                preProgress=progress;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                socket.addMessage(StringUtil.operateCmd(
+                            Command2JsonUtil.getJson("8",progress-preProgress+"",false)));
+                Toast.makeText(mContext,"当前进度 = "+progress, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
-
-  /* public static class Builder{
-        private Context mContext;
-        private Bitmap bitmap;
-
-        public void setBitmap(Bitmap bitmap) {
-            this.bitmap = bitmap;
-        }
-
-        public Bitmap getBitmap() {
-            return bitmap;
-        }
-        public Builder(Context context){
-            this.mContext=context;
-        }
-
-        public VolumwDialog create(){
-            LayoutInflater layoutInflater=(LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            VolumwDialog volumwDialog=new VolumwDialog(mContext, R.style.Dialog);
-            View v=layoutInflater.inflate(R.layout.volume_dialog,null);
-            volumwDialog.addContentView(v,new WindowManager.LayoutParams(android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-                    , android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
-            volumwDialog.setContentView(v);
-           *//* ImageView img = (ImageView)v.findViewById(R.id.img_qrcode);
-            img.setImageBitmap(getBitmap());*//*
-            return volumwDialog;
-        }
-    }*/
 }
