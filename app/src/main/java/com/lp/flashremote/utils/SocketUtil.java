@@ -230,7 +230,8 @@ public class SocketUtil extends Thread {
 
     public void setThreadStop() {
         try {
-            mSocket.close();
+            if(mSocket!=null)
+                mSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
