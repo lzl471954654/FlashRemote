@@ -33,7 +33,6 @@ class ToolsAdapter(val mContext:Context,val mlists:List<String>,val mSocket:Sock
         return MyViewHolder(LayoutInflater.from(mContext).inflate(R.layout.toolrecycleview_item,parent,false))
     }
 
-
     inner class MyViewHolder(var root: View) : RecyclerView.ViewHolder(root) {
 
         fun onBind(position: Int,list:List<String>,mSocket: SocketUtil)

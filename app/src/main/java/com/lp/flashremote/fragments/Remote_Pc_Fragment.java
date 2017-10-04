@@ -229,7 +229,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             mSocketOP.addMessage(StringUtil
-                                                    .operateCmd(Command2JsonUtil.getJson("0",null,false)));
+                                                    .operateCmd(Command2JsonUtil.getJson("0","",false)));
                                             ToastUtil.toastText(getContext(), "关闭成功!");
                                         }
                                     })
@@ -237,7 +237,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             mSocketOP.addMessage(StringUtil
-                                                    .operateCmd(Command2JsonUtil.getJson("1",null,false)));
+                                                    .operateCmd(Command2JsonUtil.getJson("1","",false)));
                                             ToastUtil.toastText(getContext(), "电脑还开着呢！");
                                         }
                                     })
@@ -279,7 +279,6 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 }
                 break;
             case R.id.fab3:
-               // startPCActivity("mouse");
                 Intent Intent = new Intent(getActivity(), PcOperationActivity.class);
                 Intent.putExtra("operation", "mouse");
                 startActivity(Intent);
@@ -298,7 +297,10 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 startPCActivity("tools");
                 break;
             case R.id.fab7:
-                 startPCActivity("search");
+                 //startPCActivity("search");
+                Intent Intentqq = new Intent(getActivity(), PcOperationActivity.class);
+                Intentqq.putExtra("operation", "search");
+                startActivity(Intentqq);
                 break;
             case R.id.fab8:
                 VolumwDialog dialog = new VolumwDialog(getActivity());

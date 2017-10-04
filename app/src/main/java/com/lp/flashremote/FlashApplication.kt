@@ -18,6 +18,7 @@ class FlashApplication:Application(){
         PropertiesUtil.getProperties(this)
         SharePerferenceUtil.getUserInfo(this)
         initDataDir()
+
     }
 
     private fun initDataDir(){
