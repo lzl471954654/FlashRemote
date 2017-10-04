@@ -31,7 +31,7 @@ public class VolumwDialog  extends Dialog{
 
     private SeekBar mProgressBar;
     private Context mContext;
-    private SocketUtil socket;
+    private SocketUtil socket;//发送socket
     public VolumwDialog(@NonNull Context context, SocketUtil s) {
         super(context,R.style.VolumeDialog);
         mContext=context;
@@ -56,6 +56,7 @@ public class VolumwDialog  extends Dialog{
     private void initData() {
         Random random = new Random();
         int s = random.nextInt(50)%(50-10+1) + 10;
+        //获取随机值
         mProgressBar.setProgress(s);
     }
 

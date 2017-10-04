@@ -299,7 +299,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
             case R.id.fab7:
                 startPCActivity("search");
                 break;
-            case R.id.fab8:
+            case R.id.fab8://音量调节
                 if (mSocketOP!=null){
                     mSocketOP.sendTestMessage(new SocketUtil.ConnectListener() {
                         @Override
