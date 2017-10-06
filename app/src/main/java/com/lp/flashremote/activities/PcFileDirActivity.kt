@@ -3,16 +3,14 @@ package com.lp.flashremote.activities
 import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.View
 import com.google.gson.Gson
 
 import com.lp.flashremote.R
 import com.lp.flashremote.adapters.FilePcAdapter
 import com.lp.flashremote.beans.FileInfo
-import com.lp.flashremote.beans.ServerProtocol
+import com.lp.flashremote.beans.PropertiesUtil
 import com.lp.flashremote.beans.UserInfo
 import com.lp.flashremote.utils.Command2JsonUtil
 import com.lp.flashremote.utils.GsonAnalysiUtil
@@ -25,7 +23,6 @@ import org.jetbrains.anko.dip
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import java.util.*
-import kotlin.properties.Delegates
 
 class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
 
@@ -134,7 +131,7 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
                 override fun connectSusess() {
                     val list = LinkedList<String>()
                     adapter.chooseFile.forEach { list.add(it.path) }
-                    val command = "${ServerProtocol.FILE_DELETE}_${Gson().toJson(list)}"
+                    val command = "${PropertiesUtil.FILE_DELETE}_${Gson().toJson(list)}"
                     val socket = SocketUtil.getInstance()
                     socket.addMessage(command)
                     val result = socket.readLine()

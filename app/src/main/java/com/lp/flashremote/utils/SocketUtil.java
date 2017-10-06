@@ -3,18 +3,13 @@ package com.lp.flashremote.utils;
 
 import android.util.Log;
 
-import com.lp.flashremote.beans.ServerProtocol;
+import com.lp.flashremote.beans.PropertiesUtil;
 import com.lp.flashremote.beans.UserInfo;
 import com.lp.flashremote.fragments.Remote_Pc_Fragment;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.InterruptedIOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -83,13 +78,13 @@ public class SocketUtil extends Thread {
     private boolean initConn() {
         boolean conn_ok = false;
         try {
-            mSocket = new Socket(ServerProtocol.SERVER_IP, 10086);
+            mSocket = new Socket(PropertiesUtil.SERVER_IP, 10086);
             OutputStream outputStream = mSocket.getOutputStream();
             InputStream inputStream = mSocket.getInputStream();
             socketInput = inputStream;
             socketOutput = outputStream;
-            String logonString = StringUtil.stringAddUnderline(ServerProtocol.CONNECTED_TO_USER,
-                    username, password, ServerProtocol.END_FLAG);
+            String logonString = StringUtil.stringAddUnderline(PropertiesUtil.CONNECTED_TO_USER,
+                    username, password, PropertiesUtil.END_FLAG);
             byte[] bytes = logonString.getBytes();
             socketOutput.write(IntConvertUtils.getIntegerBytes(bytes.length));
             socketOutput.write(bytes);
@@ -145,7 +140,7 @@ public class SocketUtil extends Thread {
         try {
             Thread.sleep(1000);
             Log.e("result",result);
-            if (result.equals(StringUtil.addEnd_flag2Str(ServerProtocol.CONNECTED_SUCCESS))) {
+            if (result.equals(StringUtil.addEnd_flag2Str(PropertiesUtil.CONNECTED_SUCCESS))) {
                 connectListener.connectSusess();
             } else {
                 Log.e("111111111","2222222222");

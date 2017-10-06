@@ -14,7 +14,6 @@ import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
-import com.lp.flashremote.beans.ServerProtocol;
 import com.lp.flashremote.beans.Voice;
 
 import java.util.ArrayList;

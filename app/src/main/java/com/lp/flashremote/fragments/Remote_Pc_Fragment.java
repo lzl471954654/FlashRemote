@@ -31,13 +31,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.iflytek.cloud.resource.Resource;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.lp.flashremote.R;
 import com.lp.flashremote.activities.PcOperationActivity;
-import com.lp.flashremote.beans.Command;
-import com.lp.flashremote.beans.ServerProtocol;
 import com.lp.flashremote.beans.UserInfo;
 import com.lp.flashremote.utils.Command2JsonUtil;
 import com.lp.flashremote.utils.SocketUtil;
@@ -45,12 +41,6 @@ import com.lp.flashremote.utils.StringUtil;
 import com.lp.flashremote.utils.ToastUtil;
 import com.lp.flashremote.utils.VoiceUtil;
 import com.lp.flashremote.views.VolumwDialog;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -233,7 +223,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                                             ToastUtil.toastText(getContext(), "关闭成功!");
                                         }
                                     })
-                                    .setNegativeButton("还是等等吧", new DialogInterface.OnClickListener() {
+                                    .setNegativeButton("取消关机", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             mSocketOP.addMessage(StringUtil

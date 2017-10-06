@@ -2,7 +2,7 @@ package com.lp.flashremote.utils;
 
 
 
-import com.lp.flashremote.beans.ServerProtocol;
+import com.lp.flashremote.beans.PropertiesUtil;
 
 public class StringUtil {
 
@@ -22,36 +22,31 @@ public class StringUtil {
     }
 
     /**
-     * 返回字符串是否以  ServerProtocol.ONLINE_SUCCESS 开始
-     * 以   ServerProtocol.END_FLAG      结尾
      *
      * @param string
      * @return
      */
     public static boolean startAndEnd(String string) {
-        return (string.startsWith(ServerProtocol.CONNECTED_SUCCESS) && string.endsWith(ServerProtocol.END_FLAG));
+        return (string.startsWith(PropertiesUtil.CONNECTED_SUCCESS) && string.endsWith(PropertiesUtil.END_FLAG));
     }
 
     /**
-     * 返回字符串是否以  ServerProtocol.CONNECTED_SUCCESS 开始
-     * 以   ServerProtocol.END_FLAG      结尾
      *
      * @param s
      * @return
      */
     public static boolean isBind(String s) {
-        return s.startsWith(ServerProtocol.CONNECTED_SUCCESS) && s.endsWith(ServerProtocol.END_FLAG);
+        return s.startsWith(PropertiesUtil.CONNECTED_SUCCESS) && s.endsWith(PropertiesUtil.END_FLAG);
     }
 
     /**
      * 发送命令的字符串拼接
      *
-     * @param s
      * @param cmd
      * @return
      */
     public static String operateCmd( String cmd) {
-        return ServerProtocol.COMMAND + "_" + cmd;
+        return PropertiesUtil.COMMAND + "_" + cmd;
     }
 
     /**
@@ -61,7 +56,7 @@ public class StringUtil {
      * @return
      */
     public static String addEnd_flag2Str(String s) {
-        return s + "_" + ServerProtocol.END_FLAG;
+        return s + "_" + PropertiesUtil.END_FLAG;
     }
 
     public static String rmEnd_flagstr(String s){

@@ -1,12 +1,11 @@
 package com.lp.flashremote.utils;
 
 import com.lp.flashremote.beans.NetParameter;
-import com.lp.flashremote.beans.ServerProtocol;
+import com.lp.flashremote.beans.PropertiesUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
@@ -47,11 +46,11 @@ public class PhoneSocketUtil {
     private boolean initPhoneSocketClient(){
         try {
 
-            mPhoneSocket=new Socket(ServerProtocol.SERVER_IP,10085);
+            mPhoneSocket=new Socket(PropertiesUtil.SERVER_IP,10085);
             inputStream=mPhoneSocket.getInputStream();
             outputStream=mPhoneSocket.getOutputStream();
-            String conString=StringUtil.stringAddUnderline(ServerProtocol.CONNECTED_TO_USER,otherIP,
-                    NetParameter.IPAddress,ServerProtocol.END_FLAG);
+            String conString=StringUtil.stringAddUnderline(PropertiesUtil.CONNECTED_TO_USER,otherIP,
+                    NetParameter.IPAddress,PropertiesUtil.END_FLAG);
             byte[] bytes=conString.getBytes();
             outputStream.write(IntConvertUtils.getIntegerBytes(bytes.length));
             String result=readLine();

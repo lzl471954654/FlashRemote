@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.lp.flashremote.R
-import com.lp.flashremote.beans.ServerProtocol
 import com.lp.flashremote.utils.Command2JsonUtil
 import com.lp.flashremote.utils.SocketUtil
 import com.lp.flashremote.utils.StringUtil

@@ -3,7 +3,6 @@ package com.lp.flashremote.utils;
 import android.text.TextUtils;
 
 import com.lp.flashremote.beans.PropertiesUtil;
-import com.lp.flashremote.beans.ServerProtocol;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,7 +79,7 @@ public class WifiSocketUtil extends Thread {
 
         while (!interrupted()){
             String messagefromclient=readString();
-            if (!messagefromclient.endsWith(ServerProtocol.END_FLAG)){
+            if (!messagefromclient.endsWith(PropertiesUtil.END_FLAG)){
                 continue;
             }
             if (!mSendMsgQueue.isEmpty()){

@@ -7,16 +7,12 @@ import android.util.Log;
 
 
 import com.lp.flashremote.beans.PropertiesUtil;
-import com.lp.flashremote.beans.WifiInfo;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.Properties;
 
 
 /**
  * Created by xiyou3g on 2017/9/18.
- *
  */
 
 public class WifiHostBiz {

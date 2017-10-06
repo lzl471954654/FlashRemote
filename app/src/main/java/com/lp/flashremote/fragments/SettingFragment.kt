@@ -43,7 +43,7 @@ class SettingFragment : Fragment(),View.OnClickListener {
         viewArray.forEach { it.setOnClickListener(this) }
         Log.i("dir:",context.filesDir.absolutePath)
         Log.i("size:",context.filesDir.length().toString())
-        //refreshCacheSize()
+
     }
 
     override fun onResume() {

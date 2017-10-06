@@ -1,44 +1,29 @@
 package com.lp.flashremote.activities
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
-import android.os.Handler
-import android.os.storage.StorageManager
+
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.FrameLayout
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.lp.flashremote.Model.FileManagerModel
 import com.lp.flashremote.Model.FileManagerStatic
-import com.lp.flashremote.Model.times
 import com.lp.flashremote.R
 import com.lp.flashremote.adapters.FIleExplorerAdapter
 import com.lp.flashremote.beans.*
-import com.lp.flashremote.utils.Command2JsonUtil
 import com.lp.flashremote.utils.SocketUtil
-import com.lp.flashremote.utils.StringUtil
 import com.lp.flashremote.views.MyProgressDialog
 import com.lp.flashremote.views.SendChoiceDialog
-import junit.framework.Test
-import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.activity_file_explorer.*
-import kotlinx.android.synthetic.main.view_file_exp_item.*
-import kotlinx.android.synthetic.main.view_my_progress_dialog.*
 import org.jetbrains.anko.*
-import org.json.JSONArray
-import org.json.JSONObject
-import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
-import java.util.*
 import kotlin.collections.ArrayList
 
 class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
@@ -255,12 +240,12 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
                     sendDialog.dismiss()
                     progressDialog.show()
                     doAsync {
-                        val instruction = "${ServerProtocol.FILE_LIST_FLAG}_${getFileDescribeArray(list)}"
+                        val instruction = "${PropertiesUtil.FILE_LIST_FLAG}_${getFileDescribeArray(list)}"
                         var socket = SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword())
                         socket.addMessage(instruction)
                         val resp = socket.readLine()
                         println("resp : $resp")
-                        if(resp.startsWith(ServerProtocol.FILE_READY)){
+                        if(resp.startsWith(PropertiesUtil.FILE_READY)){
                             println("file Ready!")
                             list.forEach {
                                 val bytes = ByteArray(4096)
@@ -300,34 +285,6 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
                 sendDialog.show()
             }
         })
-        /*doAsync {
-
-            var s = "hello World!"
-
-            val builder = StringBuilder()
-            for(i in 1..2000)
-                builder.append(i.toString()+s)
-            s = builder.toString()
-
-            val bytes = s.toByteArray()
-            val desc = FileDescribe("hello","txt",bytes.size.toLong())
-            val socket = SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword())
-            val gson = Gson()
-            val command = FileCommand("20", arrayOf(desc),true)
-            val cmd = "${ServerProtocol.FILE_LIST_FLAG}_${gson.toJson(command)}"
-
-            socket.addMessage(cmd)
-            println("cmd : $cmd")
-            val resp = socket.readLine()
-            println("resp : $resp")
-            if(resp.startsWith(ServerProtocol.FILE_READY))
-            {
-                println("FIle ready!")
-                socket.addBytes(bytes)
-                println("send success!")
-                uiThread { showSnackBar(file_exp_copy,"发送成功！") }
-            }
-        }*/
     }
 
     public fun getFileDescribeArray(fileList : ArrayList<File>):String{
