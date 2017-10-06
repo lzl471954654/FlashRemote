@@ -24,7 +24,7 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import java.util.*
 
-class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
+class PcFileDirActivity : BaseActivity() , View.OnClickListener{
 
 
 

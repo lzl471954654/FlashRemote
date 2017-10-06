@@ -26,7 +26,7 @@ import java.io.FileInputStream
 import java.io.IOException
 import kotlin.collections.ArrayList
 
-class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
+class FileExplorerActivity : BaseActivity(),View.OnClickListener {
     companion object {
         val MODE_IN = 1
         val MODE_OUT = 0

@@ -20,7 +20,7 @@ import com.lp.flashremote.utils.PhoneSocketUtil;
 
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private BottomNavigationView mNavigation;
     private Fragment mFileFragment = new FileFragment();
