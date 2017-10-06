@@ -70,6 +70,7 @@ public class SocketUtil extends Thread {
             }
             Log.e("Thread-exit", "exit");
         } else {
+            Log.e("init","11111111111111");
             setmConnOk(false);
             Remote_Pc_Fragment.connisok(mConnOk);
         }
@@ -78,7 +79,9 @@ public class SocketUtil extends Thread {
     private boolean initConn() {
         boolean conn_ok = false;
         try {
+            Log.e("ip",PropertiesUtil.SERVER_IP);
             mSocket = new Socket(PropertiesUtil.SERVER_IP, 10086);
+
             OutputStream outputStream = mSocket.getOutputStream();
             InputStream inputStream = mSocket.getInputStream();
             socketInput = inputStream;
@@ -93,6 +96,7 @@ public class SocketUtil extends Thread {
                 conn_ok = true;
             }
         } catch (Exception e) {
+            Log.e("Exception",e.getMessage());
             e.printStackTrace();
         }
         return conn_ok;

@@ -54,16 +54,18 @@ public class VolumwDialog  extends Dialog{
     }
 
     private void initData() {
-        Random random = new Random();
-        int s = random.nextInt(50)%(50-10+1) + 10;
-        //获取随机值
-        mProgressBar.setProgress(s);
+        socket.addMessage(StringUtil.operateCmd(
+                Command2JsonUtil.getJson("8","100",false)));
+        socket.addMessage(StringUtil.operateCmd(
+                Command2JsonUtil.getJson("8","-80",false)));
+
+        mProgressBar.setProgress(20);
     }
 
     private void initEvent() {
         mProgressBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            private int preProgress=0;
-            private int progress = 0;
+            private int preProgress=20;
+            private int progress = 20;
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 progress=i;

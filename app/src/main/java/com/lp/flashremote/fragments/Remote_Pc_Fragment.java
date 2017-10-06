@@ -324,6 +324,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     public static void connisok( boolean b) {
         Message m=new Message();
         m.what=b?1:2;
+
         handler.sendMessage(m);
     }
 
@@ -345,6 +346,4 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
         }
 
     }
-
-
 }

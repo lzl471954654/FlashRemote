@@ -41,7 +41,7 @@
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
         <activity android:name=".activities.FeedbackActivity" />
         <activity android:name=".activities.PcFileDirActivity" />
-        <activity android:name=".activities.AccountActivity"></activity>
+        <activity android:name=".activities.AccountActivity"/>
     </application>
 
 </manifest>

@@ -21,6 +21,7 @@ class FlashApplication:Application(){
 
     }
 
+
     private fun initDataDir(){
         val acceptFolder = File(applicationContext.filesDir.absolutePath+File.separator+"accept")
         if(!acceptFolder.exists())
