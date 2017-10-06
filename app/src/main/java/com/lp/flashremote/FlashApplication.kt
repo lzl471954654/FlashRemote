@@ -26,5 +26,10 @@ class FlashApplication:Application(){
         val acceptFolder = File(applicationContext.filesDir.absolutePath+File.separator+"accept")
         if(!acceptFolder.exists())
             acceptFolder.mkdir()
+        FlashApplication.acceptFolder = acceptFolder.absolutePath
+    }
+
+    companion object {
+        lateinit var acceptFolder:String
     }
 }
