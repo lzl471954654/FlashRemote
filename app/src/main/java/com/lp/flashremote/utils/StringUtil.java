@@ -2,6 +2,7 @@ package com.lp.flashremote.utils;
 
 
 
+import com.lp.flashremote.beans.Content;
 import com.lp.flashremote.beans.PropertiesUtil;
 
 public class StringUtil {
@@ -21,6 +22,9 @@ public class StringUtil {
         return str1 + "_" + str2 + "_" + str3 + "_" + str4;
     }
 
+    public static String stringAddUnderline(String str1, String str2, String str3) {
+        return str1 + "_" + str2 + "_" + str3;
+    }
     /**
      *
      * @param string
@@ -62,5 +66,15 @@ public class StringUtil {
     public static String rmEnd_flagstr(String s){
         int endflagindex=s.lastIndexOf("_");
         return s.substring(0,endflagindex);
+    }
+
+    public static Content getContent(String s){
+        int head=s.indexOf("_");
+        int tail=s.lastIndexOf("_");
+        Content content=new Content();
+        content.setHead(s.substring(0,head));
+        content.setContent(s.substring(head+1,tail));
+        content.setTail(s.substring(tail+1,s.length()));
+        return content;
     }
 }
