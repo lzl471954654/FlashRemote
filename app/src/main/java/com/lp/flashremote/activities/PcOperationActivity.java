@@ -18,6 +18,7 @@ import com.lp.flashremote.R;
 import com.lp.flashremote.beans.UserInfo;
 import com.lp.flashremote.fragments.DiskFragment;
 import com.lp.flashremote.fragments.MouseFragment;
+import com.lp.flashremote.fragments.ScreenFragment;
 import com.lp.flashremote.fragments.SearchFragment;
 import com.lp.flashremote.fragments.ToolsFragment;
 import com.lp.flashremote.utils.SocketUtil;
@@ -62,6 +63,9 @@ public class PcOperationActivity extends BaseActivity {
            textView.setText(getResources().getString(R.string.wcg));
           bar.setVisibility(View.GONE);
            mToolsFragment=new MouseFragment();
+       }else {
+           textView.setText("电脑截屏");
+           mToolsFragment=new ScreenFragment(operation);
        }
 
         getSupportFragmentManager().beginTransaction()

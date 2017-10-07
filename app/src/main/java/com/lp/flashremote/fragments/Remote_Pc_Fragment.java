@@ -244,34 +244,31 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 break;
             case R.id.fab2:
                 if(mSocketOP!=null){
-                    final String screenShotTime=System.currentTimeMillis()+"";
-                    mSocketOP.addMessage(StringUtil
-                            .operateCmd(Command2JsonUtil.getJson("2",screenShotTime,false)));
-                    new AlertDialog.Builder(getActivity())
-                            .setTitle("提示")
-                            .setMessage("屏幕已经截取，是否回传?")
-                            .setPositiveButton("确定" ,new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    ToastUtil.toastText(getContext(),"确定");
-                                    mSocketOP.addMessage(StringUtil.operateCmd(
-                                            Command2JsonUtil.getJson("2",screenShotTime,true)));
-                                }
-                            })
-                            .setNeutralButton("取消", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                }
-                            })
-                            .show();
-                }else{
-                    ToastUtil.toastText(getContext(), "您未上线，谢谢合作！");
-                }
+                final String screenShotTime=System.currentTimeMillis()+"";
+                mSocketOP.addMessage(StringUtil
+                        .operateCmd(Command2JsonUtil.getJson("2",screenShotTime,false)));
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("提示")
+                        .setMessage("屏幕已经截取，是否回传?")
+                        .setPositiveButton("确定" ,new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ToastUtil.toastText(getContext(),"确定");
+                                startPCActivity(screenShotTime);
+                            }
+                        })
+                        .setNeutralButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        })
+                        .show();
+            }else{
+                ToastUtil.toastText(getContext(), "您未上线，谢谢合作！");
+            }
                 break;
             case R.id.fab3:
-                Intent Intent = new Intent(getActivity(), PcOperationActivity.class);
-                Intent.putExtra("operation", "mouse");
-                startActivity(Intent);
+                startPCActivity("mouse");
                 break;
             case R.id.fab4:
                 //获取磁盘分区
@@ -324,7 +321,6 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     public static void connisok( boolean b) {
         Message m=new Message();
         m.what=b?1:2;
-
         handler.sendMessage(m);
     }
 
