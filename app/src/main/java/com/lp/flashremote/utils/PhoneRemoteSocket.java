@@ -27,6 +27,7 @@ public class PhoneRemoteSocket extends Thread {
     static private PhoneRemoteSocket phoneRemoteSocket;
     static private Handler handler;
     static private String mType = "";
+    static private String ip = PropertiesUtil.SERVER_IP;
     private PhoneRemoteSocket(){
         messageQueue = new LinkedList<>();
     }
@@ -67,8 +68,7 @@ public class PhoneRemoteSocket extends Thread {
                 }
                 else if (mType.equals("ONLINE")){
 
-                }else
-                {
+                }else if (mType.equals("REMOTE")){
 
                 }
             }else{
@@ -82,7 +82,7 @@ public class PhoneRemoteSocket extends Thread {
     }
 
     public static boolean initConnection() throws IOException{
-        mSocket = new Socket(PropertiesUtil.SERVER_IP,10085);
+        mSocket = new Socket(ip,10085);
         in = mSocket.getInputStream();
         out = mSocket.getOutputStream();
         return true;

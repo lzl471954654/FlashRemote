@@ -54,6 +54,13 @@ public class SocketUtil extends Thread {
             mSendMessaggeQueue.clear();
             mSendMessaggeQueue = null;
         }
+        if(mSocket!=null){
+            try {
+                mSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
