@@ -44,7 +44,6 @@ public class BaseActivity extends AppCompatActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO,
-
     })
     protected void grantPermission() {
         Timer timer=new Timer();

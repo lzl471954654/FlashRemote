@@ -23,4 +23,8 @@ public class UserInfo {
     public static void setUsername(String username) {
         UserInfo.username = username;
     }
+
+    public static boolean isEmpty(){
+        return username.equals("")||password.equals("");
+    }
 }

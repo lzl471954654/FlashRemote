@@ -67,4 +67,10 @@
     <string name="send_to_phone">发送给手机</string>
     <string name="right">右击</string>
 
+    <string name="phoneFragmentScanLink">面对面链接</string>
+    <string name="phoneFragmentRemoteLink">远程连接</string>
+
+    <string name="phoneFragmentOnline">上线成为被控端</string>
+    <string name="phoneFragmentControl">链接被控端</string>
+
 </resources>

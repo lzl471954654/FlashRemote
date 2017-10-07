@@ -10,8 +10,10 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.lp.flashremote.R;
 import com.lp.flashremote.beans.NetParameter;
+import com.lp.flashremote.beans.UserInfo;
 import com.lp.flashremote.beans.WifiInfo;
 import com.lp.flashremote.utils.QRcodeutil;
 import com.lp.flashremote.utils.WifiConnectUtil;
@@ -44,6 +47,8 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
     private TextView mScanQR;
     private TextView myIpAddress;
     private WifiSocketUtil mWifiSocket=null;
+    private TextView phoneOnline;
+    private TextView phoneControl;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -62,6 +67,8 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
     private void bindEvent() {
         mQRcode.setOnClickListener(this);
         mScanQR.setOnClickListener(this);
+        phoneControl.setOnClickListener(this);
+        phoneOnline.setOnClickListener(this);
     }
 
     private void iniView(View view) {
@@ -69,6 +76,8 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
         myIpAddress.setText(NetParameter.IPAddress);
         mQRcode=view.findViewById(R.id.codeimage);
         mScanQR=view.findViewById(R.id.scanQR);
+        phoneOnline = view.findViewById(R.id.phoneOnline);
+        phoneControl = view.findViewById(R.id.phoneControl);
     }
 
     @Override
@@ -92,6 +101,20 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                 Intent intent=new Intent(getActivity(), CaptureActivity.class);
                 startActivityForResult(intent,QR_RESULT_CODE);
                 break;
+            case R.id.phoneOnline:{
+                if(UserInfo.isEmpty()){
+                    Snackbar.make(phoneOnline,"请先在设置中设置账号密码",Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+                break;
+            }
+            case R.id.phoneControl:{
+                if(UserInfo.isEmpty()){
+                    Snackbar.make(phoneOnline,"请先在设置中设置账号密码",Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+                break;
+            }
         }
     }
 
@@ -169,5 +192,20 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
      */
     private void initConnect(String ip) {
 
+    }
+
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+        }
+    };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(mHandler!=null){
+            mHandler.removeCallbacksAndMessages(null);
+        }
     }
 }
