@@ -44,6 +44,7 @@
         <activity
             android:name=".activities.PcOperationActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
         <activity android:name=".activities.FeedbackActivity" />
         <activity android:name=".activities.PcFileDirActivity" />

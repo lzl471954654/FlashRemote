@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,7 @@ public class ScreenFragment extends Fragment {
             }
             if (msg.what==1){
                 mPb.setVisibility(View.GONE);
-                Bitmap b= BitmapFactory.decodeFile(FlashApplication.acceptFolder+File.pathSeparator+filename+".png",null);
+                Bitmap b= BitmapFactory.decodeFile(FlashApplication.acceptFolder+File.separator+filename,null);
                 if (b!=null){
                     mImage.setImageBitmap(b);
                 }
@@ -108,15 +109,14 @@ public class ScreenFragment extends Fragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                socket.addMessage(StringUtil.stringAddUnderline(PropertiesUtil.FILE_READY,content,
-                        PropertiesUtil.END_FLAG));
+                socket.addMessage(StringUtil.stringAddUnderline(PropertiesUtil.FILE_READY,content));
                 for (FileDescribe describe : describes) {
                     String fileName = describe.getFileName() + "." + describe.getFileType();
                     Long fileSize = describe.getFileSize();
                     int count = 0;
                     long size = 0;
                     File file = new File(FlashApplication.acceptFolder+
-                            File.pathSeparator+fileName+".png");
+                            File.separator+fileName);
                     FileOutputStream outputStream = null;
                     BufferedInputStream inputStream = null;
                     try {
@@ -144,7 +144,7 @@ public class ScreenFragment extends Fragment {
 
                     Message m=new Message();
                     m.obj=fileName;
-                    if (count>=fileSize){
+                    if (size>=fileSize){
                         m.what=1;
                     }else{
                         m.what=0;

@@ -3,6 +3,8 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="welcome">欢迎使用</string>
+    <string name="theme">远程控制 · 这不是梦</string>
 
     <string name="file_manager">文件</string>
     <string name="remote_manager">远程</string>

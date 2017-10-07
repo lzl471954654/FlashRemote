@@ -1,8 +1,6 @@
 package com.lp.flashremote
 
 import android.app.Application
-import com.lp.flashremote.beans.PropertiesUtil
-import com.lp.flashremote.utils.SharePerferenceUtil
 import java.io.File
 
 
@@ -17,8 +15,6 @@ class FlashApplication:Application(){
 
     override fun onCreate() {
         super.onCreate()
-        PropertiesUtil.getProperties(this)
-        SharePerferenceUtil.getUserInfo(this)
         initDataDir()
     }
 

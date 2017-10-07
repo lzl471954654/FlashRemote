@@ -25,6 +25,9 @@ public class StringUtil {
     public static String stringAddUnderline(String str1, String str2, String str3) {
         return str1 + "_" + str2 + "_" + str3;
     }
+    public static String stringAddUnderline(String str1, String str2) {
+        return str1 + "_" + str2;
+    }
     /**
      *
      * @param string
