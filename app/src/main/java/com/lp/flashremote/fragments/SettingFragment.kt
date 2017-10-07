@@ -94,7 +94,7 @@ class SettingFragment : Fragment(),View.OnClickListener {
 
             }
             R.id.settings_see_accept_folder->{
-                startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_EXPLORER,"dataType" to FIleExplorerAdapter.BASE_FILE_EXPLORER,"title" to "目录浏览","rootPath" to context.filesDir.absolutePath+File.separator+"accept")
+                startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_EXPLORER,"dataType" to FIleExplorerAdapter.BASE_FILE_EXPLORER,"title" to "目录浏览","rootPath" to FlashApplication.acceptFolder)
             }
             R.id.settings_exit->{
                 val dialog = AlertDialog.Builder(context)

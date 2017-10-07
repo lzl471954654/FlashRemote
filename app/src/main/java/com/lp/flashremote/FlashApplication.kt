@@ -1,6 +1,7 @@
 package com.lp.flashremote
 
 import android.app.Application
+import android.os.Environment
 import java.io.File
 
 
@@ -19,7 +20,7 @@ class FlashApplication:Application(){
     }
 
     private fun initDataDir(){
-        val acceptFolder = File(applicationContext.filesDir.absolutePath+File.separator+"accept")
+        val acceptFolder = File(Environment.getExternalStorageDirectory().path+File.separator+"Consmitor")
         if(!acceptFolder.exists())
             acceptFolder.mkdir()
         FlashApplication.acceptFolder = acceptFolder.absolutePath
