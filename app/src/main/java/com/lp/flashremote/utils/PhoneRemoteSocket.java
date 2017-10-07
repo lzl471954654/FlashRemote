@@ -28,11 +28,13 @@ public class PhoneRemoteSocket extends Thread {
     static private Handler handler;
     static private String mType = "";
     static private String ip = PropertiesUtil.SERVER_IP;
+    static private Boolean loopFlag = false;
     private PhoneRemoteSocket(){
         messageQueue = new LinkedList<>();
     }
 
-    public static PhoneRemoteSocket getInstance(Handler handler,String type){
+    public static PhoneRemoteSocket getInstance(Handler handler,String type,String ip){
+        PhoneRemoteSocket.ip = ip;
         mType = type;
         if(phoneRemoteSocket==null)
             phoneRemoteSocket = new PhoneRemoteSocket();
@@ -63,13 +65,19 @@ public class PhoneRemoteSocket extends Thread {
     public void run() {
         try {
             if(initConnection()){
-                if (mType.equals("WIFI")){
-
-                }
-                else if (mType.equals("ONLINE")){
-
-                }else if (mType.equals("REMOTE")){
-
+                switch (mType) {
+                    case "WIFI_ONLINE":
+                        wifiOnline();
+                        break;
+                    case "WIFI":
+                        wifiLoop();
+                        break;
+                    case "REMOTE_ONLINE":
+                        remoteOnline();
+                        break;
+                    case "REMOTE":
+                        remoteLoop();
+                        break;
                 }
             }else{
 
@@ -79,6 +87,31 @@ public class PhoneRemoteSocket extends Thread {
         }finally {
             clearSocket();
         }
+    }
+
+
+
+    public void sendMessageLoop(){
+
+    }
+
+    public void wifiOnline(){
+        Message message = new Message();
+        message.what = 10;
+        handler.sendMessage(message);
+
+    }
+
+    public void wifiLoop(){
+
+    }
+
+    public void remoteOnline(){
+
+    }
+
+    public void remoteLoop(){
+
     }
 
     public static boolean initConnection() throws IOException{
