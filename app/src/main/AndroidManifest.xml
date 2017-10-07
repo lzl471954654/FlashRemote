@@ -47,8 +47,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
         <activity android:name=".activities.FeedbackActivity" />
-        <activity android:name=".activities.PcFileDirActivity" />
-        <activity android:name=".activities.AccountActivity"/>
+
+        <activity android:name=".activities.PcFileDirActivity"
+            android:theme="@style/MainTheme"/>
+
+        <activity android:name=".activities.AccountActivity" />
     </application>
 
 </manifest>

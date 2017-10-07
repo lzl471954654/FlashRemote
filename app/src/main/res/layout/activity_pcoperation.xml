@@ -3,43 +3,9 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
+    <include
         android:id="@+id/linear_op_bar"
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:background="@color/primary"
-        android:layout_height="78dp">
-
-        <ImageView
-            android:id="@+id/back_tools"
-            android:paddingTop="40dp"
-            android:layout_width="0dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="15dp"
-            android:paddingBottom="20dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:src="@drawable/back_remote"/>
-        <View
-            android:layout_width="1px"
-            android:layout_height="match_parent"
-            android:layout_marginTop="35dp"
-            android:layout_marginBottom="10dp"
-            android:background="#4f8458"/>
-        <TextView
-            android:id="@+id/text"
-            android:layout_width="0dp"
-            android:layout_weight="6"
-            android:layout_marginTop="28dp"
-            android:layout_marginLeft="25dp"
-            android:layout_marginBottom="10dp"
-            android:gravity="center_vertical"
-            android:layout_height="match_parent"
-            android:textSize="20sp"
-            android:textColor="#ffffff"
-            android:text=""/>
-
-    </LinearLayout>
+        layout="@layout/layout_title"/>
 
     <FrameLayout
         android:id="@+id/fragment_container"

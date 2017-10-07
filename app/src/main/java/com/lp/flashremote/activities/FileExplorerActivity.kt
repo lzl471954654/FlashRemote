@@ -9,6 +9,7 @@ import android.os.Environment
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import android.view.WindowManager
 import android.widget.FrameLayout
 import com.google.gson.Gson
 import com.lp.flashremote.Model.FileManagerModel
@@ -20,6 +21,7 @@ import com.lp.flashremote.utils.SocketUtil
 import com.lp.flashremote.views.MyProgressDialog
 import com.lp.flashremote.views.SendChoiceDialog
 import kotlinx.android.synthetic.main.activity_file_explorer.*
+import kotlinx.android.synthetic.main.layout_title.*
 import org.jetbrains.anko.*
 import java.io.File
 import java.io.FileInputStream
@@ -44,12 +46,16 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
     lateinit var adapter:FIleExplorerAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val localLayoutParams = window.attributes
+        localLayoutParams.flags = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or localLayoutParams.flags
+
         setContentView(R.layout.activity_file_explorer)
         initView()
         mode = intent.getIntExtra("mode", MODE_IN)
         dataType = intent.getIntExtra("dataType", FIleExplorerAdapter.BASE_FILE_TYPE)
         title = intent.getStringExtra("title")
-        supportActionBar?.title = title
+        text.text=title
         if (mode == MODE_IN) {
             when(title){
                 getString(R.string.manager_video)-> dataList = FileManagerStatic.videoList as ArrayList<BaseFile>
@@ -67,8 +73,10 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
     }
 
     private fun initView(){
+
         val viewArray = arrayOf(file_exp_copy,file_exp_delete,file_exp_move,file_exp_send,file_exp_select_all,file_exp_paste)
         viewArray.forEach { it.setOnClickListener(this) }
+        back_tools.setOnClickListener(this)
     }
 
     private fun inModeRun() {
@@ -158,6 +166,9 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v?.id){
+            R.id.back_tools->{
+                onBackPressed()
+            }
             R.id.file_exp_paste->{
                 when(intent.getStringExtra("action")){
                     "copy"-> copyFile()
