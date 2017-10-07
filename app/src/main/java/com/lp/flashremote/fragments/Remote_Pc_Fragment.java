@@ -253,7 +253,6 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                         .setPositiveButton("确定" ,new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                ToastUtil.toastText(getContext(),"确定");
                                 startPCActivity(screenShotTime);
                             }
                         })

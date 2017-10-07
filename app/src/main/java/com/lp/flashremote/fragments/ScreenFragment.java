@@ -3,6 +3,7 @@ package com.lp.flashremote.fragments;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -51,12 +52,11 @@ public class ScreenFragment extends Fragment {
             }
             if (msg.what==1){
                 mPb.setVisibility(View.GONE);
-                Bitmap b= BitmapFactory.decodeFile(FlashApplication.acceptFolder+File.separator+filename,null);
+                Bitmap b= BitmapFactory.decodeFile(FlashApplication.acceptFolder+File.separator+filename+".jpg",null);
                 if (b!=null){
                     mImage.setImageBitmap(b);
+                    mImage.setVisibility(View.VISIBLE);
                 }
-                ToastUtil.toastText(getActivity(),"接受文件"+msg.obj.toString()+"成功");
-
             }
         }
     };
