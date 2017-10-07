@@ -29,7 +29,7 @@ import com.lp.flashremote.utils.SocketUtil;
  * 或者是传入上一个活动中的socket?????
  */
 
-public class PcOperationActivity extends BaseActivity {
+public class PcOperationActivity extends AppCompatActivity {
     private LinearLayout bar;
     private Fragment mToolsFragment;
     private TextView textView;

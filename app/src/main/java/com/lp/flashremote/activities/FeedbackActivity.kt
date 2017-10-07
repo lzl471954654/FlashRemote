@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.activity_feedback.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
-class FeedbackActivity : BaseActivity() {
+class FeedbackActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

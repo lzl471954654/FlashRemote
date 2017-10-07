@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.activity_account.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
-class AccountActivity : BaseActivity(), View.OnClickListener {
+class AccountActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

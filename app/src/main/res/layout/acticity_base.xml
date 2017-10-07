@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <View
+        android:id="@+id/startimage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+       android:background="@color/primary"
+        android:scaleType="fitXY"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:textSize="24sp"
+            android:textColor="#ffffff"
+            android:gravity="center|bottom"
+            android:text="欢迎使用"/>
+        <TextView
+            android:layout_marginBottom="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:textSize="46sp"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:text="Consmitor"/>
+    </LinearLayout>
+</FrameLayout>
