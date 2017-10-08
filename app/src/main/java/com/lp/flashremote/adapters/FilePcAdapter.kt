@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.lp.flashremote.R
+import com.lp.flashremote.SocketInterface
 import com.lp.flashremote.activities.PcFileDirActivity
 import com.lp.flashremote.beans.FileInfo
 import com.lp.flashremote.utils.Command2JsonUtil
@@ -26,7 +27,7 @@ import java.util.*
  * Created by xiyou3g on 2017/9/21.
  *
  */
-class FilePcAdapter(var data:MutableList<FileInfo>, val context: Context, val socket:SocketUtil):
+class FilePcAdapter(var data:MutableList<FileInfo>, val context: Context, val socket:SocketInterface):
         RecyclerView.Adapter<FilePcAdapter.ViewHolder>(){
 
 
@@ -47,7 +48,7 @@ class FilePcAdapter(var data:MutableList<FileInfo>, val context: Context, val so
         return data.size
     }
 
-    private fun moveToNextFolder(nextPath:String,socket: SocketUtil){
+    private fun moveToNextFolder(nextPath:String,socket: SocketInterface){
 
         var result:String
         socket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("4",nextPath,true)))
@@ -70,7 +71,7 @@ class FilePcAdapter(var data:MutableList<FileInfo>, val context: Context, val so
         notifyDataSetChanged()
     }
 
-    inner class ViewHolder(val view: View ,val adapter:FilePcAdapter,val socket: SocketUtil ):
+    inner class ViewHolder(val view: View ,val adapter:FilePcAdapter,val socket: SocketInterface ):
             RecyclerView.ViewHolder(view) {
 
         fun onBind(position: Int, list: MutableList<FileInfo>){

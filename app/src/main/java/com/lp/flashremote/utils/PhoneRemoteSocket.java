@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.zxing.common.StringUtils;
+import com.lp.flashremote.SocketInterface;
 import com.lp.flashremote.beans.Command;
 import com.lp.flashremote.beans.Content;
 import com.lp.flashremote.beans.FileInfo;
@@ -29,7 +30,7 @@ import java.util.Queue;
  * Created by LZL on 2017/10/7.
  */
 
-public class PhoneRemoteSocket extends Thread {
+public class PhoneRemoteSocket extends Thread implements SocketInterface {
     private static Socket mSocket;
     private static InputStream in;
     private static OutputStream out;
@@ -40,9 +41,6 @@ public class PhoneRemoteSocket extends Thread {
     static private String ip = PropertiesUtil.SERVER_IP;
     static private Boolean loopFlag = false;
     static private Thread readThread;
-    private PhoneRemoteSocket(){
-
-    }
 
     public static PhoneRemoteSocket getInstance(Handler handler,String type,String ip){
         PhoneRemoteSocket.ip = ip;
@@ -215,7 +213,7 @@ public class PhoneRemoteSocket extends Thread {
         }
     };
 
-    private static void filePathOP(Content content){
+    private void filePathOP(Content content){
         Gson gson = new Gson();
         Command command = gson.fromJson(content.getContent(),Command.class);
         File[] files = null;
@@ -240,8 +238,6 @@ public class PhoneRemoteSocket extends Thread {
         }
         StringBuilder builder = new StringBuilder();
         builder.append(gson.toJson(list));
-        builder.append("_");
-        builder.append(PropertiesUtil.END_FLAG);
         addMessage(builder.toString());
     }
 
@@ -252,7 +248,7 @@ public class PhoneRemoteSocket extends Thread {
         return true;
     }
 
-    public static String readLine() {
+    public String readLine() {
         String s = "";
         try {
             int msgSize = 0;
@@ -284,14 +280,14 @@ public class PhoneRemoteSocket extends Thread {
         return s;
     }
 
-    public static void addBytes(byte[] bytes){
+    public  void addBytes(byte[] bytes){
         synchronized (messageQueue){
             if(messageQueue!=null)
                 messageQueue.add(bytes);
         }
     }
 
-    public static void addMessage(String s){
+    public  void addMessage(String s){
         synchronized (messageQueue){
             if (messageQueue==null)
                 return;

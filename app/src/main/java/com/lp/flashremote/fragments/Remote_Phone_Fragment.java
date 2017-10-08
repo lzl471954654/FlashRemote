@@ -140,10 +140,7 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
         progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
-                PhoneRemoteSocket socket = PhoneRemoteSocket.getNowInstance();
-                if(socket!=null){
-                    socket.interrupt();
-                }
+                PhoneRemoteSocket.clearSocket();
             }
         });
         progressDialog.show();

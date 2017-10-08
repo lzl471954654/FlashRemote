@@ -3,6 +3,7 @@ package com.lp.flashremote.utils;
 
 import android.util.Log;
 
+import com.lp.flashremote.SocketInterface;
 import com.lp.flashremote.beans.PropertiesUtil;
 import com.lp.flashremote.beans.UserInfo;
 import com.lp.flashremote.fragments.Remote_Pc_Fragment;
@@ -15,7 +16,7 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class SocketUtil extends Thread {
+public class SocketUtil extends Thread implements SocketInterface{
     private Socket mSocket;
     public InputStream socketInput;
     public OutputStream socketOutput;

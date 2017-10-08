@@ -49,7 +49,7 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
 
     private fun addMessage(msg: String){
         if (mode == "phone"){
-            PhoneRemoteSocket.addMessage(msg)
+            PhoneRemoteSocket.getNowInstance().addMessage(msg)
         }else{
             mSocket.addMessage(msg)
         }
@@ -58,7 +58,7 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
     private fun readLine():String{
         var msg = ""
         if(mode == "phone"){
-            msg = PhoneRemoteSocket.readLine()
+            msg = PhoneRemoteSocket.getNowInstance().readLine()
         }else{
             msg = mSocket.readLine()
         }
@@ -67,7 +67,7 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
 
     private fun writeBytes(bytes:ByteArray){
         if(mode == "phone"){
-            PhoneRemoteSocket.addBytes(bytes)
+            PhoneRemoteSocket.getNowInstance().addBytes(bytes)
         }else{
             mSocket.addBytes(bytes)
         }
@@ -92,7 +92,11 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
             uiThread {
                 if (result!=""){
                     fileinfos=GsonAnalysiUtil.getFileList(StringUtil.rmEnd_flagstr(result))
-                    adapter= FilePcAdapter(fileinfos.toMutableList(),this@PcFileDirActivity,mSocket)
+                    if(mode == "pc"){
+                        adapter= FilePcAdapter(fileinfos.toMutableList(),this@PcFileDirActivity,mSocket)
+                    }else{
+                        adapter= FilePcAdapter(fileinfos.toMutableList(),this@PcFileDirActivity,PhoneRemoteSocket.getNowInstance())
+                    }
                     file_pc__list.layoutManager= LinearLayoutManager(mContext)
                     file_pc__list.adapter=adapter
                 }
