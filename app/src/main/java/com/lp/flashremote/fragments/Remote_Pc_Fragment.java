@@ -275,9 +275,18 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 break;
             case R.id.fab5:
                 //调节亮度
-               /* mSocketOP.addMessage(StringUtil
-                        .operateCmd(Command2JsonUtil.getJson("5",null,false)));*/
-                //startPCActivity("luminance");
+                if (mSocketOP!=null){
+                    mSocketOP.sendTestMessage(new SocketUtil.ConnectListener() {
+                        @Override
+                        public void connectSusess() {
+                           makeDialog(false);
+                        }
+                        @Override
+                        public void connectError() {
+                            ToastUtil.toastText(getActivity(),"连接失败，请重新连接！");
+                        }
+                    });
+                }
                 break;
             case R.id.fab6:
                 startPCActivity("tools");
@@ -290,16 +299,8 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                     mSocketOP.sendTestMessage(new SocketUtil.ConnectListener() {
                         @Override
                         public void connectSusess() {
-                            VolumwDialog dialog = new VolumwDialog(getActivity(),mSocketOP);
-                            Window dialogWindow = dialog.getWindow();
-                            WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-                            dialogWindow.setGravity(Gravity.CENTER | Gravity.TOP);
-                            lp.x = 0; // 新位置X坐标
-                            lp.y = 250;
-                            dialogWindow.setAttributes(lp);
-                            dialog.show();
+                            makeDialog(true);
                         }
-
                         @Override
                         public void connectError() {
                             ToastUtil.toastText(getActivity(),"连接失败，请重新连接！");
@@ -340,5 +341,22 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
             ToastUtil.toastText(getActivity(),"请先连接!!!");
         }
 
+    }
+
+    private void makeDialog(boolean b){
+        VolumwDialog dialog;
+        if (b)
+             dialog = new VolumwDialog(getActivity(),mSocketOP);
+        else
+            dialog = new VolumwDialog(getActivity(),mSocketOP,
+                    getActivity().getDrawable(R.mipmap.light),1);
+
+        Window dialogWindow = dialog.getWindow();
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        dialogWindow.setGravity(Gravity.CENTER | Gravity.TOP);
+        lp.x = 0; // 新位置X坐标
+        lp.y = 250;
+        dialogWindow.setAttributes(lp);
+        dialog.show();
     }
 }

@@ -3,6 +3,7 @@ package com.lp.flashremote.views;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,10 +33,21 @@ public class VolumwDialog  extends Dialog{
     private SeekBar mProgressBar;
     private Context mContext;
     private SocketUtil socket;//发送socket
+    private ImageView imageView;
+    private Drawable d;
+    private int flag=0;
+
+    public VolumwDialog(@NonNull Context context, SocketUtil s,Drawable d,int f) {
+        super(context,R.style.VolumeDialog);
+        this.d=d;
+        this.socket=s;
+        this.flag=f;
+        this.mContext=context;
+    }
+
     public VolumwDialog(@NonNull Context context, SocketUtil s) {
         super(context,R.style.VolumeDialog);
-        mContext=context;
-        this.socket=s;
+        new VolumwDialog(context,s, context.getDrawable(R.mipmap.vocontrol),0);
     }
 
     @Override
@@ -43,6 +55,7 @@ public class VolumwDialog  extends Dialog{
         setCanceledOnTouchOutside(true);
         setContentView(R.layout.volume_dialog);
         initView();
+        imageView.setImageDrawable(d);
         initData();
         initEvent();
         super.onCreate(savedInstanceState);
@@ -51,18 +64,26 @@ public class VolumwDialog  extends Dialog{
 
     private void initView() {
         mProgressBar=(SeekBar)findViewById(R.id.progressbar);
+        imageView=findViewById(R.id.vl);
     }
 
     private void initData() {
-        socket.addMessage(StringUtil.operateCmd(
-                Command2JsonUtil.getJson("8","100",false)));
-        socket.addMessage(StringUtil.operateCmd(
-                Command2JsonUtil.getJson("8","-80",false)));
+        if (flag==0){
+            socket.addMessage(StringUtil.operateCmd(
+                    Command2JsonUtil.getJson("8","100",false)));
+            socket.addMessage(StringUtil.operateCmd(
+                    Command2JsonUtil.getJson("8","-80",false)));
+            mProgressBar.setProgress(20);
+        }else {
+            socket.addMessage(StringUtil.operateCmd(
+                    Command2JsonUtil.getJson("5","50",false)));
+            mProgressBar.setProgress(50);
+        }
 
-        mProgressBar.setProgress(20);
     }
 
     private void initEvent() {
+
         mProgressBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             private int preProgress=20;
             private int progress = 20;
@@ -78,10 +99,22 @@ public class VolumwDialog  extends Dialog{
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                socket.addMessage(StringUtil.operateCmd(
+                if (flag==0){
+                    socket.addMessage(StringUtil.operateCmd(
                             Command2JsonUtil.getJson("8",progress-preProgress+"",false)));
+                }else{
+                    socket.addMessage(StringUtil.operateCmd(
+                            Command2JsonUtil.getJson("5",progress+"",false)));
+                }
                 Toast.makeText(mContext,"当前进度 = "+progress, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
+        socket.addMessage(StringUtil.operateCmd(
+                Command2JsonUtil.getJson("5","-1",false)));
     }
 }

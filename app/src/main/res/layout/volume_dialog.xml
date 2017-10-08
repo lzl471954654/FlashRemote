@@ -5,6 +5,7 @@
     android:orientation="horizontal"
     android:background="#785c5c5c">
     <ImageView
+        android:id="@+id/vl"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="match_parent"
