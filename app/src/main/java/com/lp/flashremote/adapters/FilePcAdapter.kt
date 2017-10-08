@@ -3,6 +3,7 @@ package com.lp.flashremote.adapters
 import android.content.Context
 import android.os.Build
 import android.support.annotation.RequiresApi
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,10 +14,7 @@ import com.lp.flashremote.R
 import com.lp.flashremote.SocketInterface
 import com.lp.flashremote.activities.PcFileDirActivity
 import com.lp.flashremote.beans.FileInfo
-import com.lp.flashremote.utils.Command2JsonUtil
-import com.lp.flashremote.utils.GsonAnalysiUtil
-import com.lp.flashremote.utils.SocketUtil
-import com.lp.flashremote.utils.StringUtil
+import com.lp.flashremote.utils.*
 import kotlinx.android.synthetic.main.view_file_pc_item.view.*
 import org.jetbrains.anko.AnkoAsyncContext
 import org.jetbrains.anko.doAsync
@@ -55,11 +53,14 @@ class FilePcAdapter(var data:MutableList<FileInfo>, val context: Context, val so
         doAsync {
             result=socket.readLine()
             uiThread {
-                if (result!=""){
+                if (result!=null&&result!=""&&!result.startsWith("null")){
                     val temp = data;
                     data=GsonAnalysiUtil.getFileList(StringUtil.rmEnd_flagstr(result))
                     stack.push(temp)
                     notifyDataSetChanged()
+                }
+                if (result.startsWith("null")){
+                    ToastUtil.toastText(context,"权限不足")
                 }
             }
         }
