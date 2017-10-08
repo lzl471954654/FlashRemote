@@ -84,6 +84,5 @@
             android:textColor="@color/normalBackgroundColor"
             android:background="@drawable/remote_tv_bg2"
             android:text="我是控制端"/>
-
     </LinearLayout>
 </LinearLayout>
