@@ -82,10 +82,15 @@ class SettingFragment : Fragment(),View.OnClickListener {
         }
     }
 
+
     override fun onClick(v: View?) {
         when(v?.id){
             R.id.settings_about_us->{
-
+                val dialog = AlertDialog.Builder(context)
+                dialog.setTitle("Consmitor")
+                dialog.setMessage("西安邮电大学移动应用开发实验室")
+                dialog.setIcon(R.mipmap.logo)
+                dialog.show()
             }
             R.id.settings_feedback->{
                 startActivity<FeedbackActivity>()
