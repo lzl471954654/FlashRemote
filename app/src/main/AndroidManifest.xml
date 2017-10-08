@@ -20,7 +20,7 @@
     <application
         android:name=".FlashApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/m"
+        android:icon="@mipmap/logo"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
