@@ -36,6 +36,7 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
 
     lateinit var progress:MyProgressDialog
 
+    var mode = "pc"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,6 +118,10 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
                 }
             })
         }
+    }
+
+    fun addMessage(msg:String){
+
     }
 
     fun deleteFileOrDirs(){

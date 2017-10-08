@@ -3,6 +3,7 @@ package com.lp.flashremote.fragments;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +13,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -24,14 +26,19 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.lp.flashremote.R;
+import com.lp.flashremote.activities.PcFileDirActivity;
 import com.lp.flashremote.beans.NetParameter;
+import com.lp.flashremote.beans.PropertiesUtil;
 import com.lp.flashremote.beans.UserInfo;
 import com.lp.flashremote.beans.WifiInfo;
+import com.lp.flashremote.utils.PhoneRemoteSocket;
 import com.lp.flashremote.utils.QRcodeutil;
+import com.lp.flashremote.utils.ToastUtil;
 import com.lp.flashremote.utils.WifiConnectUtil;
 import com.lp.flashremote.utils.WifiHostBiz;
 import com.lp.flashremote.utils.WifiSocketUtil;
 import com.lp.flashremote.views.CodeDialog;
+import com.lp.flashremote.views.MyProgressDialog;
 import com.xys.libzxing.zxing.activity.CaptureActivity;
 
 import java.io.File;
@@ -49,6 +56,10 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
     private WifiSocketUtil mWifiSocket=null;
     private TextView phoneOnline;
     private TextView phoneControl;
+
+    private boolean isConnected = false;
+
+    private MyProgressDialog progressDialog;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -106,6 +117,8 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                     Snackbar.make(phoneOnline,"请先在设置中设置账号密码",Snackbar.LENGTH_SHORT).show();
                     return;
                 }
+                PhoneRemoteSocket socket = PhoneRemoteSocket.getInstance(handler,"REMOTE_ONLINE", PropertiesUtil.SERVER_IP);
+                socket.start();
                 break;
             }
             case R.id.phoneControl:{
@@ -113,9 +126,31 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                     Snackbar.make(phoneOnline,"请先在设置中设置账号密码",Snackbar.LENGTH_SHORT).show();
                     return;
                 }
+                PhoneRemoteSocket socket = PhoneRemoteSocket.getInstance(handler,"REMOTE",PropertiesUtil.SERVER_IP);
+                socket.start();
                 break;
             }
         }
+    }
+
+    private void showProgressDialog(String s){
+        progressDialog = new MyProgressDialog(getContext(),s);
+        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                PhoneRemoteSocket socket = PhoneRemoteSocket.getNowInstance();
+                if(socket!=null){
+                    socket.interrupt();
+                }
+            }
+        });
+        progressDialog.show();
+    }
+
+    private void dissmissProgressDialog(){
+        if(progressDialog!=null)
+            if (progressDialog.isShowing())
+                progressDialog.dismiss();
     }
 
     private void initQRCode(String hotIp) {
@@ -163,11 +198,44 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what==1){
-                Toast.makeText(getActivity(),"连接成功",Toast.LENGTH_SHORT).show();
+            switch (msg.what){
+                case 1:{
+                    Toast.makeText(getActivity(),"连接成功",Toast.LENGTH_SHORT).show();
+                    break;
+                }
+                case 12:{
+                    showToast("上线成功");
+                    showProgressDialog("请不要退出当前界面，正在等待远程主机操作");
+                    break;
+                }
+                case 13:{
+                    showToast("上线失败");
+                    break;
+                }
+                case 14:{
+                    showToast("远程连接成功");
+                    /*Intent intent = new Intent(getContext(),PcFileDirActivity.class);
+                    intent.putExtra("ROOTPATH","");
+                    startActivity(intent);*/
+                    break;
+                }
+                case 15:{
+                    showToast("远程链接失败");
+                    break;
+                }
+                case 17:{
+                    showToast("连接中断！");
+                    dissmissProgressDialog();
+                    break;
+                }
             }
         }
     };
+
+    private void showToast(String s){
+        ToastUtil.toastText(getContext(),s);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -194,18 +262,11 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
 
     }
 
-    private Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-        }
-    };
-
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(mHandler!=null){
-            mHandler.removeCallbacksAndMessages(null);
+        if(handler!=null){
+            handler.removeCallbacksAndMessages(null);
         }
     }
 }

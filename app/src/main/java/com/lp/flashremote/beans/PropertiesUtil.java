@@ -27,6 +27,7 @@ public class PropertiesUtil {
     public static String FILE_READY;
     public static String FILE_DELETE;
     public static String SERVER_IP;
+    public static String FILE_PATH;
 
     public static void getProperties(Context context){
         Properties pp=new Properties();
@@ -49,6 +50,7 @@ public class PropertiesUtil {
         FILE_LIST_FLAG=pp.getProperty("FILE_LIST_FLAG");
         FILE_READY=pp.getProperty("FILE_READY");
         FILE_DELETE=pp.getProperty("FILE_DELETE");
+        FILE_PATH = pp.getProperty("FILE_PATH");
         SERVER_IP=pp.getProperty("SERVER_IP");
 
     }
