@@ -10,11 +10,13 @@ import com.google.zxing.common.StringUtils;
 import com.lp.flashremote.SocketInterface;
 import com.lp.flashremote.beans.Command;
 import com.lp.flashremote.beans.Content;
+import com.lp.flashremote.beans.FileDescribe;
 import com.lp.flashremote.beans.FileInfo;
 import com.lp.flashremote.beans.PropertiesUtil;
 import com.lp.flashremote.beans.UserInfo;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,6 +27,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Queue;
+
+import Utils.FileUtilsKt;
 
 /**
  * Created by LZL on 2017/10/7.
@@ -41,8 +45,13 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
     static private String ip = PropertiesUtil.SERVER_IP;
     static private Boolean loopFlag = false;
     static private Thread readThread;
+    private Gson gson = new Gson();
 
-    public static PhoneRemoteSocket getInstance(Handler handler,String type,String ip){
+    public static Boolean getLoopFlag() {
+        return loopFlag;
+    }
+
+    public static PhoneRemoteSocket getInstance(Handler handler, String type, String ip){
         PhoneRemoteSocket.ip = ip;
         mType = type;
         clearSocket();
@@ -55,7 +64,13 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
         return phoneRemoteSocket;
     }
 
+    @Override
+    public InputStream getInputStream() {
+        return in;
+    }
+
     public static void clearSocket(){
+        loopFlag = false;
         in = null;
         out = null;
         if(messageQueue!=null)
@@ -67,6 +82,7 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
         try {
             if(mSocket!=null)
                 mSocket.close();
+            mSocket = null;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -197,21 +213,106 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
     private Runnable listenLoop = new Runnable() {
         @Override
         public void run() {
-            Gson gson = new Gson();
             while(loopFlag&&!isInterrupted()){
                 String is = readLine();
-                if(is.startsWith(PropertiesUtil.COMMAND)){
-                    Command command = gson.fromJson(StringUtil.getContent(is).getContent(),Command.class);
-                    switch (command.getType()){
-                        case "4":{
-                            filePathOP(StringUtil.getContent(is));
-                            break;
+                if(is==null||is.equals("")){
+                    continue;
+                }
+                Content content = StringUtil.getContent(is);
+                switch (content.getHead()){
+                    case "|COMMAND|":{
+                        Command command = gson.fromJson(content.getContent(),Command.class);
+                        switch (command.getType()){
+                            case "4":{
+                                filePathOP(content);
+                                break;
+                            }
                         }
+                        break;
+                    }
+                    case "|FILE@DELETE|":{
+                        fileDelete(StringUtil.getContent(is));
+                        break;
+                    }
+                    case "|GET@FILE|":{
+                        getFile(content);
+                        break;
                     }
                 }
             }
         }
     };
+
+    private void getFile(Content content){
+        List<FileDescribe> list = new LinkedList<>();
+        FileInfo[] fileInfos = gson.fromJson(content.getContent(),FileInfo[].class);
+        for (FileInfo fileInfo : fileInfos) {
+            File file = new File(fileInfo.getPath());
+            FileDescribe describe = new FileDescribe();
+            describe.setFileSize(file.length());
+            String name = file.getName().substring(0,file.getName().lastIndexOf("."));
+            String type = file.getName().substring(file.getName().lastIndexOf(".")+1,file.getName().length());
+            describe.setFileName(name);
+            describe.setFileType(type);
+            list.add(describe);
+        }
+        String command = PropertiesUtil.FILE_LIST_FLAG+"_"+gson.toJson(list);
+        addMessage(command);
+        String reuslt = readLine();
+        if(reuslt.startsWith(PropertiesUtil.FILE_READY)){
+            try
+            {
+                for (FileInfo fileInfo : fileInfos) {
+                    File file = new File(fileInfo.getPath());
+                    int count = 0;
+                    FileInputStream inputStream = new FileInputStream(file);
+                    while(true){
+                        byte[] bytes = new byte[4096];
+                        count = inputStream.read(bytes);
+                        if(count==-1)
+                            break;
+                        if(count==4096)
+                            addBytes(bytes);
+                        else{
+                            byte[] newBytes = new byte[count];
+                            int i = 0;
+                            for (i = 0;i<count;i++)
+                                newBytes[i] = bytes[i];
+                            addBytes(newBytes);
+                        }
+                    }
+                    inputStream.close();
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+                loopFlag = false;
+            }
+        }
+    }
+
+    private void fileDelete(Content content){
+        String[] paths = gson.fromJson(content.getContent(),String[].class);
+        int originalCount = paths.length;
+        int newCount = FileUtilsKt.deleteFileOrDirs(paths);
+        sendMsgWithParamEND(new String[]{PropertiesUtil.COMMAND_RESULT,String.valueOf(newCount)});
+    }
+
+    private void sendMsgWithParamEND(String[] args){
+        StringBuilder builder = new StringBuilder();
+        for (String arg : args) {
+            builder.append(arg);
+            builder.append("_");
+        }
+        builder.append(PropertiesUtil.END_FLAG);
+        String msg = builder.toString();
+        try {
+            byte[] bytes = msg.getBytes("UTF-8");
+            addBytes(IntConvertUtils.getIntegerBytes(bytes.length));
+            addBytes(bytes);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void filePathOP(Content content){
         Gson gson = new Gson();
@@ -257,7 +358,12 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
                 loopFlag = false;
                 return "";
             }
-            in.read(msgSizeBytes);
+            int count = in.read(msgSizeBytes);
+            if (count==-1){
+                System.out.println("count is "+count);
+                loopFlag = false;
+                return "";
+            }
             msgSize = IntConvertUtils.getIntegerByByteArray(msgSizeBytes);
             if(msgSize>=40*1024){
                 return "";

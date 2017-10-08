@@ -47,26 +47,26 @@ import java.io.File;
 
 /**
  * Created by PUJW on 2017/8/14.
- *
  */
 
-public class Remote_Phone_Fragment extends Fragment implements View.OnClickListener{
-    private static final int QR_RESULT_CODE=1;
+public class Remote_Phone_Fragment extends Fragment implements View.OnClickListener {
+    private static final int QR_RESULT_CODE = 1;
     private LinearLayout mQRcode;
     private TextView mScanQR;
     private TextView myIpAddress;
-    private WifiSocketUtil mWifiSocket=null;
+    private WifiSocketUtil mWifiSocket = null;
     private TextView phoneOnline;
     private TextView phoneControl;
 
     private boolean isConnected = false;
 
     private MyProgressDialog progressDialog;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.fragment_phone,container,false);
+        View view = inflater.inflate(R.layout.fragment_phone, container, false);
         iniView(view);
         return view;
     }
@@ -85,17 +85,17 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
     }
 
     private void iniView(View view) {
-        myIpAddress=view.findViewById(R.id.ipaddress);
+        myIpAddress = view.findViewById(R.id.ipaddress);
         myIpAddress.setText(NetParameter.IPAddress);
-        mQRcode=view.findViewById(R.id.codeimage);
-        mScanQR=view.findViewById(R.id.scanQR);
+        mQRcode = view.findViewById(R.id.codeimage);
+        mScanQR = view.findViewById(R.id.scanQR);
         phoneOnline = view.findViewById(R.id.phoneOnline);
         phoneControl = view.findViewById(R.id.phoneControl);
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.codeimage:
 
                 /**
@@ -103,7 +103,7 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                  * 2 本机WiFi ip
                  * 3 等待对方连接
                  */
-                String hotIp=setwifiHot(true);   //打开热点，并开启socket
+                String hotIp = setwifiHot(true);   //打开热点，并开启socket
                 initQRCode(hotIp);               //弹出二维码等待连接
                 /*if (mWifiSocket==null){
                     mWifiSocket=new WifiSocketUtil();
@@ -111,81 +111,82 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                 }*/
                 break;
             case R.id.scanQR:
-                Intent intent=new Intent(getActivity(), CaptureActivity.class);
-                startActivityForResult(intent,QR_RESULT_CODE);
+                Intent intent = new Intent(getActivity(), CaptureActivity.class);
+                startActivityForResult(intent, QR_RESULT_CODE);
                 break;
-            case R.id.phoneOnline:{
-                if(UserInfo.isEmpty()){
-                    Snackbar.make(phoneOnline,"请先在设置中设置账号密码",Snackbar.LENGTH_SHORT).show();
+            case R.id.phoneOnline: {
+                if (UserInfo.isEmpty()) {
+                    Snackbar.make(phoneOnline, "请先在设置中设置账号密码", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
-                PhoneRemoteSocket socket = PhoneRemoteSocket.getInstance(handler,"REMOTE_ONLINE", PropertiesUtil.SERVER_IP);
+                PhoneRemoteSocket socket = PhoneRemoteSocket.getInstance(handler, "REMOTE_ONLINE", PropertiesUtil.SERVER_IP);
                 socket.start();
                 break;
             }
-            case R.id.phoneControl:{
-                if(UserInfo.isEmpty()){
-                    Snackbar.make(phoneOnline,"请先在设置中设置账号密码",Snackbar.LENGTH_SHORT).show();
+            case R.id.phoneControl: {
+                if (UserInfo.isEmpty()) {
+                    Snackbar.make(phoneOnline, "请先在设置中设置账号密码", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
-                PhoneRemoteSocket socket = PhoneRemoteSocket.getInstance(handler,"REMOTE",PropertiesUtil.SERVER_IP);
-                socket.start();
+                    PhoneRemoteSocket socket = PhoneRemoteSocket.getInstance(handler, "REMOTE", PropertiesUtil.SERVER_IP);
+                    socket.start();
                 break;
             }
         }
     }
 
-    private void showProgressDialog(String s){
-        progressDialog = new MyProgressDialog(getContext(),s);
+    private void showProgressDialog(String s) {
+        progressDialog = new MyProgressDialog(getContext(), s);
         progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
+                System.out.println("onCancel");
                 PhoneRemoteSocket.clearSocket();
             }
         });
         progressDialog.show();
     }
 
-    private void dissmissProgressDialog(){
-        if(progressDialog!=null)
+    private void dissmissProgressDialog() {
+        if (progressDialog != null)
             if (progressDialog.isShowing())
                 progressDialog.dismiss();
     }
 
     private void initQRCode(String hotIp) {
-        final String filepath=getContext().getCacheDir().getAbsolutePath()
-                +File.separator+"qr"+System.currentTimeMillis()+".jpg";
-        System.out.println("code_path:\t"+filepath);
+        final String filepath = getContext().getCacheDir().getAbsolutePath()
+                + File.separator + "qr" + System.currentTimeMillis() + ".jpg";
+        System.out.println("code_path:\t" + filepath);
 
-        Bitmap bitmap=null;
-        if (QRcodeutil.createQRcode(new Gson().toJson(new WifiInfo(hotIp)),600,600,filepath)){
-            bitmap= BitmapFactory.decodeFile(filepath);
-        }else{
-            bitmap=BitmapFactory.decodeResource(getResources(),R.drawable.code);
+        Bitmap bitmap = null;
+        if (QRcodeutil.createQRcode(new Gson().toJson(new WifiInfo(hotIp)), 600, 600, filepath)) {
+            bitmap = BitmapFactory.decodeFile(filepath);
+        } else {
+            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.code);
         }
-        CodeDialog.Builder dialogbuilder=new CodeDialog.Builder(getContext());
+        CodeDialog.Builder dialogbuilder = new CodeDialog.Builder(getContext());
         dialogbuilder.setBitmap(bitmap);
-        CodeDialog dialog=dialogbuilder.create();
+        CodeDialog dialog = dialogbuilder.create();
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();
     }
 
     private String setwifiHot(boolean b) {
-        WifiHostBiz wifiHostBiz=new WifiHostBiz(getContext());
+        WifiHostBiz wifiHostBiz = new WifiHostBiz(getContext());
         String hotIp;
-        if (wifiHostBiz.isWifiApEnable()){
+        if (wifiHostBiz.isWifiApEnable()) {
             wifiHostBiz.setWifiAPEnable(!b);
-            hotIp=wifiHostBiz.setWifiAPEnable(b);
-        }else{
-            hotIp=wifiHostBiz.setWifiAPEnable(b);
+            hotIp = wifiHostBiz.setWifiAPEnable(b);
+        } else {
+            hotIp = wifiHostBiz.setWifiAPEnable(b);
         }
         return hotIp;
     }
 
     private String getFileRoot(Context context) {
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
-            File external=context.getExternalFilesDir(null);
-            if (external!=null){
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            File external = context.getExternalFilesDir(null);
+            if (external != null) {
                 return external.getAbsolutePath();
             }
         }
@@ -194,36 +195,36 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
     }
 
 
-    private Handler handler=new Handler(){
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
-                case 1:{
-                    Toast.makeText(getActivity(),"连接成功",Toast.LENGTH_SHORT).show();
+            switch (msg.what) {
+                case 1: {
+                    Toast.makeText(getActivity(), "连接成功", Toast.LENGTH_SHORT).show();
                     break;
                 }
-                case 12:{
+                case 12: {
                     showToast("上线成功");
                     showProgressDialog("请不要退出当前界面，正在等待远程主机操作");
                     break;
                 }
-                case 13:{
+                case 13: {
                     showToast("上线失败");
                     break;
                 }
-                case 14:{
+                case 14: {
                     showToast("远程连接成功");
-                    Intent intent = new Intent(getContext(),PcFileDirActivity.class);
-                    intent.putExtra("ROOTPATH","");
-                    intent.putExtra("mode","phone");
+                    Intent intent = new Intent(getContext(), PcFileDirActivity.class);
+                    intent.putExtra("ROOTPATH", "");
+                    intent.putExtra("mode", "phone");
                     startActivity(intent);
                     break;
                 }
-                case 15:{
+                case 15: {
                     showToast("远程链接失败");
                     break;
                 }
-                case 17:{
+                case 17: {
                     showToast("连接中断！");
                     dissmissProgressDialog();
                     break;
@@ -232,22 +233,22 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
         }
     };
 
-    private void showToast(String s){
-        ToastUtil.toastText(getContext(),s);
+    private void showToast(String s) {
+        ToastUtil.toastText(getContext(), s);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==QR_RESULT_CODE && resultCode== Activity.RESULT_OK){
-            Bundle bundle=data.getExtras();
-            String QRcontent=bundle.getString("result");
-            WifiInfo wifiInfo=new Gson().fromJson(QRcontent,WifiInfo.class);
-            WifiConnectUtil wifiConnectUtil=new WifiConnectUtil(getContext());
+        if (requestCode == QR_RESULT_CODE && resultCode == Activity.RESULT_OK) {
+            Bundle bundle = data.getExtras();
+            String QRcontent = bundle.getString("result");
+            WifiInfo wifiInfo = new Gson().fromJson(QRcontent, WifiInfo.class);
+            WifiConnectUtil wifiConnectUtil = new WifiConnectUtil(getContext());
 
-            if ( wifiConnectUtil.Connect(wifiInfo.getName(),wifiInfo.getPwd())){
-                Message m=new Message();
-                m.what=1;
+            if (wifiConnectUtil.Connect(wifiInfo.getName(), wifiInfo.getPwd())) {
+                Message m = new Message();
+                m.what = 1;
                 handler.sendMessage(m);
             }
             //initConnect(wifiInfo.getIp());
@@ -256,6 +257,7 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
 
     /**
      * 开启同一热点下的socket
+     *
      * @param ip
      */
     private void initConnect(String ip) {
@@ -265,7 +267,7 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(handler!=null){
+        if (handler != null) {
             handler.removeCallbacksAndMessages(null);
         }
     }

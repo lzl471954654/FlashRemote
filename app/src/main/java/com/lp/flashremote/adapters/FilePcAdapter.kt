@@ -55,8 +55,10 @@ class FilePcAdapter(var data:MutableList<FileInfo>, val context: Context, val so
         doAsync {
             result=socket.readLine()
             uiThread {
-                if (result!=null){
+                if (result!=""){
+                    val temp = data;
                     data=GsonAnalysiUtil.getFileList(StringUtil.rmEnd_flagstr(result))
+                    stack.push(temp)
                     notifyDataSetChanged()
                 }
             }
@@ -83,7 +85,7 @@ class FilePcAdapter(var data:MutableList<FileInfo>, val context: Context, val so
             view.file_pc_item_name.text=list.get(position).name
             view.setOnClickListener {
                 if (list.get(position).isType){
-                    adapter.stack.push(list)
+                    //adapter.stack.push(list)
                     adapter.moveToNextFolder(list.get(position).path,socket)
                 }
             }
