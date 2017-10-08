@@ -24,7 +24,7 @@ import java.util.*
 class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
 
 
-    var phoneSocket:PhoneRemoteSocket = PhoneRemoteSocket.getNowInstance()
+    var phoneSocket:PhoneRemoteSocket? = PhoneRemoteSocket.getNowInstance()
     lateinit var mSocket: SocketUtil
     lateinit var fileinfos:List<FileInfo>
     lateinit var result:String
@@ -125,6 +125,8 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
         {
             if(adapter!!.canBack())
                 adapter?.backToMother()
+            else
+                super.onBackPressed()
         }
         else
             finish()
