@@ -70,7 +70,9 @@ public class MouseFragment extends Fragment {
             public void onDoubleClick(View v) {
                 i=0;
                 map.clear();
+                map.put(0,0);
                 String doublecClick=Command2JsonUtil.getMouseJson(map,true,false,true,false);
+                map.clear();
                 mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",doublecClick,false)));
                 Toast.makeText(getContext(), "双击", Toast.LENGTH_SHORT).show();
             }
@@ -79,7 +81,9 @@ public class MouseFragment extends Fragment {
             public void onSingleClick(View v) {
                 map.clear();
                 i=0;
+                map.put(0,0);
                 String singleClick=Command2JsonUtil.getMouseJson(map,true,true,false,false);
+                map.clear();
                 mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",singleClick,false)));
                 Toast.makeText(getContext(), "单击", Toast.LENGTH_SHORT).show();
             }

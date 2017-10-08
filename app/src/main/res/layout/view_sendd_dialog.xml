@@ -7,8 +7,8 @@
     android:background="@drawable/feedback_advice_drawable"
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
-    android:paddingBottom="16dp"
-    android:paddingTop="16dp"
+    android:paddingBottom="24dp"
+    android:paddingTop="24dp"
     android:layout_margin="4dp"
     >
 
@@ -36,6 +36,7 @@
         android:layout_margin="8dp"
         android:padding="8dp"
         android:background="@color/primary_light"
+        android:visibility="gone"
         />
 
 </LinearLayout>
