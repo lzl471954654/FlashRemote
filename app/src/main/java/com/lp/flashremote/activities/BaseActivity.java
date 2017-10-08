@@ -2,10 +2,13 @@ package com.lp.flashremote.activities;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+
 import com.lp.flashremote.R;
 import com.lp.flashremote.beans.PropertiesUtil;
 import com.lp.flashremote.utils.SharePerferenceUtil;
@@ -21,7 +24,6 @@ import permissions.dispatcher.RuntimePermissions;
  * Created by xiyou3g on 2017/10/6.
  *
  */
-
 @RuntimePermissions
 public class BaseActivity extends AppCompatActivity {
 
@@ -32,6 +34,7 @@ public class BaseActivity extends AppCompatActivity {
         setContentView(R.layout.acticity_base);
         PropertiesUtil.getProperties(this);
         SharePerferenceUtil.getUserInfo(this);
+
         BaseActivityPermissionsDispatcher.grantPermissionWithPermissionCheck(this);
     }
     @NeedsPermission({
@@ -68,6 +71,8 @@ public class BaseActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         BaseActivityPermissionsDispatcher.onRequestPermissionsResult(this,requestCode,grantResults);
     }
+
+
 
     @Override
     protected void onPause() {

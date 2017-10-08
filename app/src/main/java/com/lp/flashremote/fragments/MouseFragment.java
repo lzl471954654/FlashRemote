@@ -21,6 +21,9 @@ import com.lp.flashremote.utils.StringUtil;
 import com.lp.flashremote.utils.ToastUtil;
 import com.lp.flashremote.views.MouseTouchView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by xiyou3g on 2017/9/23.
  * 鼠标操作 fragment
@@ -33,7 +36,8 @@ public class MouseFragment extends Fragment {
 
 
     private TextView rightClick;
-    private String mouseClickCom=null;
+    private  int i=0;
+    Map<Integer,Integer> map=new HashMap<>();
     private float[] moveX=new float[2];
     private float[] moveY=new float[2];
     @Nullable
@@ -64,36 +68,51 @@ public class MouseFragment extends Fragment {
         mMouseTouchView.setClickListener(new MouseTouchView.OnClickListener() {
             @Override
             public void onDoubleClick(View v) {
-                String doublecClick=Command2JsonUtil.getMouseJson(0,0,true,false,true,false);
+                i=0;
+                map.clear();
+                String doublecClick=Command2JsonUtil.getMouseJson(map,true,false,true,false);
                 mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",doublecClick,false)));
                 Toast.makeText(getContext(), "双击", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSingleClick(View v) {
-                String singleClick=Command2JsonUtil.getMouseJson(0,0,true,true,false,false);
+                map.clear();
+                i=0;
+                String singleClick=Command2JsonUtil.getMouseJson(map,true,true,false,false);
                 mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",singleClick,false)));
                 Toast.makeText(getContext(), "单击", Toast.LENGTH_SHORT).show();
             }
 
         });
 
+
         mMouseTouchView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+
                 if (motionEvent.getAction()==MotionEvent.ACTION_DOWN ){
-                    moveX[0]=moveX[1]=motionEvent.getX();
-                    moveY[0]=moveY[1]=motionEvent.getY();
+                    moveX[0]=moveX[1]=motionEvent.getX()/9;
+                    moveY[0]=moveY[1]=motionEvent.getY()/9;
                 }
                 else{
-                    moveY[1]=motionEvent.getX();
-                    moveX[1]=motionEvent.getX();
+                    moveY[1]=motionEvent.getY()/9;
+                    moveX[1]=motionEvent.getX()/9;
                 }
-                if (moveX[1]-moveX[0]>5| moveY[1]-moveY[0]>5){
-                    String move=Command2JsonUtil.getMouseJson((moveX[1]-moveX[0]),
-                            (moveY[1]-moveY[0]),false,false,false,false);
+                if (motionEvent.getAction()==MotionEvent.ACTION_UP){
+                    String move=Command2JsonUtil.getMouseJson(map,false,false,false,false);
+                    map.clear();
+                    i=0;
                     mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",move,false)));
                 }
+                   map.put((int)(moveX[1]-moveX[0]),(int)(moveY[1]-moveY[0]));
+                    i++;
+                    if (i==20){
+                        String move=Command2JsonUtil.getMouseJson(map,false,false,false,false);
+                        map.clear();
+                        i=0;
+                        mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",move,false)));
+                    }
 
                 return false;
             }
@@ -102,7 +121,9 @@ public class MouseFragment extends Fragment {
         rightClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String rightClick=Command2JsonUtil.getMouseJson(0,0,true,false,false,true);
+                map.clear();
+                i=0;
+                String rightClick=Command2JsonUtil.getMouseJson(map,true,false,false,true);
                 mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",rightClick,false)));
                 Toast.makeText(getContext(), "右击", Toast.LENGTH_SHORT).show();
             }
