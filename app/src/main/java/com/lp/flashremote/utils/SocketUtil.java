@@ -43,6 +43,11 @@ public class SocketUtil extends Thread implements SocketInterface{
         return mSocketUtil;
     }
 
+    @Override
+    public InputStream getInputStream() {
+        return socketInput;
+    }
+
     public static SocketUtil getInstance(){
         return getInstance(UserInfo.getUsername(),UserInfo.getPassword());
     }
@@ -115,8 +120,6 @@ public class SocketUtil extends Thread implements SocketInterface{
             if (getThreadState()) {
                 break;
             }
-
-            Thread.sleep(50);
             synchronized (mSendMessaggeQueue){
                 if (!mSendMessaggeQueue.isEmpty()) {
                     byte[] bytes = mSendMessaggeQueue.remove();

@@ -23,11 +23,13 @@ public class PropertiesUtil {
 
     public static String END_FLAG;
     public static String COMMAND;
+    public static String COMMAND_RESULT;
     public static String FILE_LIST_FLAG;
     public static String FILE_READY;
     public static String FILE_DELETE;
     public static String SERVER_IP;
     public static String FILE_PATH;
+    public static String GET_FILE;
 
     public static void getProperties(Context context){
         Properties pp=new Properties();
@@ -47,10 +49,12 @@ public class PropertiesUtil {
         CONNECTED_SUCCESS=pp.getProperty("CONNECTED_SUCCESS");
         END_FLAG=pp.getProperty("END_FLAG");
         COMMAND=pp.getProperty("COMMAND");
+        COMMAND_RESULT = pp.getProperty("COMMAND_RESULT");
         FILE_LIST_FLAG=pp.getProperty("FILE_LIST_FLAG");
         FILE_READY=pp.getProperty("FILE_READY");
         FILE_DELETE=pp.getProperty("FILE_DELETE");
         FILE_PATH = pp.getProperty("FILE_PATH");
+        GET_FILE = pp.getProperty("GET_FILE");
         SERVER_IP=pp.getProperty("SERVER_IP");
 
     }
