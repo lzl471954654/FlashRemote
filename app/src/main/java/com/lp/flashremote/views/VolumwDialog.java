@@ -47,7 +47,10 @@ public class VolumwDialog  extends Dialog{
 
     public VolumwDialog(@NonNull Context context, SocketUtil s) {
         super(context,R.style.VolumeDialog);
-        new VolumwDialog(context,s, context.getDrawable(R.mipmap.vocontrol),0);
+        this.mContext=context;
+        this.socket=s;
+        this.d=context.getDrawable(R.mipmap.vocontrol);
+        this.flag=0;
     }
 
     @Override
