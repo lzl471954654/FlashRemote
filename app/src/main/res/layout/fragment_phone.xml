@@ -19,13 +19,16 @@
         android:layout_marginStart="16dp"
         android:textColor="@color/primary_text"
         />
-    <include android:id="@+id/codeimage"
+    <include
+
+        android:id="@+id/codeimage"
         layout="@layout/myphone_layout"/>
 
     <TextView
+        android:layout_marginTop="30dp"
         android:id="@+id/scanQR"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginStart="70dp"
+        android:layout_marginEnd="70dp"
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:text="扫码链接"
@@ -35,9 +38,11 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="2px"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:background="@color/divider"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="20dp"
         />
     <TextView
         android:layout_width="wrap_content"
@@ -47,29 +52,38 @@
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
         />
-    <TextView
-        android:id="@+id/phoneOnline"
-        android:layout_marginTop="32dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
+    <LinearLayout
+        android:layout_marginTop="50dp"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:text="@string/phoneFragmentOnline"
-        android:gravity="center"
-        android:textColor="@color/normalBackgroundColor"
-        android:background="@drawable/remote_tv_bg"
-        />
+        android:layout_height="46dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/phoneOnline"
+            android:layout_marginEnd="1dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="45dp"
+            android:gravity="center"
+            android:textColor="@color/normalBackgroundColor"
+            android:background="@drawable/remote_tv_bg1"
+            android:text="我是被控端"/>
+        <View
+            android:layout_width="2px"
+            android:layout_height="match_parent"
+            android:background="#605f5f"/>
+        <TextView
+            android:id="@+id/phoneControl"
 
-    <TextView
-        android:id="@+id/phoneControl"
-        android:layout_marginTop="32dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:text="@string/phoneFragmentControl"
-        android:gravity="center"
-        android:textColor="@color/normalBackgroundColor"
-        android:background="@drawable/remote_tv_bg"
-        />
+            android:layout_marginStart="1dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="45dp"
+            android:gravity="center"
+            android:textColor="@color/normalBackgroundColor"
+            android:background="@drawable/remote_tv_bg2"
+            android:text="我是控制端"/>
+
+    </LinearLayout>
 </LinearLayout>
