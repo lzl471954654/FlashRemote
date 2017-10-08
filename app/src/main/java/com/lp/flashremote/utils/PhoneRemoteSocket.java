@@ -33,7 +33,7 @@ public class PhoneRemoteSocket extends Thread {
     private static Socket mSocket;
     private static InputStream in;
     private static OutputStream out;
-    static private Queue<byte[]> messageQueue;
+    static private Queue<byte[]> messageQueue = new LinkedList<>();
     static private PhoneRemoteSocket phoneRemoteSocket;
     static private Handler handler;
     static private String mType = "";
@@ -41,18 +41,14 @@ public class PhoneRemoteSocket extends Thread {
     static private Boolean loopFlag = false;
     static private Thread readThread;
     private PhoneRemoteSocket(){
-        messageQueue = new LinkedList<>();
+
     }
 
     public static PhoneRemoteSocket getInstance(Handler handler,String type,String ip){
         PhoneRemoteSocket.ip = ip;
         mType = type;
-        if(phoneRemoteSocket==null)
-            phoneRemoteSocket = new PhoneRemoteSocket();
-        else if (!type.equals(mType)){
-            clearSocket();
-            phoneRemoteSocket = new PhoneRemoteSocket();
-        }
+        clearSocket();
+        phoneRemoteSocket = new PhoneRemoteSocket();
         PhoneRemoteSocket.handler = handler;
         return phoneRemoteSocket;
     }
@@ -66,7 +62,8 @@ public class PhoneRemoteSocket extends Thread {
         out = null;
         if(messageQueue!=null)
             messageQueue.clear();
-        messageQueue = null;
+        if(phoneRemoteSocket!=null)
+            phoneRemoteSocket.interrupt();
         phoneRemoteSocket = null;
         handler = null;
         try {
@@ -102,7 +99,8 @@ public class PhoneRemoteSocket extends Thread {
         }finally {
             Message message = new Message();
             message.what = 17;
-            handler.sendMessage(message);
+            if(handler!=null)
+                handler.sendMessage(message);
             clearSocket();
             /*
             * 17 连接中断
@@ -254,14 +252,13 @@ public class PhoneRemoteSocket extends Thread {
         return true;
     }
 
-    public String readLine() {
+    public static String readLine() {
         String s = "";
         try {
             int msgSize = 0;
             byte[] msgSizeBytes = new byte[4];
             if(in==null){
                 loopFlag = false;
-                interrupt();
                 return "";
             }
             in.read(msgSizeBytes);
@@ -271,7 +268,6 @@ public class PhoneRemoteSocket extends Thread {
             }
             if(msgSize<0){
                 loopFlag = false;
-                interrupt();
                 return "";
             }
             int i = 0;

@@ -34,7 +34,6 @@ public class BaseActivity extends AppCompatActivity {
         SharePerferenceUtil.getUserInfo(this);
         BaseActivityPermissionsDispatcher.grantPermissionWithPermissionCheck(this);
     }
-
     @NeedsPermission({
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,

@@ -167,7 +167,7 @@ class DiskFragment(val mdiskSocket: SocketUtil) : Fragment() ,OnChartValueSelect
                 return@forEach
             }
         }
-        startActivity<PcFileDirActivity>("ROOTPATH" to diskinfo.path )
+        startActivity<PcFileDirActivity>("ROOTPATH" to diskinfo.path,"mode" to "pc" )
 
 
     }

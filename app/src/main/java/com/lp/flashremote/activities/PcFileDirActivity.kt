@@ -12,10 +12,7 @@ import com.lp.flashremote.adapters.FilePcAdapter
 import com.lp.flashremote.beans.FileInfo
 import com.lp.flashremote.beans.PropertiesUtil
 import com.lp.flashremote.beans.UserInfo
-import com.lp.flashremote.utils.Command2JsonUtil
-import com.lp.flashremote.utils.GsonAnalysiUtil
-import com.lp.flashremote.utils.SocketUtil
-import com.lp.flashremote.utils.StringUtil
+import com.lp.flashremote.utils.*
 import com.lp.flashremote.views.MyProgressDialog
 import kotlinx.android.synthetic.main.activity_pc_file_dir.*
 import org.jetbrains.anko.bottomPadding
@@ -27,11 +24,11 @@ import java.util.*
 class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
 
 
-
+    var phoneSocket:PhoneRemoteSocket = PhoneRemoteSocket.getNowInstance()
     lateinit var mSocket: SocketUtil
     lateinit var fileinfos:List<FileInfo>
     lateinit var result:String
-    lateinit var adapter: FilePcAdapter
+    var adapter: FilePcAdapter? = null
     lateinit var mContext:Context
 
     lateinit var progress:MyProgressDialog
@@ -42,6 +39,7 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pc_file_dir)
         val rootPath = intent.getStringExtra("ROOTPATH")
+        mode = intent.getStringExtra("mode")
         supportActionBar?.title="目录浏览"
         mContext=this
         initView()
@@ -49,19 +47,50 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
     }
 
 
+    private fun addMessage(msg: String){
+        if (mode == "phone"){
+            PhoneRemoteSocket.addMessage(msg)
+        }else{
+            mSocket.addMessage(msg)
+        }
+    }
+
+    private fun readLine():String{
+        var msg = ""
+        if(mode == "phone"){
+            msg = PhoneRemoteSocket.readLine()
+        }else{
+            msg = mSocket.readLine()
+        }
+        return msg
+    }
+
+    private fun writeBytes(bytes:ByteArray){
+        if(mode == "phone"){
+            PhoneRemoteSocket.addBytes(bytes)
+        }else{
+            mSocket.addBytes(bytes)
+        }
+    }
+
     private fun initView() {
         val viewArray = arrayOf(file_pc_delete,file_pc_send)
         viewArray.forEach { it.setOnClickListener(this) }
     }
 
     private fun initData(rootPath:String) {
-        mSocket = SocketUtil.getInstance(UserInfo.getUsername(), UserInfo.getPassword())
-        mSocket.addMessage(StringUtil.operateCmd(Command2JsonUtil
+        if(mode == "pc")
+            mSocket = SocketUtil.getInstance(UserInfo.getUsername(), UserInfo.getPassword())
+        addMessage(StringUtil.operateCmd(Command2JsonUtil
                 .getJson("4", rootPath, true)))
+        /*mSocket.addMessage(StringUtil.operateCmd(Command2JsonUtil
+                .getJson("4", rootPath, true)))*/
         doAsync {
-            result = mSocket.readLine()
+            /*result = mSocket.readLine()*/
+            result = readLine()
+            println("result:"+result)
             uiThread {
-                if (result!=null){
+                if (result!=""){
                     fileinfos=GsonAnalysiUtil.getFileList(StringUtil.rmEnd_flagstr(result))
                     adapter= FilePcAdapter(fileinfos.toMutableList(),this@PcFileDirActivity,mSocket)
                     file_pc__list.layoutManager= LinearLayoutManager(mContext)
@@ -87,10 +116,14 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
     }
 
     override fun onBackPressed() {
-        if(adapter.canBack())
-            adapter.backToMother()
+        println(adapter === null)
+        if (adapter!=null)
+        {
+            if(adapter!!.canBack())
+                adapter?.backToMother()
+        }
         else
-            super.onBackPressed()
+            finish()
     }
 
     override fun onClick(v: View?) {
@@ -107,51 +140,52 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
     fun downloadFile(){
         progress = MyProgressDialog(this@PcFileDirActivity,"正在下载文件，请稍后")
         progress.show()
-        doAsync {
-            SocketUtil.getInstance().sendTestMessage(object : SocketUtil.ConnectListener {
-                override fun connectError() {
-                    uiThread { progress.dismiss();showSnackBar(file_pc_send,"对不起连接中断") }
-                }
+        if(mode == "pc")
+        {
+            doAsync {
+                SocketUtil.getInstance().sendTestMessage(object : SocketUtil.ConnectListener {
+                    override fun connectError() {
+                        uiThread { progress.dismiss();showSnackBar(file_pc_send,"对不起连接中断") }
+                    }
 
-                override fun connectSusess() {
+                    override fun connectSusess() {
 
-                }
-            })
+                    }
+                })
+            }
         }
-    }
-
-    fun addMessage(msg:String){
-
     }
 
     fun deleteFileOrDirs(){
         progress = MyProgressDialog(this@PcFileDirActivity,"正在删除，请稍后")
         progress.show()
-        doAsync {
-            SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword()).sendTestMessage(object : SocketUtil.ConnectListener {
-                override fun connectError() {
-                    uiThread { progress.dismiss();showSnackBar(file_pc_send,"对不起连接中断") }
-                }
-
-                override fun connectSusess() {
-                    val list = LinkedList<String>()
-                    adapter.chooseFile.forEach { list.add(it.path) }
-                    val command = "${PropertiesUtil.FILE_DELETE}_${Gson().toJson(list)}"
-                    val socket = SocketUtil.getInstance()
-                    socket.addMessage(command)
-                    val result = socket.readLine()
-                    val size = result.split("_")[1].toInt()
-                    println(result)
-                    if(size==0){
-                        uiThread { progress.dismiss();showSnackBar(file_pc_send,"删除失败") }
-                    }else{
-                        adapter.data.removeAll(adapter.chooseFile)
-                        adapter.chooseFile.clear()
-                        uiThread { progress.dismiss();showSnackBar(file_pc_send,"成功删除${size}个文件"); adapter.notifyDataSetChanged();changeBottomBarState(0)}
+        if(mode == "pc"){
+            doAsync {
+                SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword()).sendTestMessage(object : SocketUtil.ConnectListener {
+                    override fun connectError() {
+                        uiThread { progress.dismiss();showSnackBar(file_pc_send,"对不起连接中断") }
                     }
 
-                }
-            })
+                    override fun connectSusess() {
+                        val list = LinkedList<String>()
+                        adapter?.chooseFile?.forEach { list.add(it.path) }
+                        val command = "${PropertiesUtil.FILE_DELETE}_${Gson().toJson(list)}"
+                        val socket = SocketUtil.getInstance()
+                        socket.addMessage(command)
+                        val result = socket.readLine()
+                        val size = result.split("_")[1].toInt()
+                        println(result)
+                        if(size==0){
+                            uiThread { progress.dismiss();showSnackBar(file_pc_send,"删除失败") }
+                        }else{
+                            adapter?.data?.removeAll(adapter!!.chooseFile)
+                            adapter?.chooseFile?.clear()
+                            uiThread { progress.dismiss();showSnackBar(file_pc_send,"成功删除${size}个文件"); adapter?.notifyDataSetChanged();changeBottomBarState(0)}
+                        }
+
+                    }
+                })
+            }
         }
     }
 
