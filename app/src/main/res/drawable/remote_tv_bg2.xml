@@ -12,7 +12,7 @@
         <shape>
             <corners android:bottomRightRadius="10dp"
                 android:topRightRadius="10dp"/>
-            <solid android:color="@color/primary_dark"/>
+            <solid android:color="@color/green"/>
             <stroke android:width="2px" android:color="@color/accent"/>
         </shape>
     </item>

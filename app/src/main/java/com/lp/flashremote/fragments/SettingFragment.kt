@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Environment
+import android.support.annotation.UiThread
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
@@ -39,7 +40,9 @@ class SettingFragment : Fragment(),View.OnClickListener {
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        viewArray  = arrayOf(root.settings_about_us,root.settings_clear_cache,root.settings_clear_folder,root.settings_feedback,root.settings_see_accept_folder,root.settings_account)
+        viewArray  = arrayOf(root.settings_exit,root.settings_about_us,root.settings_clear_cache,
+                root.settings_clear_folder,root.settings_feedback,root.settings_see_accept_folder,
+                root.settings_account)
         viewArray.forEach { it.setOnClickListener(this) }
         Log.i("dir:",context.filesDir.absolutePath)
         Log.i("size:",context.filesDir.length().toString())
@@ -91,7 +94,7 @@ class SettingFragment : Fragment(),View.OnClickListener {
                 clearCache()
             }
             R.id.settings_clear_folder->{
-
+                clearfolder(FlashApplication.acceptFolder)
             }
             R.id.settings_see_accept_folder->{
                 startActivity<FileExplorerActivity>("mode" to FileExplorerActivity.MODE_EXPLORER,
@@ -105,6 +108,7 @@ class SettingFragment : Fragment(),View.OnClickListener {
                     p0, p1 ->
                     System.exit(0)
                 }
+                dialog.show()
             }
             R.id.settings_account->{
                 startActivity<AccountActivity>()
@@ -125,5 +129,29 @@ class SettingFragment : Fragment(),View.OnClickListener {
             Thread.sleep(2000)
             uiThread { dialog.dismiss();root.settings_cache_size.text = getSizeText(0L) }
         }
+    }
+
+    private fun clearfolder(path:String){
+        val dialog = MyProgressDialog(context,"清除中。。。")
+        dialog.show()
+        doAsync {
+            val file=File(path)
+            if (!file.isDirectory){
+                file.delete()
+            }else{
+                val filelist=file.list()
+                filelist.forEach {
+                    val f=File(FlashApplication.acceptFolder+File.separator+it)
+                    if (f.isDirectory){
+                        clearfolder(it)
+                    }else{
+                        f.delete()
+                    }
+                }
+            }
+            Thread.sleep(2000)
+           uiThread { dialog.dismiss() }
+        }
+
     }
 }
