@@ -62,6 +62,8 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
 
     private MyProgressDialog progressDialog;
 
+    private WifiInfo mWifiInfo;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -142,6 +144,7 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
             public void onCancel(DialogInterface dialogInterface) {
                 System.out.println("onCancel");
                 PhoneRemoteSocket.clearSocket();
+                WifiSocketUtil.stopSocket();
             }
         });
         progressDialog.show();
@@ -200,7 +203,9 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1: {
-                    Toast.makeText(getActivity(), "连接成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "WIFI连接成功", Toast.LENGTH_SHORT).show();
+                    WifiSocketUtil wifiSocketUtil = WifiSocketUtil.getInstance("CS",mWifiInfo.getIp(),handler);
+                    wifiSocketUtil.start();
                     break;
                 }
                 case 12: {
@@ -229,6 +234,14 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                     dissmissProgressDialog();
                     break;
                 }
+                case 18:{
+                    showToast("链接成功");
+                    Intent intent = new Intent(getContext(), PcFileDirActivity.class);
+                    intent.putExtra("ROOTPATH", "");
+                    intent.putExtra("mode", "wifi");
+                    startActivity(intent);
+                    break;
+                }
             }
         }
     };
@@ -239,7 +252,7 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        //super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == QR_RESULT_CODE && resultCode == Activity.RESULT_OK) {
             Bundle bundle = data.getExtras();
             String QRcontent = bundle.getString("result");
@@ -249,6 +262,7 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
             if (wifiConnectUtil.Connect(wifiInfo.getName(), wifiInfo.getPwd())) {
                 Message m = new Message();
                 m.what = 1;
+                mWifiInfo = wifiInfo;
                 handler.sendMessage(m);
             }
             //initConnect(wifiInfo.getIp());

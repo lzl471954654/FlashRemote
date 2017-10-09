@@ -337,9 +337,7 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
             info.setPath(file.getAbsolutePath());
             list.add(info);
         }
-        StringBuilder builder = new StringBuilder();
-        builder.append(gson.toJson(list));
-        addMessage(builder.toString());
+        addMessage(gson.toJson(list));
     }
 
     private static boolean initConnection() throws IOException{

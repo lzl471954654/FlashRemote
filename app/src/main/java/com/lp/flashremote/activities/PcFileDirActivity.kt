@@ -44,9 +44,12 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
         mode = intent.getStringExtra("mode")
         if(mode == "pc"){
             socket = SocketUtil.getInstance()
-        }else
+        }else if(mode == "phone")
         {
             socket = PhoneRemoteSocket.getNowInstance()
+        }
+        else if(mode == "wifi"){
+            socket = WifiSocketUtil.getNowInstance()
         }
         supportActionBar?.title="目录浏览"
         mContext=this
