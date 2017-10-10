@@ -61,8 +61,8 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
     private static boolean loopFlag = false;
 
 
-    private WifiSocketUtil(String mode,String ip){
-        if(mode == SERVER){
+    public WifiSocketUtil(String mode,String ip){
+        if(mode .equals(SERVER)){
             startflag = SERVER;
         }else {
             startflag = CLIENT;
@@ -173,6 +173,7 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
 
         if (readString().equals(PropertiesUtil.HELLOSERVER)){
             byte[] helloClent= PropertiesUtil.HELLOCLIENT.getBytes("UTF-8");
+            Log.e("222222222","fdsfdsfsdfsd");
             outputStream.write(getIntegerBytes(helloClent.length));
             outputStream.write(helloClent);
             flag=true;
@@ -186,6 +187,7 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
         inputStream=socket.getInputStream();
         outputStream=socket.getOutputStream();
         byte[] helloServer= PropertiesUtil.HELLOSERVER.getBytes("UTF-8");
+        Log.e("1111111111","fdsfdsfsdfsd");
         outputStream.write(getIntegerBytes(helloServer.length));
         outputStream.write(helloServer);
         if (readString().equals(PropertiesUtil.HELLOCLIENT)){

@@ -19,6 +19,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,8 @@ import com.lp.flashremote.views.MyProgressDialog;
 import com.xys.libzxing.zxing.activity.CaptureActivity;
 
 import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by PUJW on 2017/8/14.
@@ -107,10 +110,7 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                  */
                 String hotIp = setwifiHot(true);   //打开热点，并开启socket
                 initQRCode(hotIp);               //弹出二维码等待连接
-                /*if (mWifiSocket==null){
-                    mWifiSocket=new WifiSocketUtil();
-                    mWifiSocket.start();
-                }*/
+
                 break;
             case R.id.scanQR:
                 Intent intent = new Intent(getActivity(), CaptureActivity.class);
@@ -172,6 +172,7 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
         CodeDialog dialog = dialogbuilder.create();
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();
+        initConnect(hotIp);
     }
 
     private String setwifiHot(boolean b) {
@@ -204,10 +205,12 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
             switch (msg.what) {
                 case 1: {
                     Toast.makeText(getActivity(), "WIFI连接成功", Toast.LENGTH_SHORT).show();
-                    WifiSocketUtil wifiSocketUtil = WifiSocketUtil.getInstance("CS",mWifiInfo.getIp(),handler);
+
+                    WifiSocketUtil wifiSocketUtil = WifiSocketUtil.getInstance("CS", mWifiInfo.getIp(), handler);
                     wifiSocketUtil.start();
-                    break;
+
                 }
+                    break;
                 case 12: {
                     showToast("上线成功");
                     showProgressDialog("请不要退出当前界面，正在等待远程主机操作");
@@ -265,17 +268,25 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                 mWifiInfo = wifiInfo;
                 handler.sendMessage(m);
             }
-            //initConnect(wifiInfo.getIp());
+
         }
     }
 
     /**
      * 开启同一热点下的socket
-     *
      * @param ip
      */
     private void initConnect(String ip) {
-
+      if (mWifiSocket==null){
+          Log.e("2222222","22222222222222");
+        mWifiSocket=new WifiSocketUtil("SS",ip);
+       new Thread(new Runnable() {
+           @Override
+           public void run() {
+               mWifiSocket.run();
+           }
+       }).start();
+      }
     }
 
     @Override
