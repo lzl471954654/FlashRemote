@@ -1,5 +1,5 @@
-WIFINAME=FlashRemote
-WIFIPWD=xiyou3g.FlashRemote
+WIFINAME=Consmitor
+WIFIPWD=xiyou3g.Consmitor
 
 HELLOSERVER=@@HELLO$SERVER@@
 HELLOCLIENT=@@HELLO$CLIENT@@

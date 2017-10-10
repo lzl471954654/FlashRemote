@@ -69,7 +69,6 @@ public class MouseFragment extends Fragment {
             @Override
             public void onDoubleClick(View v) {
                 i=0;
-                map.clear();
                 map.put(0,0);
                 String doublecClick=Command2JsonUtil.getMouseJson(map,true,false,true,false);
                 map.clear();
@@ -79,7 +78,7 @@ public class MouseFragment extends Fragment {
 
             @Override
             public void onSingleClick(View v) {
-                map.clear();
+
                 i=0;
                 map.put(0,0);
                 String singleClick=Command2JsonUtil.getMouseJson(map,true,true,false,false);
@@ -87,7 +86,6 @@ public class MouseFragment extends Fragment {
                 mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",singleClick,false)));
                 Toast.makeText(getContext(), "单击", Toast.LENGTH_SHORT).show();
             }
-
         });
 
 
@@ -104,20 +102,17 @@ public class MouseFragment extends Fragment {
                     moveX[1]=motionEvent.getX()/9;
                 }
                 if (motionEvent.getAction()==MotionEvent.ACTION_UP){
+                    map.clear();
+                    i=0;
+                }
+                map.put((int)(moveX[1]-moveX[0]),(int)(moveY[1]-moveY[0]));
+                i++;
+                if (i==12){
                     String move=Command2JsonUtil.getMouseJson(map,false,false,false,false);
                     map.clear();
                     i=0;
                     mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",move,false)));
                 }
-                   map.put((int)(moveX[1]-moveX[0]),(int)(moveY[1]-moveY[0]));
-                    i++;
-                    if (i==20){
-                        String move=Command2JsonUtil.getMouseJson(map,false,false,false,false);
-                        map.clear();
-                        i=0;
-                        mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",move,false)));
-                    }
-
                 return false;
             }
         });
