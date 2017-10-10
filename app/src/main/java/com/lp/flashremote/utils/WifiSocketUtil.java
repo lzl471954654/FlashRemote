@@ -107,6 +107,8 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
     public void run() {
         try{
             Message message = new Message();
+            Log.e("1111111111","11111111111111");
+
             if (startflag.equals(CLIENT)){
                 if (initSocketClient(hotIP)){
                     loopFlag = true;
@@ -183,7 +185,9 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
 
     private boolean initSocketClient(String ip) throws IOException{
         boolean flag=false;
+        Log.e("1111111111","ip");
         Socket socket=new Socket(ip,10085);
+        Log.e("1111111111","pppppppppppp");
         inputStream=socket.getInputStream();
         outputStream=socket.getOutputStream();
         byte[] helloServer= PropertiesUtil.HELLOSERVER.getBytes("UTF-8");
