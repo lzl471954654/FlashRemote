@@ -107,8 +107,6 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
     public void run() {
         try{
             Message message = new Message();
-            Log.e("1111111111","11111111111111");
-
             if (startflag.equals(CLIENT)){
                 if (initSocketClient(hotIP)){
                     loopFlag = true;
@@ -168,6 +166,7 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
 
     private boolean initSocketServer() throws IOException{
         boolean flag=false;
+        Log.e("wifiip","ip"+hotIP);
         ServerSocket serverSocket=new ServerSocket(10085);
         Socket socket=serverSocket.accept();
         inputStream=socket.getInputStream();

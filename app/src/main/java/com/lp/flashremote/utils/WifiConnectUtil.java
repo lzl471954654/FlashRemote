@@ -22,7 +22,7 @@ public class WifiConnectUtil {
     }
     public WifiConnectUtil(Context context){
         manager=(WifiManager) context.getSystemService(context.WIFI_SERVICE);
-    }
+     }
     //打开wifi功能
     private boolean OpenWifi()
     {
