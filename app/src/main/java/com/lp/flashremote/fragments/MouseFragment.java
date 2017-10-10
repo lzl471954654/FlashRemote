@@ -31,6 +31,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 public class MouseFragment extends Fragment {
+    /**
+     * 如果有一天，没有bug了 那该是一件多么幸福的一件事啊
+     *
+     */
     private View rootView;
     private MouseTouchView mMouseTouchView;
     private  SocketUtil mouseScoket;
