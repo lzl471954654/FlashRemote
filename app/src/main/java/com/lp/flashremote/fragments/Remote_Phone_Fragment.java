@@ -14,8 +14,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.ContactsContract;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.AppOpsManagerCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +36,7 @@ import com.lp.flashremote.beans.NetParameter;
 import com.lp.flashremote.beans.PropertiesUtil;
 import com.lp.flashremote.beans.UserInfo;
 import com.lp.flashremote.beans.WifiInfo;
+import com.lp.flashremote.utils.IpAddressUtil;
 import com.lp.flashremote.utils.PhoneRemoteSocket;
 import com.lp.flashremote.utils.QRcodeutil;
 import com.lp.flashremote.utils.ToastUtil;
@@ -45,6 +48,8 @@ import com.lp.flashremote.views.MyProgressDialog;
 import com.xys.libzxing.zxing.activity.CaptureActivity;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -53,7 +58,7 @@ import java.util.TimerTask;
  */
 
 public class Remote_Phone_Fragment extends Fragment implements View.OnClickListener {
-    private static final int QR_RESULT_CODE = 1;
+    private static final int QR_RESULT_CODE = 100;
     private LinearLayout mQRcode;
     private TextView mScanQR;
     private TextView myIpAddress;
@@ -109,6 +114,8 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                  * 3 等待对方连接
                  */
                 String hotIp = setwifiHot(true);   //打开热点，并开启socket
+                WifiManager wifiManager = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                String newIP = IpAddressUtil.intIP2StringIP(wifiManager.getDhcpInfo().serverAddress);
                 initQRCode(hotIp);               //弹出二维码等待连接
 
                 break;
@@ -161,6 +168,8 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                 + File.separator + "qr" + System.currentTimeMillis() + ".jpg";
         System.out.println("code_path:\t" + filepath);
 
+        System.out.println("newIP = "+hotIp);
+
         Bitmap bitmap = null;
         if (QRcodeutil.createQRcode(new Gson().toJson(new WifiInfo(hotIp)), 600, 600, filepath)) {
             bitmap = BitmapFactory.decodeFile(filepath);
@@ -172,7 +181,38 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
         CodeDialog dialog = dialogbuilder.create();
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();
-        initConnect(hotIp);
+        listenConnection();
+    }
+
+    private void listenConnection(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true){
+                    List<String> list = null;
+                    try {
+                        list = WifiSocketUtil.getConnectIp();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if(list.size()>0){
+                        Log.e("ConnectedIp",list.size()+"");
+                        Message message = new Message();
+                        message.what = 20;
+                        Bundle bundle = new Bundle();
+                        bundle.putString("ip",list.get(0));
+                        message.setData(bundle);
+                        handler.sendMessage(message);
+                        break;
+                    }
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     private String setwifiHot(boolean b) {
@@ -205,10 +245,7 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
             switch (msg.what) {
                 case 1: {
                     Toast.makeText(getActivity(), "WIFI连接成功", Toast.LENGTH_SHORT).show();
-
-                    WifiSocketUtil wifiSocketUtil = WifiSocketUtil.getInstance("CS", mWifiInfo.getIp(), handler);
-                    wifiSocketUtil.start();
-
+                    initConnect("SS","");
                 }
                     break;
                 case 12: {
@@ -240,10 +277,15 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                 case 18:{
                     showToast("链接成功");
                     Intent intent = new Intent(getContext(), PcFileDirActivity.class);
-                    intent.putExtra("ROOTPATH", "");
+                    intent.putExtra("ROOTPATH","");
                     intent.putExtra("mode", "wifi");
                     startActivity(intent);
                     break;
+                }
+                case 20:{
+                    showToast("开始链接");
+                    String ip = msg.getData().getString("ip");
+                    initConnect("CS",ip);
                 }
             }
         }
@@ -261,7 +303,7 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
             String QRcontent = bundle.getString("result");
             WifiInfo wifiInfo = new Gson().fromJson(QRcontent, WifiInfo.class);
             WifiConnectUtil wifiConnectUtil = new WifiConnectUtil(getContext());
-
+            System.out.println(wifiInfo);
             if (wifiConnectUtil.Connect(wifiInfo.getName(), wifiInfo.getPwd())) {
                 Message m = new Message();
                 m.what = 1;
@@ -276,17 +318,10 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
      * 开启同一热点下的socket
      * @param ip
      */
-    private void initConnect(String ip) {
-      if (mWifiSocket==null){
-          Log.e("2222222","22222222222222");
-        mWifiSocket=new WifiSocketUtil("SS",ip);
-       new Thread(new Runnable() {
-           @Override
-           public void run() {
-               mWifiSocket.run();
-           }
-       }).start();
-      }
+    private void initConnect(String mode,String ip) {
+        Log.e("2222222","22222222222222");
+        mWifiSocket=WifiSocketUtil.getInstance(mode,ip,handler);
+        mWifiSocket.start();
     }
 
     @Override

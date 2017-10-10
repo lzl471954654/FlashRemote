@@ -14,12 +14,16 @@ import com.lp.flashremote.beans.FileDescribe;
 import com.lp.flashremote.beans.FileInfo;
 import com.lp.flashremote.beans.PropertiesUtil;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -61,7 +65,8 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
     private static boolean loopFlag = false;
 
 
-    public WifiSocketUtil(String mode,String ip){
+    private WifiSocketUtil(String mode,String ip){
+        System.out.println("WIFISOCKET Start! "+mode+"\t"+ip);
         if(mode .equals(SERVER)){
             startflag = SERVER;
         }else {
@@ -105,25 +110,29 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
 
     @Override
     public void run() {
+        System.out.println("WIFISOCKET RUN "+startflag+"\t"+hotIP);
         try{
             Message message = new Message();
             if (startflag.equals(CLIENT)){
                 if (initSocketClient(hotIP)){
                     loopFlag = true;
-                    message.what = 18;
+                    message.what = 12;
+                    System.out.println("server ok");
                     sendHandlerMessage(message);
-                    clientloop();
+                    serverloop();
                 }
             }else if (startflag.equals(SERVER)){
                 if (initSocketServer()){
                     loopFlag = true;
-                    message.what = 12;
+                    message.what = 18;
+                    System.out.println("client ok");
                     sendHandlerMessage(message);
-                    serverloop();
+                    clientloop();
                 }
             }
-        }catch (IOException e){
+        }catch (Exception e){
             e.printStackTrace();
+            Log.e("wifi",""+e.getMessage());
         }
         finally {
             Message message = new Message();
@@ -166,8 +175,8 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
 
     private boolean initSocketServer() throws IOException{
         boolean flag=false;
-        Log.e("wifiip","ip"+hotIP);
         ServerSocket serverSocket=new ServerSocket(10085);
+
         Socket socket=serverSocket.accept();
         inputStream=socket.getInputStream();
         outputStream=socket.getOutputStream();
@@ -181,6 +190,24 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
         }
         return flag;
     }
+    public static ArrayList<String> getConnectIp() throws IOException {
+        ArrayList<String> connectIpList = new ArrayList<String>();
+        BufferedReader br = new BufferedReader(new FileReader("/proc/net/arp"));
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] splitted = line.split(" +");
+            if (splitted != null && splitted.length >= 4) {
+                String ip = splitted[0];
+                System.out.println(ip);
+                String[] verify = ip.split("\\.");
+                if (verify!=null&&verify.length>=4)
+                    connectIpList.add(ip);
+            }
+        }
+        br.close();
+        return connectIpList;
+    }
+
 
     private boolean initSocketClient(String ip) throws IOException{
         boolean flag=false;

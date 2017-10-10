@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.View
 import com.google.gson.Gson
 import com.lp.flashremote.FlashApplication
@@ -25,7 +26,7 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
 
 
     var phoneSocket:PhoneRemoteSocket? = PhoneRemoteSocket.getNowInstance()
-    lateinit var mSocket: SocketUtil
+    //lateinit var mSocket: SocketUtil
     lateinit var fileinfos:List<FileInfo>
     lateinit var result:String
     var adapter: FilePcAdapter? = null
@@ -51,6 +52,7 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
         else if(mode == "wifi"){
             socket = WifiSocketUtil.getNowInstance()
         }
+        Log.e("PcFileAc","mode is "+mode+"\t socket is "+(socket==null))
         supportActionBar?.title="目录浏览"
         mContext=this
         initView()
@@ -59,29 +61,15 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
 
 
     private fun addMessage(msg: String){
-        if (mode == "phone"){
-            PhoneRemoteSocket.getNowInstance().addMessage(msg)
-        }else{
-            mSocket.addMessage(msg)
-        }
+        socket.addMessage(msg)
     }
 
     private fun readLine():String{
-        var msg = ""
-        if(mode == "phone"){
-            msg = PhoneRemoteSocket.getNowInstance().readLine()
-        }else{
-            msg = mSocket.readLine()
-        }
-        return msg
+        return socket.readLine()
     }
 
     private fun writeBytes(bytes:ByteArray){
-        if(mode == "phone"){
-            PhoneRemoteSocket.getNowInstance().addBytes(bytes)
-        }else{
-            mSocket.addBytes(bytes)
-        }
+        socket.addBytes(bytes)
     }
 
     private fun initView() {
@@ -90,9 +78,9 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
     }
 
     private fun initData(rootPath:String) {
-        if(mode == "pc")
-            mSocket = SocketUtil.getInstance(UserInfo.getUsername(), UserInfo.getPassword())
-        addMessage(StringUtil.operateCmd(Command2JsonUtil
+        /*if(mode == "pc")
+            mSocket = SocketUtil.getInstance(UserInfo.getUsername(), UserInfo.getPassword())*/
+        socket.addMessage(StringUtil.operateCmd(Command2JsonUtil
                 .getJson("4", rootPath, true)))
         /*mSocket.addMessage(StringUtil.operateCmd(Command2JsonUtil
                 .getJson("4", rootPath, true)))*/
@@ -103,11 +91,12 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
             uiThread {
                 if (result!=""){
                     fileinfos=GsonAnalysiUtil.getFileList(StringUtil.rmEnd_flagstr(result))
-                    if(mode == "pc"){
-                        adapter= FilePcAdapter(fileinfos.toMutableList(),this@PcFileDirActivity,mSocket)
+                    /*if(mode == "pc"){
+                        adapter= FilePcAdapter(fileinfos.toMutableList(),this@PcFileDirActivity,socket)
                     }else{
                         adapter= FilePcAdapter(fileinfos.toMutableList(),this@PcFileDirActivity,PhoneRemoteSocket.getNowInstance())
-                    }
+                    }*/
+                    adapter= FilePcAdapter(fileinfos.toMutableList(),this@PcFileDirActivity,socket)
                     file_pc__list.layoutManager= LinearLayoutManager(mContext)
                     file_pc__list.adapter=adapter
                 }

@@ -42,8 +42,11 @@ public class BaseActivity extends AppCompatActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.CHANGE_WIFI_STATE,
+            Manifest.permission.CHANGE_NETWORK_STATE
     })
     protected void grantPermission() {
+        System.out.println("grantPermission");
         Timer timer=new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -60,6 +63,9 @@ public class BaseActivity extends AppCompatActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.CHANGE_WIFI_STATE,
+
+            Manifest.permission.CHANGE_NETWORK_STATE
     })
     void showDenied() {
         finish(); // 如果用户拒绝该权限执行的方法

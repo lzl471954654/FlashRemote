@@ -71,11 +71,13 @@ public class WifiConnectUtil {
     private WifiConfiguration IsExsits(String SSID)
     {
         List<WifiConfiguration> existingConfigs = manager.getConfiguredNetworks();
-        for (WifiConfiguration existingConfig : existingConfigs)
-        {
-            if (existingConfig.SSID.equals("\""+SSID+"\""))
+        if(existingConfigs!=null){
+            for (WifiConfiguration existingConfig : existingConfigs)
             {
-                return existingConfig;
+                if (existingConfig.SSID.equals("\""+SSID+"\""))
+                {
+                    return existingConfig;
+                }
             }
         }
         return null;

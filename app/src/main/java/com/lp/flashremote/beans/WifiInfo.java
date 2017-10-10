@@ -15,6 +15,8 @@ public class WifiInfo {
         this.setIp(i);
     }
 
+
+
     public String getName() {
         return name;
     }
@@ -37,5 +39,14 @@ public class WifiInfo {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    @Override
+    public String toString() {
+        return "WifiInfo{" +
+                "name='" + name + '\'' +
+                ", pwd='" + pwd + '\'' +
+                ", ip='" + ip + '\'' +
+                '}';
     }
 }
