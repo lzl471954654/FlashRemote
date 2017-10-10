@@ -39,7 +39,6 @@ public class MouseFragment extends Fragment {
     private TextView rightClick;
     private static int i=0;
     Map<Integer,Integer> map=new ConcurrentHashMap<>();
-  //  Map<Integer,Integer> map2=new ConcurrentHashMap<>();
     private float[] moveX=new float[2];
     private float[] moveY=new float[2];
     @Nullable
@@ -70,23 +69,27 @@ public class MouseFragment extends Fragment {
         mMouseTouchView.setClickListener(new MouseTouchView.OnClickListener() {
             @Override
             public void onDoubleClick(View v) {
-                Map<Integer,Integer> map2=new ConcurrentHashMap<>();
-                map2.put(0,0);
-                String doublecClick=Command2JsonUtil.getMouseJson(map2,true,false,true,false);
-                mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",doublecClick,false)));
-                Toast.makeText(getContext(), "双击", Toast.LENGTH_SHORT).show();
+                map.put(0,0);
+                if (map.size()<2){
+                    String doublecClick=Command2JsonUtil.getMouseJson(map,true,false,true,false);
+                    map.clear();
+                    mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",doublecClick,false)));
+                    Toast.makeText(getContext(), "双击", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
             public void onSingleClick(View v) {
-                Map<Integer,Integer> map2=new ConcurrentHashMap<>();
-                map2.put(0,0);
-                Log.e("1111111111","2222222222");
-                String singleClick=Command2JsonUtil.getMouseJson(map2,true,true,false,false);
-                mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",singleClick,false)));
-                Toast.makeText(getContext(), "单击", Toast.LENGTH_SHORT).show();
+                map.put(0,0);
+                if (map.size()<2){
+                    String singleClick=Command2JsonUtil.getMouseJson(map,true,true,false,false);
+                    map.clear();
+                    mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",singleClick,false)));
+                    Toast.makeText(getContext(), "单击", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
 
 
         mMouseTouchView.setOnTouchListener(new View.OnTouchListener() {
@@ -122,9 +125,8 @@ public class MouseFragment extends Fragment {
         rightClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Map<Integer,Integer> map2=new ConcurrentHashMap<>();
-                map2.put(0,0);
-                String rightClick=Command2JsonUtil.getMouseJson(map2,true,false,false,true);
+                map.put(0,0);
+                String rightClick=Command2JsonUtil.getMouseJson(map,true,false,false,true);
                 mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",rightClick,false)));
                 Toast.makeText(getContext(), "右击", Toast.LENGTH_SHORT).show();
             }

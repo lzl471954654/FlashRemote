@@ -82,7 +82,6 @@ public class MouseTouchView extends View {
                 //送你一行代码。。。。。。。。。
                 break;
         }
-
         invalidate();//重绘组件
         return true;
     }
