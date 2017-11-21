@@ -74,5 +74,6 @@
 
     <string name="phoneFragmentOnline">上线成为被控端</string>
     <string name="phoneFragmentControl">链接被控端</string>
+    <string name="file_exp_normal_name">fileName</string>
 
 </resources>

@@ -106,13 +106,13 @@ public class MainActivity extends AppCompatActivity {
         transaction.hide(mFileFragment)
                 .hide(mRemoteFragment)
                 .hide(mSettingFragment)
-                .commitNow();
+                .commitNowAllowingStateLoss();
     }
 
     public void showFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .show(fragment)
-                .commitNow();
+                .commitNowAllowingStateLoss();
         mNowFragment = fragment;
     }
 

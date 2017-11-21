@@ -1,5 +1,6 @@
 package com.lp.flashremote.activities
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
@@ -7,6 +8,7 @@ import android.os.Bundle
 import android.os.Environment
 
 import android.support.design.widget.Snackbar
+import android.support.v4.content.FileProvider
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.view.WindowManager
@@ -23,6 +25,7 @@ import com.lp.flashremote.views.SendChoiceDialog
 import kotlinx.android.synthetic.main.activity_file_explorer.*
 import kotlinx.android.synthetic.main.layout_title.*
 import org.jetbrains.anko.*
+import org.jetbrains.anko.appcompat.v7.Appcompat
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -252,7 +255,7 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
                     progressDialog.show()
                     doAsync {
                         val instruction = "${PropertiesUtil.FILE_LIST_FLAG}_${getFileDescribeArray(list)}"
-                        var socket = SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword())
+                        val socket = SocketUtil.getInstance(UserInfo.getUsername(),UserInfo.getPassword())
                         socket.addMessage(instruction)
                         val resp = socket.readLine()
                         println("resp : $resp")
@@ -261,7 +264,7 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
                             list.forEach {
                                 val bytes = ByteArray(4096)
                                 val fileInput = FileInputStream(it)
-                                var count = 0
+                                var count:Int
                                 while(true){
                                     count = fileInput.read(bytes)
                                     if(count == -1)
@@ -269,7 +272,7 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
                                     if(count==4096)
                                         socket.addBytes(bytes)
                                     else{
-                                        var newBytes = ByteArray(count)
+                                        val newBytes = ByteArray(count)
                                         for(i in 0 until count){
                                             newBytes[i] = bytes[i]
                                         }
@@ -298,7 +301,7 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
         })
     }
 
-    public fun getFileDescribeArray(fileList : ArrayList<File>):String{
+     fun getFileDescribeArray(fileList : ArrayList<File>):String{
         val command = FileCommand()
         val data = ArrayList<FileDescribe>()
         fileList.forEach {
@@ -315,14 +318,14 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
         return s
     }
 
-    public fun showNoFileImage(){
+    fun showNoFileImage(){
         file_exp_no_file_image.visibility = View.VISIBLE
     }
 
-    public fun hideNoFileImage(){
+    fun hideNoFileImage(){
         file_exp_no_file_image.visibility = View.INVISIBLE
     }
-    public fun showBottomBar(size:Int){
+    fun showBottomBar(size:Int){
         if(size>0)
         {
             file_exp_list.bottomPadding = dip(48)
@@ -388,7 +391,10 @@ class FileExplorerActivity : AppCompatActivity(),View.OnClickListener {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.setAction(Intent.ACTION_VIEW)
         try{
-            intent.setDataAndType(Uri.fromFile(File(path)),type)
+            val uri = FileProvider.getUriForFile(applicationContext,"com.lp.flashremote.fileprovider",File(path))
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            intent.setDataAndType(uri,type)
             startActivity(intent)
         }catch (e:Exception){
             e.printStackTrace()
