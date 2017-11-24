@@ -22,7 +22,6 @@ public class GsonAnalysiUtil {
                 new TypeToken<List<DiskInfo>>() {
                 }.getType());
         return retList;
-
     }
 
     public static List<FileInfo> getFileList(String fileinfo){

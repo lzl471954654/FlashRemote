@@ -27,7 +27,6 @@ public class SocketUtil extends Thread implements SocketInterface{
 
     private boolean mConnOk=false;
 
-
     private static SocketUtil mSocketUtil;
 
     private SocketUtil(String u, String pwd) {
@@ -35,6 +34,7 @@ public class SocketUtil extends Thread implements SocketInterface{
         this.password = pwd;
         mSendMessaggeQueue = new LinkedList<>();
     }
+
 
     public static SocketUtil getInstance(String u, String p) {
         if (mSocketUtil == null) {
