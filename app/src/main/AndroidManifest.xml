@@ -66,6 +66,9 @@
             android:theme="@style/MainTheme"/>
 
         <activity android:name=".activities.AccountActivity" />
+
+        <service android:name=".services.MainServices"/>
+
     </application>
 
 </manifest>

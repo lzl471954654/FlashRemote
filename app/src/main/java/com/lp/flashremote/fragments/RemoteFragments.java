@@ -1,7 +1,10 @@
 package com.lp.flashremote.fragments;
 
+import android.content.ComponentName;
+import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -14,6 +17,7 @@ import android.widget.LinearLayout;
 
 import com.lp.flashremote.R;
 import com.lp.flashremote.adapters.Remote_Tab_Adapter;
+import com.lp.flashremote.services.MainServices;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -30,6 +34,18 @@ public class RemoteFragments extends Fragment {
 
     private List<String> mTabItem=new ArrayList<>();
     private List<Fragment> mTabsList=new ArrayList<>();
+
+
+    private MainServices.SocketBinder socketBinder;
+    private ServiceConnection serviceConnection=new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            socketBinder=(MainServices.SocketBinder) service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {}
+    };
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

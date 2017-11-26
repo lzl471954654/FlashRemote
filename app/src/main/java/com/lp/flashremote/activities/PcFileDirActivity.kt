@@ -26,7 +26,6 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
 
 
     var phoneSocket:PhoneRemoteSocket? = PhoneRemoteSocket.getNowInstance()
-    //lateinit var mSocket: SocketUtil
     lateinit var fileinfos:List<FileInfo>
     lateinit var result:String
     var adapter: FilePcAdapter? = null

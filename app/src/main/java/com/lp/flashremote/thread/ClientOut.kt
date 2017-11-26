@@ -10,6 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue
 
 /**
  * Created by LZL on 2017/11/25.
+ *
  */
 class ClientOut(private val outputStream: OutputStream):Thread(),ClinetSocketOut {
 
