@@ -3,9 +3,11 @@ package com.lp.flashremote.fragments;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -13,6 +15,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -35,6 +38,7 @@ import com.iflytek.cloud.ui.RecognizerDialog;
 import com.lp.flashremote.R;
 import com.lp.flashremote.activities.PcOperationActivity;
 import com.lp.flashremote.beans.UserInfo;
+import com.lp.flashremote.services.MainServices;
 import com.lp.flashremote.utils.Command2JsonUtil;
 import com.lp.flashremote.utils.SocketUtil;
 import com.lp.flashremote.utils.StringUtil;
@@ -73,6 +77,18 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     private RecognizerDialog iatDialog;
     private static Context mContext;
     private boolean isShow = false;
+
+    private MainServices.SocketBinder socketBinder;
+    private ServiceConnection serviceConnection=new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            socketBinder=(MainServices.SocketBinder) service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {}
+    };
+
 
     private static Handler handler=new Handler(){
         @Override
@@ -164,6 +180,11 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.connpc:
+                /**
+                 * 绑定服务
+                Intent bindIntent=new Intent(getActivity(),MainServices.class);
+                getActivity().bindService(bindIntent,serviceConnection,Context.BIND_AUTO_CREATE) ;
+                */
                 if(UserInfo.getPassword().equals("") || UserInfo.getUsername().equals("") ){
                     ToastUtil.toastText(getContext(),"请您先设置账户");
                     return;
@@ -177,6 +198,11 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 break;
 
             case R.id.breakConnpc:
+                /**
+                 * 中断服务
+                         getActivity().unbindService(serviceConnection);
+                 */
+
                 //中断线程；
                 if (mSocketOP != null) {
                     mSocketOP.interrupt();

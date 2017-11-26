@@ -36,16 +36,6 @@ public class RemoteFragments extends Fragment {
     private List<Fragment> mTabsList=new ArrayList<>();
 
 
-    private MainServices.SocketBinder socketBinder;
-    private ServiceConnection serviceConnection=new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            socketBinder=(MainServices.SocketBinder) service;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {}
-    };
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
