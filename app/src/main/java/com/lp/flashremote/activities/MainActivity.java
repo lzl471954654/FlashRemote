@@ -6,6 +6,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 
@@ -28,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
     private Fragment mRemoteFragment = new RemoteFragments();
     private Fragment mSettingFragment = new SettingFragment();
     private Fragment mNowFragment = null;
+
+    RecyclerView rv;
+    LinearLayoutManager llm;
 
 
 
