@@ -10,6 +10,8 @@ import android.os.IBinder
  *  主服务
  *  连接socket主服务
  */
+
+@Deprecated("This class will be replaced")
 class MainServices: Service() {
 
     private val mBinder=SocketBinder()
