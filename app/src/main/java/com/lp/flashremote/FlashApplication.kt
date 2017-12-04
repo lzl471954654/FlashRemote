@@ -13,7 +13,6 @@ import java.io.File
 
 class FlashApplication:Application(){
 
-
     override fun onCreate() {
         super.onCreate()
         initDataDir()
@@ -28,5 +27,6 @@ class FlashApplication:Application(){
 
     companion object {
         lateinit var acceptFolder:String
+        val ServerIP = "139.199.20.248"
     }
 }
