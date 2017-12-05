@@ -10,6 +10,7 @@ import com.lp.flashremote.beans.PackByteArray
 import com.lp.flashremote.thread.ClinetSocketOut
 import com.lp.flashremote.utils.IntConvertUtils
 import java.io.IOException
+import java.io.InputStream
 import java.io.OutputStream
 import java.net.Socket
 import java.net.SocketException
@@ -23,7 +24,7 @@ import java.util.concurrent.LinkedBlockingDeque
 class ConnectionManagerService : Service() {
     private lateinit var binder:ConnectionBinder
     private lateinit var map : ConcurrentHashMap<String,ConnectionCallBack>
-
+    private lateinit var connectionThread = ConnectionThread("123","123")
     @Volatile
     private var stopFlag = false
 
@@ -58,10 +59,14 @@ class ConnectionManagerService : Service() {
         }
 
         public fun startConnection(){
-
+            startConnection0()
         }
     }
 
+
+    private fun startConnection0{
+        connectionThread.start()
+    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -79,6 +84,13 @@ class ConnectionManagerService : Service() {
                 val out = socket.getOutputStream()
                 val loginData = ("$userName|$passWord").toByteArray(charset("UTF-8"))
                 out.sendDataWithFlag(ProtocolField.phoneOnline,loginData)
+                val flag = input.read().toByte()
+                if(flag == ProtocolField.onlineSuccess){
+                    println("onlineSuccess")
+                    map.forEach { it.value.connectionSuccess() }
+                }else{
+                    println("flag is $flag")
+                }
             }catch (e:SocketException){
                 e.printStackTrace()
             }catch (e:SocketTimeoutException){
@@ -133,6 +145,7 @@ class ConnectionManagerService : Service() {
 
 }
 
+
 fun OutputStream.sendDataWithFlag(flag: Byte , byteArray: ByteArray?){
     write(flag.toInt())
     if(byteArray != null){
@@ -157,5 +170,5 @@ interface ConnectionCallBack{
     fun connectionFailed()
     fun connectionDisconnected()
     fun serviceShutdodwn()
-    fun getMessage(flag : Byte , byteArray: ByteArray)
+    fun getMessage(data:PackByteArray)
 }

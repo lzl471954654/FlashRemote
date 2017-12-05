@@ -19,7 +19,7 @@ data class PackByteArray(public val flag : Byte , public val body:ByteArray?) {
     }
 
     override fun hashCode(): Int {
-        var result = flag.toInt()
+        var result = flag.hashCode()
         result = 31 * result + (body?.let { Arrays.hashCode(it) } ?: 0)
         return result
     }
