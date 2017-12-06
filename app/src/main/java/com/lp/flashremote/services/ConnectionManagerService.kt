@@ -14,6 +14,7 @@ import com.lp.flashremote.utils.IntConvertUtils
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.io.Serializable
 import java.net.Socket
 import java.net.SocketException
 import java.net.SocketTimeoutException
@@ -29,6 +30,7 @@ class ConnectionManagerService : Service() {
     private lateinit var map: ConcurrentHashMap<String, ConnectionCallBack>
     private var connectionThread: ConnectionThread? = null
     private var clientOut: ClientOut? = null
+    private var clientIn:ClientIn? = null
     @Volatile
     private var stopFlag = false
     private val lock = ReentrantLock(false)
@@ -56,6 +58,7 @@ class ConnectionManagerService : Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder? {
+        startService(intent)
         val name = intent?.getStringExtra("bindName") ?: throw NullPointerException("bindName should not be NULL !")
         val callback = intent.getSerializableExtra("callBack") as ConnectionCallBack
         map.put(name, callback)
@@ -72,24 +75,45 @@ class ConnectionManagerService : Service() {
         public fun stopService() {
             stopFlag = true
             clientOut?.stopSend()
+            clientIn?.stopRecive()
+            stopSelf()
+        }
+
+        public fun stopServiceAferWorking(){
+            stopFlag = true
         }
 
         public fun addData(data: PackByteArray) {
-
+            clientOut?.addMessage(data)
         }
 
-        public fun isConnected(): Boolean = connectionThread != null && connectionThread!!.isAlive
+        public fun addDataWithHighLevel(data: PackByteArray){
+            clientOut?.addMessageHighLevel(data)
+        }
+
+        public fun isConnected(): Boolean =
+                clientOut!=null && clientOut!!.isAlive && clientIn!=null && clientIn!!.isAlive
     }
 
 
     override fun onDestroy() {
         super.onDestroy()
+        clientIn?.stopRecive()
+        clientOut?.stopSend()
         map.forEach { it.value.serviceShutdodwn() }
         map.clear()
     }
 
-    private fun disConnected(){
+    private fun disConnectedNotify(){
         map.forEach { it.value.connectionDisconnected() }
+    }
+
+    private fun connectionSsuccessNotify(){
+        map.forEach{ it.value.connectionSuccess() }
+    }
+
+    private fun connectionFailedNotify(){
+        map.forEach { it.value.connectionFailed() }
     }
 
 
@@ -107,27 +131,44 @@ class ConnectionManagerService : Service() {
                     println("onlineSuccess")
                     try {
                         lock.lock()
-                        clientOut = if (clientOut == null) {
-                            ClientOut(socket.getOutputStream())
-                        } else if (!clientOut!!.isAlive) {
-                            ClientOut(socket.getOutputStream())
-                        } else {
-                            clientOut!!.interrupt()
-                            ClientOut(socket.getOutputStream())
-                        }
-                        clientOut!!.start()
+                        startOutputThread(socket)
+                        startInputThread(socket)
                     } finally {
                         lock.unlock()
                     }
-                    map.forEach { it.value.connectionSuccess() }
+                    connectionSsuccessNotify()
                 } else {
                     println("flag is $flag")
+                    connectionFailedNotify()
                 }
             } catch (e: SocketException) {
                 e.printStackTrace()
             } catch (e: SocketTimeoutException) {
                 e.printStackTrace()
             }
+        }
+
+        private fun startInputThread(socket: Socket){
+            clientIn = if (clientIn == null) {
+                ClientIn(socket.getInputStream())
+            } else if (!clientOut!!.isAlive) {
+                ClientIn(socket.getInputStream())
+            } else {
+                clientIn!!.interrupt()
+                ClientIn(socket.getInputStream())
+            }
+            clientIn!!.start()
+        }
+        private fun startOutputThread(socket: Socket){
+            clientOut = if (clientOut == null) {
+                ClientOut(socket.getOutputStream())
+            } else if (!clientOut!!.isAlive) {
+                ClientOut(socket.getOutputStream())
+            } else {
+                clientOut!!.interrupt()
+                ClientOut(socket.getOutputStream())
+            }
+            clientOut!!.start()
         }
     }
 
@@ -137,6 +178,7 @@ class ConnectionManagerService : Service() {
         private val queue = LinkedBlockingDeque<PackByteArray>(1024)
 
         override fun run() {
+            Log.e(name,"ClientOut Thread started")
             try {
                 while (!Thread.interrupted() && !stopFlag) {
                     sendMessage()
@@ -158,7 +200,8 @@ class ConnectionManagerService : Service() {
                 logException(this@ConnectionManagerService, e)
             } finally {
                 Log.e(name, "Client Out Stop")
-
+                disConnectedNotify()
+                stopSelf()
             }
         }
 
@@ -183,6 +226,7 @@ class ConnectionManagerService : Service() {
 
     inner class ClientIn(private val inputStream: InputStream) : Thread("ClientIn") {
         override fun run() {
+            Log.e(name,"ClientOut Thread started")
             try {
                 while (!Thread.interrupted() && !stopFlag) {
                     val flag = readByte()
@@ -211,7 +255,13 @@ class ConnectionManagerService : Service() {
                 logException(this@ConnectionManagerService, e)
             } finally {
                 Log.e(name, "Client In Stop")
+                disConnectedNotify()
+                stopSelf()
             }
+        }
+
+        public fun stopRecive(){
+            interrupt()
         }
 
         private fun dispatchData(packByteArray: PackByteArray) {
@@ -270,7 +320,7 @@ fun packArray(flag: Byte, byteArray: ByteArray?) = PackByteArray(flag, byteArray
  *  ConnectionCallBack interface
  *  use it to communicate between Service and other Component (for example , Activity , Fragment ,etc..)
  * */
-interface ConnectionCallBack {
+public interface ConnectionCallBack:Serializable {
     fun connectionSuccess()
     fun connectionFailed()
     fun connectionDisconnected()

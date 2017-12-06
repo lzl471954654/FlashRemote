@@ -1,11 +1,12 @@
 package com.lp.flashremote.beans
 
+import java.io.Serializable
 import java.util.*
 
 /**
  * Created by lzl on 17-12-5.
  */
-data class PackByteArray(public val flag : Byte , public val body:ByteArray?) {
+data class PackByteArray(public val flag : Byte , public val body:ByteArray?):Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

@@ -3,6 +3,7 @@ package com.lp.flashremote.fragments;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.app.AlertDialog;
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -37,7 +38,10 @@ import android.widget.Toast;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.lp.flashremote.R;
 import com.lp.flashremote.activities.PcOperationActivity;
+import com.lp.flashremote.beans.PackByteArray;
 import com.lp.flashremote.beans.UserInfo;
+import com.lp.flashremote.services.ConnectionCallBack;
+import com.lp.flashremote.services.ConnectionManagerService;
 import com.lp.flashremote.services.MainServices;
 import com.lp.flashremote.utils.Command2JsonUtil;
 import com.lp.flashremote.utils.SocketUtil;
@@ -45,6 +49,9 @@ import com.lp.flashremote.utils.StringUtil;
 import com.lp.flashremote.utils.ToastUtil;
 import com.lp.flashremote.utils.VoiceUtil;
 import com.lp.flashremote.views.VolumwDialog;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -175,6 +182,47 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
         }
     }
 
+    private ConnectionManagerService.ConnectionBinder binder = null;
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            binder = (ConnectionManagerService.ConnectionBinder) service;
+            System.out.println("ServiceConnected");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
+    private static ConnectionCallBack connectionCallBack = new ConnectionCallBack() {
+        @Override
+        public void connectionSuccess() {
+            System.out.println("ConnectionSuccess , PC");
+        }
+
+        @Override
+        public void connectionFailed() {
+            System.out.println("connectionFailed , PC");
+        }
+
+        @Override
+        public void connectionDisconnected() {
+            System.out.println("connectionDisconnected , PC");
+        }
+
+        @Override
+        public void serviceShutdodwn() {
+            System.out.println("serviceShutdodwn , PC");
+        }
+
+        @Override
+        public void getMessage(@NotNull PackByteArray data) {
+
+        }
+    };
 
     @Override
     public void onClick(View view) {
@@ -189,12 +237,16 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                     ToastUtil.toastText(getContext(),"请您先设置账户");
                     return;
                 }
-                if (mSocketOP == null) {
+                /*if (mSocketOP == null) {
                     mSocketOP = SocketUtil.getInstance(UserInfo.getUsername(), UserInfo.getPassword());
                     mSocketOP.start();
                 } else {
                     ToastUtil.toastText(getContext(), "您已经上线了！");
-                }
+                }*/
+                Intent intent = new Intent(getContext(), ConnectionManagerService.class);
+                intent.putExtra("bindName","PC");
+                intent.putExtra("callBack",connectionCallBack);
+                getContext().bindService(intent,connection, Service.BIND_AUTO_CREATE);
                 break;
 
             case R.id.breakConnpc:
