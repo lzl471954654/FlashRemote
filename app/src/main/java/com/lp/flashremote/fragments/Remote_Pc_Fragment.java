@@ -50,6 +50,9 @@ import com.lp.flashremote.utils.ToastUtil;
 import com.lp.flashremote.utils.VoiceUtil;
 import com.lp.flashremote.views.VolumwDialog;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -117,10 +120,14 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     };
 
 
+
+    private EventBus mEventBus=null;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext=getContext();
+        mEventBus=EventBus.getDefault();
+        mEventBus.register(this);
     }
 
     @Nullable
@@ -157,6 +164,8 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
         super.onActivityCreated(savedInstanceState);
         bindEvents();
     }
+
+
 
     private void bindEvents() {
         mConnPc.setOnClickListener(this);
@@ -437,4 +446,17 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
         dialogWindow.setAttributes(lp);
         dialog.show();
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mEventBus!=null)
+            mEventBus.unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventMainThread(String str) {
+        ToastUtil.toastText(getContext(),str);
+    }
+
 }

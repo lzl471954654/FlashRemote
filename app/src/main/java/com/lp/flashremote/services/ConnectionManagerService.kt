@@ -11,6 +11,7 @@ import com.lp.flashremote.beans.PackByteArray
 import com.lp.flashremote.beans.UserInfo
 import com.lp.flashremote.thread.ClinetSocketOut
 import com.lp.flashremote.utils.IntConvertUtils
+import org.greenrobot.eventbus.EventBus
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -24,6 +25,7 @@ import java.util.concurrent.locks.ReentrantLock
 
 /**
  * Created by lzl on 17-12-4.
+ *
  */
 class ConnectionManagerService : Service() {
     private lateinit var binder: ConnectionBinder
@@ -31,13 +33,22 @@ class ConnectionManagerService : Service() {
     private var connectionThread: ConnectionThread? = null
     private var clientOut: ClientOut? = null
     private var clientIn:ClientIn? = null
+
+    private var mEventBus :EventBus ?= null
+
     @Volatile
     private var stopFlag = false
+
     private val lock = ReentrantLock(false)
+
     override fun onCreate() {
         super.onCreate()
         binder = ConnectionBinder()
         map = ConcurrentHashMap()
+
+      /*  mEventBus=EventBus.getDefault() ?: throw NullPointerException("eventbus 空指针异常！！！！")
+        mEventBus!!.register(this)*/
+        mEventBus= EventBus.getDefault()
     }
 
 
@@ -102,6 +113,10 @@ class ConnectionManagerService : Service() {
         clientOut?.stopSend()
         map.forEach { it.value.serviceShutdodwn() }
         map.clear()
+
+        if (mEventBus != null)
+            mEventBus!!.unregister(this)
+
     }
 
     private fun disConnectedNotify(){
@@ -129,6 +144,8 @@ class ConnectionManagerService : Service() {
                 val flag = input.read().toByte()
                 if (flag == ProtocolField.onlineSuccess) {
                     println("onlineSuccess")
+
+
                     try {
                         lock.lock()
                         startOutputThread(socket)
@@ -138,6 +155,7 @@ class ConnectionManagerService : Service() {
                     }
                     connectionSsuccessNotify()
                 } else {
+                    mEventBus!!.post("onlinefail")
                     println("flag is $flag")
                     connectionFailedNotify()
                 }

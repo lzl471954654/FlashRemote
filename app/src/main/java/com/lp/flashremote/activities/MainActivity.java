@@ -20,6 +20,8 @@ import com.lp.flashremote.utils.IpAddressUtil;
 import com.lp.flashremote.utils.PhoneSocketUtil;
 
 
+import org.greenrobot.eventbus.EventBus;
+
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,11 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private Fragment mRemoteFragment = new RemoteFragments();
     private Fragment mSettingFragment = new SettingFragment();
     private Fragment mNowFragment = null;
-
-    RecyclerView rv;
-    LinearLayoutManager llm;
-
-
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
