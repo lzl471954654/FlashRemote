@@ -8,7 +8,6 @@ package com.lp.flashremote.beans;
 public class Command {
     private String type;
     private String describe;
-    private boolean isback=false;
 
     public String getDescribe() {
         return describe;
@@ -22,16 +21,8 @@ public class Command {
         return type;
     }
 
-    public void setIsback(boolean isback) {
-        this.isback = isback;
-    }
-
     public void setType(String type) {
         this.type = type;
-    }
-
-    public boolean getIsBack(){
-        return isback;
     }
 
 }

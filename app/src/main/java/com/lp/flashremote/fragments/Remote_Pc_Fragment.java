@@ -246,16 +246,16 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                     ToastUtil.toastText(getContext(),"请您先设置账户");
                     return;
                 }
-                /*if (mSocketOP == null) {
+                if (mSocketOP == null) {
                     mSocketOP = SocketUtil.getInstance(UserInfo.getUsername(), UserInfo.getPassword());
                     mSocketOP.start();
                 } else {
                     ToastUtil.toastText(getContext(), "您已经上线了！");
-                }*/
-                Intent intent = new Intent(getContext(), ConnectionManagerService.class);
+                }
+              /*  Intent intent = new Intent(getContext(), ConnectionManagerService.class);
                 intent.putExtra("bindName","PC");
                 intent.putExtra("callBack",connectionCallBack);
-                getContext().bindService(intent,connection, Service.BIND_AUTO_CREATE);
+                getContext().bindService(intent,connection, Service.BIND_AUTO_CREATE);*/
                 break;
 
             case R.id.breakConnpc:

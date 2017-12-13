@@ -4,9 +4,12 @@ package com.lp.flashremote.utils;
 import android.util.Log;
 
 import com.lp.flashremote.SocketInterface;
+import com.lp.flashremote.beans.PackByteArray;
 import com.lp.flashremote.beans.PropertiesUtil;
 import com.lp.flashremote.beans.UserInfo;
 import com.lp.flashremote.fragments.Remote_Pc_Fragment;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,17 +18,27 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.LinkedBlockingDeque;
 
-public class SocketUtil extends Thread implements SocketInterface{
+import NewVersion.ProtocolField;
+import Utils.DataUtil;
+
+public class SocketUtil extends Thread implements SocketInterface {
     private Socket mSocket;
     public InputStream socketInput;
     public OutputStream socketOutput;
     private String username;
     private String password;
     private static Queue<byte[]> mSendMessaggeQueue;
+
+    private static Queue<PackByteArray> messageQueue = new LinkedBlockingDeque<>(1024);
+    private EventBus mEventBus;
+
     private boolean threadStopState = false; //为true则终止，为false则继续
 
-    private boolean mConnOk=false;
+    private boolean mConnOk = false;
+
+    private String result = "";
 
     private static SocketUtil mSocketUtil;
 
@@ -48,19 +61,19 @@ public class SocketUtil extends Thread implements SocketInterface{
         return socketInput;
     }
 
-    public static SocketUtil getInstance(){
-        return getInstance(UserInfo.getUsername(),UserInfo.getPassword());
+    public static SocketUtil getInstance() {
+        return getInstance(UserInfo.getUsername(), UserInfo.getPassword());
     }
 
     public void clearSocketCon() {
         mSocketUtil = null;
         socketInput = null;
         socketOutput = null;
-        if(mSendMessaggeQueue!=null){
+        if (mSendMessaggeQueue != null) {
             mSendMessaggeQueue.clear();
             mSendMessaggeQueue = null;
         }
-        if(mSocket!=null){
+        if (mSocket != null) {
             try {
                 mSocket.close();
             } catch (IOException e) {
@@ -83,7 +96,7 @@ public class SocketUtil extends Thread implements SocketInterface{
             }
             Log.e("Thread-exit", "exit");
         } else {
-            Log.e("init","11111111111111");
+            Log.e("init", "11111111111111");
             setmConnOk(false);
             Remote_Pc_Fragment.connisok(mConnOk);
         }
@@ -92,35 +105,43 @@ public class SocketUtil extends Thread implements SocketInterface{
     private boolean initConn() {
         boolean conn_ok = false;
         try {
-            Log.e("ip",PropertiesUtil.SERVER_IP);
+            Log.e("ip", PropertiesUtil.SERVER_IP);
             mSocket = new Socket(PropertiesUtil.SERVER_IP, 10086);
 
             OutputStream outputStream = mSocket.getOutputStream();
-            InputStream inputStream = mSocket.getInputStream();
-            socketInput = inputStream;
+            InputStream is = mSocket.getInputStream();
+            socketInput = is;
             socketOutput = outputStream;
-            String logonString = StringUtil.stringAddUnderline(PropertiesUtil.CONNECTED_TO_USER,
-                    username, password, PropertiesUtil.END_FLAG);
-            byte[] bytes = logonString.getBytes();
-            socketOutput.write(IntConvertUtils.getIntegerBytes(bytes.length));
-            socketOutput.write(bytes);
-            String result = readLine();
-            if (StringUtil.startAndEnd(result)) {
+
+            byte[] loginData = (username + "|" + password).getBytes("UTF-8");
+
+            if (loginData.length == 0)
+                return false;
+            socketOutput.write(ProtocolField.phoneOnline);
+            socketOutput.write(IntConvertUtils.getShortByByteArray(loginData));
+            socketOutput.write(loginData);
+
+            byte result = (byte) socketInput.read();
+            if (result == ProtocolField.onlineSuccess) {
+
+                mEventBus = EventBus.getDefault();
+                mEventBus.register(this);
+
                 conn_ok = true;
             }
         } catch (Exception e) {
-            Log.e("Exception",e.getMessage());
+            Log.e("Exception", e.getMessage());
             e.printStackTrace();
         }
         return conn_ok;
     }
 
-    private void loop() throws IOException,InterruptedException {
+    private void loop() throws IOException, InterruptedException {
         while (!isInterrupted()) {
             if (getThreadState()) {
                 break;
             }
-            synchronized (mSendMessaggeQueue){
+            synchronized (mSendMessaggeQueue) {
                 if (!mSendMessaggeQueue.isEmpty()) {
                     byte[] bytes = mSendMessaggeQueue.remove();
                     socketOutput.write(bytes);
@@ -130,21 +151,33 @@ public class SocketUtil extends Thread implements SocketInterface{
         }
     }
 
+
+    private void newLoop() throws IOException {
+        while (!isInterrupted()) {
+            if (getThreadState())
+                break;
+            if (messageQueue.isEmpty()) {
+                PackByteArray pack = messageQueue.remove();
+                socketOutput.write(pack.getFlag());
+                if (pack.getBody() != null)
+                    socketOutput.write(pack.getBody());
+                socketOutput.flush();
+            }
+        }
+    }
+
     /**
      * 发送测试命令给 pc
      *
-     * @param t
      * @return 是否可以发送
      */
-    private String result = "";
 
     public void sendTestMessage(ConnectListener connectListener) {
-        if(!mConnOk){
+        if (!mConnOk) {
             connectListener.connectError();
             return;
         }
-        addMessage(StringUtil
-                .operateCmd(Command2JsonUtil.getJson("-1", "", true)));
+        addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("-1", "", true)));
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -154,11 +187,11 @@ public class SocketUtil extends Thread implements SocketInterface{
         thread.start();
         try {
             Thread.sleep(1000);
-            Log.e("result",result);
+            Log.e("result", result);
             if (result.equals(StringUtil.addEnd_flag2Str(PropertiesUtil.CONNECTED_SUCCESS))) {
                 connectListener.connectSusess();
             } else {
-                Log.e("111111111","2222222222");
+                Log.e("111111111", "2222222222");
                 connectListener.connectError();
             }
         } catch (InterruptedException e) {
@@ -166,10 +199,58 @@ public class SocketUtil extends Thread implements SocketInterface{
         }
     }
 
+
+  /*
+    public void sendTestMag(ConnectListener connectListener){
+        if (!mConnOk){
+            connectListener.connectError();
+            return ;
+        }
+        //addMessage();
+    }*/
+
+
     /**
-     * 读取流中的字符
-     *
+     * 如果是文件那么就分发到服务中执行，如果是命令就直接执行
      */
+
+    public PackByteArray read() throws IOException {
+
+        while (true) {
+            byte flag = (byte) socketInput.read();
+            int mark = DataUtil.getType(flag);
+            if (mark == 1 || mark == 3) {//是文件操作，直接分发到服务线程中操作
+                byte[] body = newReadLine();
+                PackByteArray pack = new PackByteArray(flag, body);
+                mEventBus.post(pack);
+            } else {     //文件以外的其他操作
+                byte[] body = newReadLine();
+                return new PackByteArray(flag, body);
+            }
+        }
+    }
+
+    private byte[] newReadLine() throws IOException {
+        int msgSize;
+        byte[] msgSizeBytes = new byte[2];
+        int len = socketInput.read(msgSizeBytes);
+        //System.out.println(len);
+        msgSize = IntConvertUtils.getShortByByteArray(msgSizeBytes);
+
+        if (msgSize >= 0) {
+            int i = 0;
+            byte[] body = new byte[msgSize];
+            while (i < msgSize) {
+                body[i] = (byte) socketInput.read();
+                i++;
+            }
+            return body;
+        }
+        setThreadStop();
+        setmConnOk(false);
+        interrupt();
+        return null;
+    }
 
     public String readLine() {
         String s = "";
@@ -178,7 +259,7 @@ public class SocketUtil extends Thread implements SocketInterface{
             byte[] msgSizeBytes = new byte[4];
             socketInput.read(msgSizeBytes);
             msgSize = IntConvertUtils.getIntegerByByteArray(msgSizeBytes);
-            if(msgSize<=0&&msgSize>=40*1024){
+            if (msgSize <= 0 && msgSize >= 40 * 1024) {
                 setThreadStop();
                 setmConnOk(false);
                 interrupt();
@@ -187,13 +268,13 @@ public class SocketUtil extends Thread implements SocketInterface{
 
             int i = 0;
             byte[] dataBytes = new byte[msgSize];
-            while(i<msgSize){
-                dataBytes[i] = (byte)socketInput.read();
+            while (i < msgSize) {
+                dataBytes[i] = (byte) socketInput.read();
                 i++;
             }
 
             s = new String(dataBytes);
-            Log.e("pppppppppppppp",s);
+            Log.e("pppppppppppppp", s);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -201,19 +282,19 @@ public class SocketUtil extends Thread implements SocketInterface{
     }
 
 
-    public void addBytes(byte[] bytes){
-        synchronized (mSendMessaggeQueue){
-            if(mSendMessaggeQueue!=null)
+    public void addBytes(byte[] bytes) {
+        synchronized (mSendMessaggeQueue) {
+            if (mSendMessaggeQueue != null)
                 mSendMessaggeQueue.add(bytes);
         }
     }
 
     public void addMessage(String s) {
-        synchronized (mSendMessaggeQueue){
-            if(mSendMessaggeQueue==null)
+        synchronized (mSendMessaggeQueue) {
+            if (mSendMessaggeQueue == null)
                 return;
             s = StringUtil.addEnd_flag2Str(s);
-            Log.e("addMessage",s);
+            Log.e("addMessage", s);
             try {
                 byte[] stringData = s.getBytes("UTF-8");
                 mSendMessaggeQueue.add(getIntegerBytes(stringData.length));
@@ -224,12 +305,12 @@ public class SocketUtil extends Thread implements SocketInterface{
         }
     }
 
-    public byte[] getIntegerBytes(int data){
-        byte[] s = {(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff};
-        s[3] = (byte)((data)&s[3]);
-        for(int i = 2;i>=0;i--){
-            data = data>>8;
-            s[i] = (byte)((data)&s[i]);
+    public byte[] getIntegerBytes(int data) {
+        byte[] s = {(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+        s[3] = (byte) ((data) & s[3]);
+        for (int i = 2; i >= 0; i--) {
+            data = data >> 8;
+            s[i] = (byte) ((data) & s[i]);
         }
         return s;
     }
@@ -240,7 +321,7 @@ public class SocketUtil extends Thread implements SocketInterface{
 
     public void setThreadStop() {
         try {
-            if(mSocket!=null)
+            if (mSocket != null)
                 mSocket.close();
         } catch (IOException e) {
             e.printStackTrace();

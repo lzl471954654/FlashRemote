@@ -15,15 +15,12 @@ public class Command2JsonUtil {
         Command command=new Command();
         command.setType(type);
         command.setDescribe(des);
-        command.setIsback(isback);
         return new Gson().toJson(command);
     }
 
     public static String getMouseJson(Map<Integer,Integer> map, boolean click, boolean single,
                                       boolean doubleClick, boolean right){
         MouseOpInfo mouse=new MouseOpInfo();
-      /*  mouse.setX(x);
-        mouse.setY(y);*/
          mouse.setMap(map);
         mouse.setClick(click);
         mouse.setSingleClick(single);
