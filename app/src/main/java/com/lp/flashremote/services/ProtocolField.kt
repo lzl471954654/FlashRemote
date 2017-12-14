@@ -1,6 +1,8 @@
 package NewVersion
 
 object ProtocolField {
+
+    const val isConn : Byte = 0xff.toByte()
     /**
      * pcOnline PC online
      *

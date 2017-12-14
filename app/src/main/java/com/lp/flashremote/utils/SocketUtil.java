@@ -23,22 +23,20 @@ import java.util.concurrent.LinkedBlockingDeque;
 import NewVersion.ProtocolField;
 import Utils.DataUtil;
 
-public class SocketUtil extends Thread implements SocketInterface {
+public class SocketUtil extends Thread{
     private Socket mSocket;
     public InputStream socketInput;
-    public OutputStream socketOutput;
+    private OutputStream socketOutput;
     private String username;
     private String password;
     private static Queue<byte[]> mSendMessaggeQueue;
 
-    private static Queue<PackByteArray> messageQueue = new LinkedBlockingDeque<>(1024);
+    private static LinkedBlockingDeque<PackByteArray> messageQueue;
     private EventBus mEventBus;
 
     private boolean threadStopState = false; //为true则终止，为false则继续
 
     private boolean mConnOk = false;
-
-    private String result = "";
 
     private static SocketUtil mSocketUtil;
 
@@ -46,6 +44,7 @@ public class SocketUtil extends Thread implements SocketInterface {
         this.username = u;
         this.password = pwd;
         mSendMessaggeQueue = new LinkedList<>();
+         messageQueue = new LinkedBlockingDeque<>(1024);
     }
 
 
@@ -54,11 +53,6 @@ public class SocketUtil extends Thread implements SocketInterface {
             mSocketUtil = new SocketUtil(u, p);
         }
         return mSocketUtil;
-    }
-
-    @Override
-    public InputStream getInputStream() {
-        return socketInput;
     }
 
     public static SocketUtil getInstance() {
@@ -88,8 +82,8 @@ public class SocketUtil extends Thread implements SocketInterface {
             try {
                 setmConnOk(true);
                 Remote_Pc_Fragment.connisok(mConnOk);
-                loop();//开启消息队列
-            } catch (IOException | InterruptedException e) {
+                newLoop();//开启消息队列
+            } catch (IOException e) {
                 e.printStackTrace();
                 setmConnOk(false);
                 Remote_Pc_Fragment.connisok(false);
@@ -136,22 +130,6 @@ public class SocketUtil extends Thread implements SocketInterface {
         return conn_ok;
     }
 
-    private void loop() throws IOException, InterruptedException {
-        while (!isInterrupted()) {
-            if (getThreadState()) {
-                break;
-            }
-            synchronized (mSendMessaggeQueue) {
-                if (!mSendMessaggeQueue.isEmpty()) {
-                    byte[] bytes = mSendMessaggeQueue.remove();
-                    socketOutput.write(bytes);
-                    socketOutput.flush();
-                }
-            }
-        }
-    }
-
-
     private void newLoop() throws IOException {
         while (!isInterrupted()) {
             if (getThreadState())
@@ -159,6 +137,7 @@ public class SocketUtil extends Thread implements SocketInterface {
             if (messageQueue.isEmpty()) {
                 PackByteArray pack = messageQueue.remove();
                 socketOutput.write(pack.getFlag());
+                socketOutput.write(pack.getLen());
                 if (pack.getBody() != null)
                     socketOutput.write(pack.getBody());
                 socketOutput.flush();
@@ -172,42 +151,40 @@ public class SocketUtil extends Thread implements SocketInterface {
      * @return 是否可以发送
      */
 
-    public void sendTestMessage(ConnectListener connectListener) {
-        if (!mConnOk) {
-            connectListener.connectError();
-            return;
-        }
-        addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("-1", "", true)));
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                result = readLine();
-            }
-        });
-        thread.start();
+    private PackByteArray testPack=null;
+    public void sendTestMsg(ConnectListener connectListener){
+       if (!mConnOk){
+           connectListener.connectError();
+           return;
+       }
+        byte[] bytes={0,0};
+       PackByteArray pack=new PackByteArray(ProtocolField.isConn,bytes,null);
+       addMessageHighLevel(pack);
+
+
+       Thread thread=new Thread(new Runnable() {
+           @Override
+           public void run() {
+               try {
+                   testPack=read();
+               } catch (IOException e) {
+                   e.printStackTrace();
+               }
+           }
+       });
+       thread.start();
+
         try {
             Thread.sleep(1000);
-            Log.e("result", result);
-            if (result.equals(StringUtil.addEnd_flag2Str(PropertiesUtil.CONNECTED_SUCCESS))) {
+            if (testPack.getFlag()== ProtocolField.isConn ) {
                 connectListener.connectSusess();
             } else {
-                Log.e("111111111", "2222222222");
                 connectListener.connectError();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-
-
-  /*
-    public void sendTestMag(ConnectListener connectListener){
-        if (!mConnOk){
-            connectListener.connectError();
-            return ;
-        }
-        //addMessage();
-    }*/
 
 
     /**
@@ -220,24 +197,28 @@ public class SocketUtil extends Thread implements SocketInterface {
             byte flag = (byte) socketInput.read();
             int mark = DataUtil.getType(flag);
             if (mark == 1 || mark == 3) {//是文件操作，直接分发到服务线程中操作
-                byte[] body = newReadLine();
-                PackByteArray pack = new PackByteArray(flag, body);
+                byte[] msgSizeBytes = new byte[2];
+                int len = socketInput.read(msgSizeBytes);
+                //System.out.println(len);
+                byte[] body = newReadLine(msgSizeBytes);
+                PackByteArray pack = new PackByteArray(flag,msgSizeBytes, body);
                 mEventBus.post(pack);
             } else {     //文件以外的其他操作
-                byte[] body = newReadLine();
-                return new PackByteArray(flag, body);
+                byte[] msgSizeBytes = new byte[2];
+                int len = socketInput.read(msgSizeBytes);
+                //System.out.println(len);
+                byte[] body = newReadLine(msgSizeBytes);
+                return new PackByteArray(flag,msgSizeBytes, body);
             }
         }
     }
 
-    private byte[] newReadLine() throws IOException {
+
+    private byte[] newReadLine(byte[] msgSizeBytes) throws IOException {
         int msgSize;
-        byte[] msgSizeBytes = new byte[2];
-        int len = socketInput.read(msgSizeBytes);
-        //System.out.println(len);
         msgSize = IntConvertUtils.getShortByByteArray(msgSizeBytes);
 
-        if (msgSize >= 0) {
+        if (msgSize > 0) {
             int i = 0;
             byte[] body = new byte[msgSize];
             while (i < msgSize) {
@@ -246,76 +227,22 @@ public class SocketUtil extends Thread implements SocketInterface {
             }
             return body;
         }
-        setThreadStop();
-        setmConnOk(false);
-        interrupt();
         return null;
     }
 
-    public String readLine() {
-        String s = "";
-        try {
-            int msgSize = 0;
-            byte[] msgSizeBytes = new byte[4];
-            socketInput.read(msgSizeBytes);
-            msgSize = IntConvertUtils.getIntegerByByteArray(msgSizeBytes);
-            if (msgSize <= 0 && msgSize >= 40 * 1024) {
-                setThreadStop();
-                setmConnOk(false);
-                interrupt();
-                return "";
-            }
 
-            int i = 0;
-            byte[] dataBytes = new byte[msgSize];
-            while (i < msgSize) {
-                dataBytes[i] = (byte) socketInput.read();
-                i++;
-            }
-
-            s = new String(dataBytes);
-            Log.e("pppppppppppppp", s);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return s;
+    public void addMessage(PackByteArray pack){
+        if (messageQueue!=null)
+            messageQueue.addLast(pack);
     }
 
 
-    public void addBytes(byte[] bytes) {
-        synchronized (mSendMessaggeQueue) {
-            if (mSendMessaggeQueue != null)
-                mSendMessaggeQueue.add(bytes);
-        }
+    public void addMessageHighLevel(PackByteArray pack){
+        if (messageQueue!=null)
+            messageQueue.addFirst(pack);
     }
 
-    public void addMessage(String s) {
-        synchronized (mSendMessaggeQueue) {
-            if (mSendMessaggeQueue == null)
-                return;
-            s = StringUtil.addEnd_flag2Str(s);
-            Log.e("addMessage", s);
-            try {
-                byte[] stringData = s.getBytes("UTF-8");
-                mSendMessaggeQueue.add(getIntegerBytes(stringData.length));
-                mSendMessaggeQueue.add(stringData);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public byte[] getIntegerBytes(int data) {
-        byte[] s = {(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
-        s[3] = (byte) ((data) & s[3]);
-        for (int i = 2; i >= 0; i--) {
-            data = data >> 8;
-            s[i] = (byte) ((data) & s[i]);
-        }
-        return s;
-    }
-
-    public boolean getThreadState() {
+    private boolean getThreadState() {
         return threadStopState;
     }
 
@@ -331,11 +258,10 @@ public class SocketUtil extends Thread implements SocketInterface {
 
     public interface ConnectListener {
         void connectSusess();
-
         void connectError();
     }
 
-    public void setmConnOk(boolean mConnOk) {
+    private void setmConnOk(boolean mConnOk) {
         this.mConnOk = mConnOk;
     }
 

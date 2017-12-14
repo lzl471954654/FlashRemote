@@ -5,8 +5,10 @@ import java.util.*
 
 /**
  * Created by lzl on 17-12-5.
+ * data pack
  */
-data class PackByteArray(public val flag : Byte , public val body:ByteArray?):Serializable {
+data class PackByteArray( val flag : Byte ,val len : ByteArray,
+                         val body:ByteArray?) :Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
