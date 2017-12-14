@@ -3,10 +3,14 @@ package com.lp.flashremote.utils;
 
 
 import com.lp.flashremote.beans.Content;
+import com.lp.flashremote.beans.PackByteArray;
 import com.lp.flashremote.beans.PropertiesUtil;
 
-public class StringUtil {
+import java.io.UnsupportedEncodingException;
 
+import NewVersion.ProtocolField;
+
+public class StringUtil {
 
 
     /**
@@ -22,38 +26,41 @@ public class StringUtil {
         return str1 + "_" + str2 + "_" + str3 + "_" + str4;
     }
 
-    public static String stringAddUnderline(String str1, String str2, String str3) {
-        return str1 + "_" + str2 + "_" + str3;
-    }
-    public static String stringAddUnderline(String str1, String str2) {
-        return str1 + "_" + str2;
-    }
-    /**
-     *
-     * @param string
-     * @return
-     */
-    public static boolean startAndEnd(String string) {
-        return (string.startsWith(PropertiesUtil.CONNECTED_SUCCESS) && string.endsWith(PropertiesUtil.END_FLAG));
-    }
 
-    /**
-     *
-     * @param s
-     * @return
-     */
-    public static boolean isBind(String s) {
-        return s.startsWith(PropertiesUtil.CONNECTED_SUCCESS) && s.endsWith(PropertiesUtil.END_FLAG);
-    }
+
+
 
     /**
      * 发送命令的字符串拼接
-     *
-     * @param cmd
+     * @param data
+     * @param isBack
      * @return
      */
-    public static String operateCmd( String cmd) {
-        return PropertiesUtil.COMMAND + "_" + cmd;
+
+    public static PackByteArray cmdFactory(String data,boolean isBack){
+        PackByteArray pack=null;
+        if (isBack){  //need back
+            try {
+                byte[] cmdDatabytes=data.getBytes("UTF-8");
+                Short len=IntConvertUtils.getShortByByteArray(cmdDatabytes);
+                pack=new PackByteArray(ProtocolField.commandreturn,
+                        IntConvertUtils.getShortBytes(len),cmdDatabytes);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+        }else{
+            try {
+                byte[] cmdDatabytes=data.getBytes("UTF-8");
+                Short len=IntConvertUtils.getShortByByteArray(cmdDatabytes);
+                pack=new PackByteArray(ProtocolField.command,
+                        IntConvertUtils.getShortBytes(len),cmdDatabytes);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return pack;
     }
 
     /**

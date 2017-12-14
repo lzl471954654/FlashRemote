@@ -44,6 +44,7 @@ import com.lp.flashremote.services.ConnectionCallBack;
 import com.lp.flashremote.services.ConnectionManagerService;
 import com.lp.flashremote.services.MainServices;
 import com.lp.flashremote.utils.Command2JsonUtil;
+import com.lp.flashremote.utils.JsonFactoryUtil;
 import com.lp.flashremote.utils.SocketUtil;
 import com.lp.flashremote.utils.StringUtil;
 import com.lp.flashremote.utils.ToastUtil;
@@ -237,11 +238,6 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.connpc:
-                /**
-                 * 绑定服务
-                Intent bindIntent=new Intent(getActivity(),MainServices.class);
-                getActivity().bindService(bindIntent,serviceConnection,Context.BIND_AUTO_CREATE) ;
-                */
                 if(UserInfo.getPassword().equals("") || UserInfo.getUsername().equals("") ){
                     ToastUtil.toastText(getContext(),"请您先设置账户");
                     return;
@@ -252,10 +248,6 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 } else {
                     ToastUtil.toastText(getContext(), "您已经上线了！");
                 }
-              /*  Intent intent = new Intent(getContext(), ConnectionManagerService.class);
-                intent.putExtra("bindName","PC");
-                intent.putExtra("callBack",connectionCallBack);
-                getContext().bindService(intent,connection, Service.BIND_AUTO_CREATE);*/
                 break;
 
             case R.id.breakConnpc:
@@ -295,7 +287,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
             case R.id.fab1:
                 //发送消息试探是否仍然连接
                 if (mSocketOP != null) {
-                    mSocketOP.sendTestMessage(new SocketUtil.ConnectListener() {
+                    mSocketOP.sendTestMsg(new SocketUtil.ConnectListener() {
                         @Override
                         public void connectSusess() {
                             new AlertDialog.Builder(getActivity())
@@ -305,16 +297,17 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                                     .setPositiveButton("关了吧", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
-                                            mSocketOP.addMessage(StringUtil
-                                                    .operateCmd(Command2JsonUtil.getJson("0","",false)));
+
+                                            mSocketOP.addMessageHighLevel(StringUtil.
+                                                    cmdFactory(JsonFactoryUtil.getCmd("0",""),false));
                                             ToastUtil.toastText(getContext(), "关闭成功!");
                                         }
                                     })
                                     .setNegativeButton("取消关机", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
-                                            mSocketOP.addMessage(StringUtil
-                                                    .operateCmd(Command2JsonUtil.getJson("1","",false)));
+                                            mSocketOP.addMessageHighLevel(StringUtil.
+                                                    cmdFactory(JsonFactoryUtil.getCmd("1",""),false));
                                             ToastUtil.toastText(getContext(), "电脑还开着呢！");
                                         }
                                     })
@@ -332,8 +325,8 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
             case R.id.fab2:
                 if(mSocketOP!=null){
                 final String screenShotTime=System.currentTimeMillis()+"";
-                mSocketOP.addMessage(StringUtil
-                        .operateCmd(Command2JsonUtil.getJson("2",screenShotTime,false)));
+                mSocketOP.addMessageHighLevel(StringUtil.cmdFactory(JsonFactoryUtil
+                        .getCmd("2",screenShotTime),false));
                 new AlertDialog.Builder(getActivity())
                         .setTitle("提示")
                         .setMessage("屏幕已经截取，是否回传?")
@@ -363,7 +356,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
             case R.id.fab5:
                 //调节亮度
                 if (mSocketOP!=null){
-                    mSocketOP.sendTestMessage(new SocketUtil.ConnectListener() {
+                    mSocketOP.sendTestMsg(new SocketUtil.ConnectListener() {
                         @Override
                         public void connectSusess() {
                            makeDialog(false);
@@ -383,7 +376,7 @@ public class Remote_Pc_Fragment extends Fragment implements View.OnClickListener
                 break;
             case R.id.fab8://音量调节
                 if (mSocketOP!=null){
-                    mSocketOP.sendTestMessage(new SocketUtil.ConnectListener() {
+                    mSocketOP.sendTestMsg(new SocketUtil.ConnectListener() {
                         @Override
                         public void connectSusess() {
                             makeDialog(true);

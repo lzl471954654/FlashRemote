@@ -29,7 +29,6 @@ public class SocketUtil extends Thread{
     private OutputStream socketOutput;
     private String username;
     private String password;
-    private static Queue<byte[]> mSendMessaggeQueue;
 
     private static LinkedBlockingDeque<PackByteArray> messageQueue;
     private EventBus mEventBus;
@@ -43,7 +42,6 @@ public class SocketUtil extends Thread{
     private SocketUtil(String u, String pwd) {
         this.username = u;
         this.password = pwd;
-        mSendMessaggeQueue = new LinkedList<>();
          messageQueue = new LinkedBlockingDeque<>(1024);
     }
 
@@ -63,9 +61,9 @@ public class SocketUtil extends Thread{
         mSocketUtil = null;
         socketInput = null;
         socketOutput = null;
-        if (mSendMessaggeQueue != null) {
-            mSendMessaggeQueue.clear();
-            mSendMessaggeQueue = null;
+        if (messageQueue != null) {
+            messageQueue.clear();
+            messageQueue = null;
         }
         if (mSocket != null) {
             try {
