@@ -22,6 +22,7 @@ import com.lp.flashremote.Model.RecordDao;
 import com.lp.flashremote.R;
 import com.lp.flashremote.beans.UserInfo;
 import com.lp.flashremote.utils.Command2JsonUtil;
+import com.lp.flashremote.utils.JsonFactoryUtil;
 import com.lp.flashremote.utils.SocketUtil;
 import com.lp.flashremote.utils.StringUtil;
 
@@ -108,8 +109,8 @@ public class SearchFragment   extends Fragment implements View.OnClickListener {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                mSearchSocket.addMessage(StringUtil.operateCmd(
-                        Command2JsonUtil.getJson("7",mList.get(i),false)));
+                mSearchSocket.addMessageHighLevel(StringUtil.cmdFactory(JsonFactoryUtil
+                        .getCmd("7",mList.get(i)),false));
             }
         });
         mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -138,8 +139,8 @@ public class SearchFragment   extends Fragment implements View.OnClickListener {
         switch (view.getId()){
             case R.id.search:
                 String str=mEditText.getText().toString();
-                mSearchSocket.addMessage(StringUtil.operateCmd(
-                        Command2JsonUtil.getJson("7",str,false)));
+                mSearchSocket.addMessageHighLevel(StringUtil.cmdFactory(JsonFactoryUtil
+                        .getCmd("7",str),false));
                 mRecord.addData(str);
                 mList.add(str);
                 adapter.notifyDataSetChanged();

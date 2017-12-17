@@ -23,6 +23,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.lp.flashremote.R
 import com.lp.flashremote.activities.PcFileDirActivity
 import com.lp.flashremote.beans.DiskInfo
+import com.lp.flashremote.beans.PackByteArray
 import com.lp.flashremote.utils.*
 
 import kotlinx.android.synthetic.main.disk_fagment.view.*
@@ -41,7 +42,7 @@ class DiskFragment(val mdiskSocket: SocketUtil) : Fragment() ,OnChartValueSelect
 
 
     lateinit var rootView: View
-    var result: String? = null
+    var result : PackByteArray ?= null
     lateinit var diskInfos:MutableList<DiskInfo>
 
 
@@ -55,14 +56,16 @@ class DiskFragment(val mdiskSocket: SocketUtil) : Fragment() ,OnChartValueSelect
 
         rootView = inflater!!.inflate(R.layout.disk_fagment, container, false)
 
-        mdiskSocket.addMessage(StringUtil.operateCmd(Command2JsonUtil
-                .getJson("4", "", true)))
+
+        mdiskSocket.addMessageHighLevel(StringUtil.cmdFactory(JsonFactoryUtil.getCmd("4", ""),true))
         doAsync {
-            result = mdiskSocket.readLine()
+            result=mdiskSocket.read()
 
             uiThread {
                 if (result != null) {
-                    diskInfos = GsonAnalysiUtil.getDisklist(result!!.split("_")[0])
+                    val resultBody=result!!.body.toString()
+                    diskInfos = GsonAnalysiUtil.getDisklist(resultBody)
+
                     diskInfos.forEach {
                         val piechart = PieChart(activity)
                         val layoutParams = FrameLayout.LayoutParams(

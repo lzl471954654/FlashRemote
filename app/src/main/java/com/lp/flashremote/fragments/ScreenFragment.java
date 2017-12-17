@@ -1,21 +1,19 @@
 package com.lp.flashremote.fragments;
 
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.lp.flashremote.FlashApplication;
@@ -34,32 +32,44 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 public class ScreenFragment extends Fragment {
     private String filename;
-    private ProgressBar mPb;
+    public  ProgressBar mPb;
     private ImageView mImage;
     private SocketUtil socket;
     private View rootView;
 
-    private  String content=null;
 
-    private Handler handler=new Handler(){
+    private  Handler handler=new MyHandler(this);
+
+    static  class MyHandler extends Handler{
+        WeakReference<ScreenFragment> mFragmentReference;
+
+        MyHandler(ScreenFragment fg){
+            mFragmentReference=new WeakReference<ScreenFragment>(fg);
+        }
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what==0){
-                ToastUtil.toastText(getActivity(),"接受文件"+msg.obj.toString()+"失败");
-            }
-            if (msg.what==1){
-                mPb.setVisibility(View.GONE);
-                Bitmap b= BitmapFactory.decodeFile(FlashApplication.acceptFolder+File.separator+filename+".jpg",null);
-                if (b!=null){
-                    mImage.setImageBitmap(b);
-                    mImage.setVisibility(View.VISIBLE);
+            ScreenFragment fileFragment=mFragmentReference.get();
+
+            if (fileFragment != null){
+                if (msg.what==0){
+                    ToastUtil.toastText(mFragmentReference.get().getActivity(),"接受文件"+msg.obj.toString()+"失败");
+                }
+                if (msg.what==1){
+                    fileFragment.mPb.setVisibility(View.GONE);
+                    Bitmap b= BitmapFactory.decodeFile(FlashApplication.acceptFolder+File.separator+msg.obj.toString()+".jpg",null);
+                    if (b!=null){
+                        fileFragment.mImage.setImageBitmap(b);
+                        fileFragment.mImage.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         }
-    };
+    }
+    private  String content=null;
 
     public ScreenFragment(String f){
         this.filename=f;

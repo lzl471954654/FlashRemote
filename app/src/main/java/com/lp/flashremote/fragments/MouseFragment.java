@@ -1,14 +1,11 @@
 package com.lp.flashremote.fragments;
 
-import android.app.usage.UsageEvents;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,12 +13,12 @@ import android.widget.Toast;
 import com.lp.flashremote.R;
 import com.lp.flashremote.beans.UserInfo;
 import com.lp.flashremote.utils.Command2JsonUtil;
+import com.lp.flashremote.utils.JsonFactoryUtil;
 import com.lp.flashremote.utils.SocketUtil;
 import com.lp.flashremote.utils.StringUtil;
 import com.lp.flashremote.utils.ToastUtil;
 import com.lp.flashremote.views.MouseTouchView;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -55,7 +52,7 @@ public class MouseFragment extends Fragment {
         mMouseTouchView = rootView.findViewById(R.id.mouse_view);
         rightClick=rootView.findViewById(R.id.right_click);
 
-        mouseScoket.sendTestMessage(new SocketUtil.ConnectListener() {
+        mouseScoket.sendTestMsg(new SocketUtil.ConnectListener() {
             @Override
             public void connectSusess() {
                 initlistener();
@@ -77,7 +74,7 @@ public class MouseFragment extends Fragment {
                 if (map.size()<2){
                     String doublecClick=Command2JsonUtil.getMouseJson(map,true,false,true,false);
                     map.clear();
-                    mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",doublecClick,false)));
+                    mouseScoket.addMessageHighLevel(StringUtil.cmdFactory(JsonFactoryUtil.getCmd("3",doublecClick),false));
                     Toast.makeText(getContext(), "双击", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -88,7 +85,7 @@ public class MouseFragment extends Fragment {
                 if (map.size()<2){
                     String singleClick=Command2JsonUtil.getMouseJson(map,true,true,false,false);
                     map.clear();
-                    mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",singleClick,false)));
+                    mouseScoket.addMessageHighLevel(StringUtil.cmdFactory(JsonFactoryUtil.getCmd("3",singleClick),false));
                     Toast.makeText(getContext(), "单击", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -118,7 +115,7 @@ public class MouseFragment extends Fragment {
                 i++;
                 if (i>=12){
                     String move=Command2JsonUtil.getMouseJson(map,false,false,false,false);
-                    mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",move,false)));
+                    mouseScoket.addMessageHighLevel(StringUtil.cmdFactory(JsonFactoryUtil.getCmd("3",move),false));
                     map.clear();
                     i=0;
                 }
@@ -131,7 +128,7 @@ public class MouseFragment extends Fragment {
             public void onClick(View view) {
                 map.put(0,0);
                 String rightClick=Command2JsonUtil.getMouseJson(map,true,false,false,true);
-                mouseScoket.addMessage(StringUtil.operateCmd(Command2JsonUtil.getJson("3",rightClick,false)));
+                mouseScoket.addMessage(StringUtil.cmdFactory(JsonFactoryUtil.getCmd("3",rightClick),false));
                 Toast.makeText(getContext(), "右击", Toast.LENGTH_SHORT).show();
             }
         });
