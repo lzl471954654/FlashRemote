@@ -36,4 +36,6 @@ object ProtocolField {
     const val command =            0x20.toByte()
     const val commandreturn =      0x21.toByte()
 
+    const val cmdScreenBody =      0x23.toByte()
+
 }

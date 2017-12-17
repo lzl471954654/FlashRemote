@@ -22,9 +22,9 @@ public class StringUtil {
      * @param str4
      * @return
      */
-    public static String stringAddUnderline(String str1, String str2, String str3, String str4) {
+   /* public static String stringAddUnderline(String str1, String str2, String str3, String str4) {
         return str1 + "_" + str2 + "_" + str3 + "_" + str4;
-    }
+    }*/
 
 
 

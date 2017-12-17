@@ -18,12 +18,12 @@ import android.widget.ProgressBar;
 import com.google.gson.Gson;
 import com.lp.flashremote.FlashApplication;
 import com.lp.flashremote.R;
-import com.lp.flashremote.beans.Content;
 import com.lp.flashremote.beans.FileCommand;
 import com.lp.flashremote.beans.FileDescribe;
-import com.lp.flashremote.beans.PropertiesUtil;
+import com.lp.flashremote.beans.PackByteArray;
 import com.lp.flashremote.beans.UserInfo;
-import com.lp.flashremote.utils.Command2JsonUtil;
+import com.lp.flashremote.utils.IntConvertUtils;
+import com.lp.flashremote.utils.JsonFactoryUtil;
 import com.lp.flashremote.utils.SocketUtil;
 import com.lp.flashremote.utils.StringUtil;
 import com.lp.flashremote.utils.ToastUtil;
@@ -32,7 +32,10 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
+
+import NewVersion.ProtocolField;
 
 public class ScreenFragment extends Fragment {
     private String filename;
@@ -86,21 +89,22 @@ public class ScreenFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView=inflater.inflate(R.layout.screenfragment,container,false);
         initView(rootView);
-        socket.addMessage(StringUtil.operateCmd(
-                Command2JsonUtil.getJson("2",filename,true)));
-
+        socket.addMessageHighLevel(StringUtil.cmdFactory(JsonFactoryUtil.getCmd("2",filename),true));
         new Thread(new Runnable() {
             @Override
             public void run() {
-                content=socket.readLine();
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Content c=StringUtil.getContent(content);
-                        FileCommand command=new Gson().fromJson(c.getContent(),FileCommand.class);
-                        fileOperation(command, c.getContent());
-                    }
-                });
+                try {
+                    content=socket.read().getBody().toString();
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            FileCommand command=new Gson().fromJson(content,FileCommand.class);
+                            fileOperation(command, content);
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
         return rootView;
@@ -119,7 +123,15 @@ public class ScreenFragment extends Fragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                socket.addMessage(StringUtil.stringAddUnderline(PropertiesUtil.FILE_READY,content));
+                try {
+                    byte[] contentBytes=content.getBytes("utf-8");
+                    byte[] contentlen=IntConvertUtils.getShortBytes(IntConvertUtils.getShortByByteArray(contentBytes));
+                    PackByteArray pack=new PackByteArray(ProtocolField.cmdScreenBody, contentlen,contentBytes);
+                    socket.addMessageHighLevel(pack);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
                 for (FileDescribe describe : describes) {
                     String fileName = describe.getFileName() + "." + describe.getFileType();
                     Long fileSize = describe.getFileSize();
