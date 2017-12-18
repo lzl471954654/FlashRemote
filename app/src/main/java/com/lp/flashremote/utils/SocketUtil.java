@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class SocketUtil extends Thread implements SocketInterface{
     private Socket mSocket;
@@ -22,7 +23,7 @@ public class SocketUtil extends Thread implements SocketInterface{
     public OutputStream socketOutput;
     private String username;
     private String password;
-    private static Queue<byte[]> mSendMessaggeQueue;
+    private static LinkedBlockingDeque<byte[]> mSendMessaggeQueue = new LinkedBlockingDeque<>(1024);
     private boolean threadStopState = false; //为true则终止，为false则继续
 
     private boolean mConnOk=false;
@@ -33,7 +34,7 @@ public class SocketUtil extends Thread implements SocketInterface{
     private SocketUtil(String u, String pwd) {
         this.username = u;
         this.password = pwd;
-        mSendMessaggeQueue = new LinkedList<>();
+        //mSendMessaggeQueue = new LinkedList<>();
     }
 
     public static SocketUtil getInstance(String u, String p) {
@@ -56,10 +57,13 @@ public class SocketUtil extends Thread implements SocketInterface{
         mSocketUtil = null;
         socketInput = null;
         socketOutput = null;
-        if(mSendMessaggeQueue!=null){
+        /*if(mSendMessaggeQueue!=null){
             mSendMessaggeQueue.clear();
             mSendMessaggeQueue = null;
-        }
+        }*/
+
+        mSendMessaggeQueue.clear();
+
         if(mSocket!=null){
             try {
                 mSocket.close();
@@ -120,13 +124,18 @@ public class SocketUtil extends Thread implements SocketInterface{
             if (getThreadState()) {
                 break;
             }
-            synchronized (mSendMessaggeQueue){
+
+            byte[] bytes = mSendMessaggeQueue.getFirst();
+            socketOutput.write(bytes);
+            socketOutput.flush();
+
+            /*synchronized (mSendMessaggeQueue){
                 if (!mSendMessaggeQueue.isEmpty()) {
                     byte[] bytes = mSendMessaggeQueue.remove();
                     socketOutput.write(bytes);
                     socketOutput.flush();
                 }
-            }
+            }*/
         }
     }
 
@@ -202,25 +211,23 @@ public class SocketUtil extends Thread implements SocketInterface{
 
 
     public void addBytes(byte[] bytes){
-        synchronized (mSendMessaggeQueue){
+        /*synchronized (mSendMessaggeQueue){
             if(mSendMessaggeQueue!=null)
                 mSendMessaggeQueue.add(bytes);
-        }
+        }*/
+
+        mSendMessaggeQueue.addLast(bytes);
     }
 
     public void addMessage(String s) {
-        synchronized (mSendMessaggeQueue){
-            if(mSendMessaggeQueue==null)
-                return;
-            s = StringUtil.addEnd_flag2Str(s);
-            Log.e("addMessage",s);
-            try {
-                byte[] stringData = s.getBytes("UTF-8");
-                mSendMessaggeQueue.add(getIntegerBytes(stringData.length));
-                mSendMessaggeQueue.add(stringData);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+        s = StringUtil.addEnd_flag2Str(s);
+        Log.e("addMessage",s);
+        try {
+            byte[] stringData = s.getBytes("UTF-8");
+            mSendMessaggeQueue.addLast(getIntegerBytes(stringData.length));
+            mSendMessaggeQueue.addLast(stringData);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
     }
 

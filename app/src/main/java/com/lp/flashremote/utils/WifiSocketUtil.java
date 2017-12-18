@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import Utils.FileUtilsKt;
 
@@ -57,7 +58,7 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
     private static final String SERVER="SS";
     private static final String CLIENT="CS";
 
-    private static final Queue<byte[]> mSendMsgQueue = new LinkedList<>();
+    private static final LinkedBlockingDeque<byte[]> mSendMsgQueue = new LinkedBlockingDeque<>(1024);
     private static WifiSocketUtil wifi;
 
     private Gson gson = new Gson();
@@ -96,9 +97,9 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
         loopFlag = false;
         if(wifi!=null){
             wifi.interrupt();
-            synchronized (mSendMsgQueue){
-                mSendMsgQueue.clear();
-            }
+
+            mSendMsgQueue.clear();
+
             handler = null;
             inputStream = null;
             outputStream = null;
@@ -154,12 +155,8 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
 
     public void sendMessageLoop() throws IOException{
         while(!isInterrupted()){
-            synchronized (mSendMsgQueue){
-                if(!mSendMsgQueue.isEmpty()){
-                    byte[] bytes = mSendMsgQueue.remove();
-                    outputStream.write(bytes);
-                }
-            }
+            byte[] bytes = mSendMsgQueue.getFirst();
+            outputStream.write(bytes);
         }
     }
 
@@ -238,19 +235,15 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
     }
 
     public void addBytes(byte[] bytes){
-        synchronized (mSendMsgQueue){
-            mSendMsgQueue.add(bytes);
-        }
+        mSendMsgQueue.addLast(bytes);
     }
 
     public void addMessage(String s){
         s = StringUtil.addEnd_flag2Str(s);
         try {
             byte[] stringData = s.getBytes("UTF-8");
-            synchronized (mSendMsgQueue){
-                mSendMsgQueue.add(getIntegerBytes(stringData.length));
-                mSendMsgQueue.add(stringData);
-            }
+            mSendMsgQueue.addLast(getIntegerBytes(stringData.length));
+            mSendMsgQueue.addLast(stringData);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

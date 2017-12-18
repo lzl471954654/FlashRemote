@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Queue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import Utils.FileUtilsKt;
 
@@ -38,7 +39,7 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
     private static Socket mSocket;
     private static InputStream in;
     private static OutputStream out;
-    static private Queue<byte[]> messageQueue = new LinkedList<>();
+    static private LinkedBlockingDeque<byte[]> messageQueue = new LinkedBlockingDeque<>(1024);
     static private PhoneRemoteSocket phoneRemoteSocket;
     static private Handler handler;
     static private String mType = "";
@@ -73,8 +74,8 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
         loopFlag = false;
         in = null;
         out = null;
-        if(messageQueue!=null)
-            messageQueue.clear();
+
+        messageQueue.clear();
         if(phoneRemoteSocket!=null)
             phoneRemoteSocket.interrupt();
         phoneRemoteSocket = null;
@@ -126,14 +127,16 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
 
     private void sendMessageLoop() throws IOException{
         while(loopFlag&&!isInterrupted()){
-            synchronized (messageQueue){
+            byte[] bytes = messageQueue.getFirst();
+            out.write(bytes);
+            /*synchronized (messageQueue){
                 if(messageQueue!=null){
                     if(!messageQueue.isEmpty()){
                         byte[] bytes = messageQueue.remove();
                         out.write(bytes);
                     }
                 }
-            }
+            }*/
         }
     }
 /*
@@ -385,25 +388,18 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
     }
 
     public  void addBytes(byte[] bytes){
-        synchronized (messageQueue){
-            if(messageQueue!=null)
-                messageQueue.add(bytes);
-        }
+        messageQueue.addLast(bytes);
     }
 
     public  void addMessage(String s){
-        synchronized (messageQueue){
-            if (messageQueue==null)
-                return;
-            s = StringUtil.addEnd_flag2Str(s);
-            Log.e("addMessage:",s);
-            try {
-                byte[] stringData = s.getBytes("UTF-8");
-                messageQueue.add(getIntegerBytes(stringData.length));
-                messageQueue.add(stringData);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+        s = StringUtil.addEnd_flag2Str(s);
+        Log.e("addMessage:",s);
+        try {
+            byte[] stringData = s.getBytes("UTF-8");
+            messageQueue.addLast(getIntegerBytes(stringData.length));
+            messageQueue.addLast(stringData);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
     }
 
