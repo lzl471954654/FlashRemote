@@ -331,7 +331,12 @@ fun OutputStream.sendFlag(flag: Byte) {
     write(flag.toInt())
 }
 
-fun packArray(flag: Byte, byteArray: ByteArray?) = PackByteArray(flag, byteArray)
+fun packArray(flag: Byte, byteArray: ByteArray?):PackByteArray{
+    return if (byteArray == null){
+        PackByteArray(flag,IntConvertUtils.getShortBytes(0),byteArray)
+    }else
+        PackByteArray(flag,IntConvertUtils.getShortBytes(byteArray.size.toShort()),byteArray)
+}
 
 /**
  *  @author LZL
