@@ -147,15 +147,15 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
      * 被扫码端开启的loop
      *
      */
-    private void serverloop() throws IOException{
+    private void serverloop() throws IOException,InterruptedException{
         Thread thread = new Thread(listenLoop);
         thread.start();
         sendMessageLoop();
     }
 
-    public void sendMessageLoop() throws IOException{
+    public void sendMessageLoop() throws IOException,InterruptedException{
         while(!isInterrupted()){
-            byte[] bytes = mSendMsgQueue.getFirst();
+            byte[] bytes = mSendMsgQueue.takeFirst();
             outputStream.write(bytes);
         }
     }
@@ -165,7 +165,7 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
     /**
      * 扫码端开启的loop
      */
-    private void clientloop() throws IOException{
+    private void clientloop() throws IOException,InterruptedException{
         sendMessageLoop();
     }
 

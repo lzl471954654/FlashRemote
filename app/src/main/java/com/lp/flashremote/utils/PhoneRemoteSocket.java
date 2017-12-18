@@ -109,7 +109,7 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
                         break;
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }finally {
             Message message = new Message();
@@ -125,9 +125,9 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
 
 
 
-    private void sendMessageLoop() throws IOException{
+    private void sendMessageLoop() throws IOException,InterruptedException{
         while(loopFlag&&!isInterrupted()){
-            byte[] bytes = messageQueue.getFirst();
+            byte[] bytes = messageQueue.takeFirst();
             out.write(bytes);
             /*synchronized (messageQueue){
                 if(messageQueue!=null){
@@ -149,7 +149,7 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
 * what = 15 远程链接失败
 *
 * */
-    private void wifiOnline() throws IOException{
+    private void wifiOnline() throws IOException,InterruptedException{
         Message message = new Message();
         message.what = 10;
         handler.sendMessage(message);
@@ -158,14 +158,14 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
         sendMessageLoop();
     }
 
-    private void wifiLoop() throws IOException{
+    private void wifiLoop() throws IOException,InterruptedException{
         Message message = new Message();
         message.what = 11;
         handler.sendMessage(message);
         sendMessageLoop();
     }
 
-    private void remoteOnline() throws IOException{
+    private void remoteOnline() throws IOException,InterruptedException{
         String login = "|ONLINE|_"+ UserInfo.getUsername()+"_"+UserInfo.getPassword()+"_"+PropertiesUtil.END_FLAG;
         System.out.println("online :"+login+"\n");
         byte[] bytes = login.getBytes("UTF-8");
@@ -187,7 +187,7 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
         }
     }
 
-    private void remoteLoop() throws  IOException{
+    private void remoteLoop() throws  IOException,InterruptedException{
         String login = PropertiesUtil.CONNECTED_TO_USER+"_"+UserInfo.getUsername()+"_"+UserInfo.getPassword()+"_"+PropertiesUtil.END_FLAG;
         byte[] bytes = login.getBytes("UTF-8");
         out.write(IntConvertUtils.getIntegerBytes(bytes.length));
@@ -388,7 +388,11 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
     }
 
     public  void addBytes(byte[] bytes){
-        messageQueue.addLast(bytes);
+        try {
+            messageQueue.putLast(bytes);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public  void addMessage(String s){
@@ -396,9 +400,9 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
         Log.e("addMessage:",s);
         try {
             byte[] stringData = s.getBytes("UTF-8");
-            messageQueue.addLast(getIntegerBytes(stringData.length));
-            messageQueue.addLast(stringData);
-        } catch (UnsupportedEncodingException e) {
+            messageQueue.putLast(getIntegerBytes(stringData.length));
+            messageQueue.putLast(stringData);
+        } catch (UnsupportedEncodingException | InterruptedException e) {
             e.printStackTrace();
         }
     }

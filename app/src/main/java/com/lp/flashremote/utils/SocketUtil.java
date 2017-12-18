@@ -125,7 +125,7 @@ public class SocketUtil extends Thread implements SocketInterface{
                 break;
             }
 
-            byte[] bytes = mSendMessaggeQueue.getFirst();
+            byte[] bytes = mSendMessaggeQueue.takeFirst();
             socketOutput.write(bytes);
             socketOutput.flush();
 
@@ -216,7 +216,11 @@ public class SocketUtil extends Thread implements SocketInterface{
                 mSendMessaggeQueue.add(bytes);
         }*/
 
-        mSendMessaggeQueue.addLast(bytes);
+        try {
+            mSendMessaggeQueue.putLast(bytes);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addMessage(String s) {
@@ -224,9 +228,9 @@ public class SocketUtil extends Thread implements SocketInterface{
         Log.e("addMessage",s);
         try {
             byte[] stringData = s.getBytes("UTF-8");
-            mSendMessaggeQueue.addLast(getIntegerBytes(stringData.length));
-            mSendMessaggeQueue.addLast(stringData);
-        } catch (UnsupportedEncodingException e) {
+            mSendMessaggeQueue.putLast(getIntegerBytes(stringData.length));
+            mSendMessaggeQueue.putLast(stringData);
+        } catch (UnsupportedEncodingException | InterruptedException e) {
             e.printStackTrace();
         }
     }
