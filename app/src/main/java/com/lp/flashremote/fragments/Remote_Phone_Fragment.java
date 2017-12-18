@@ -301,15 +301,18 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
         if (requestCode == QR_RESULT_CODE && resultCode == Activity.RESULT_OK) {
             Bundle bundle = data.getExtras();
             String QRcontent = bundle.getString("result");
-            WifiInfo wifiInfo = new Gson().fromJson(QRcontent, WifiInfo.class);
-            WifiConnectUtil wifiConnectUtil = new WifiConnectUtil(getContext());
-            System.out.println(wifiInfo);
-            if (wifiConnectUtil.Connect(wifiInfo.getName(), wifiInfo.getPwd())) {
-                Message m = new Message();
-                m.what = 1;
-                mWifiInfo = wifiInfo;
-                handler.sendMessage(m);
-            }
+            if (QRcontent!= null && QRcontent.startsWith("{") && QRcontent.endsWith("}")){
+                WifiInfo wifiInfo = new Gson().fromJson(QRcontent, WifiInfo.class);
+                WifiConnectUtil wifiConnectUtil = new WifiConnectUtil(getContext());
+                System.out.println(wifiInfo);
+                if (wifiConnectUtil.Connect(wifiInfo.getName(), wifiInfo.getPwd())) {
+                    Message m = new Message();
+                    m.what = 1;
+                    mWifiInfo = wifiInfo;
+                    handler.sendMessage(m);
+                }
+            }else
+                ToastUtil.toastText(getActivity(),"请扫正确的码！！！");
 
         }
     }
