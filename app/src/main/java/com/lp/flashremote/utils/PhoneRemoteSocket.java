@@ -52,10 +52,11 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
         return loopFlag;
     }
 
-    public static PhoneRemoteSocket getInstance(Handler handler, String type, String ip){
+    public static synchronized PhoneRemoteSocket getInstance(Handler handler, String type, String ip){
+        clearSocket();
         PhoneRemoteSocket.ip = ip;
         mType = type;
-        clearSocket();
+
         phoneRemoteSocket = new PhoneRemoteSocket();
         PhoneRemoteSocket.handler = handler;
         return phoneRemoteSocket;
@@ -201,7 +202,9 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
         }else{
             System.out.println("connected failed");
             message.what = 15;
-            handler.sendMessage(message);
+            if (handler != null) {
+                handler.sendMessage(message);
+            }
         }
     }
 

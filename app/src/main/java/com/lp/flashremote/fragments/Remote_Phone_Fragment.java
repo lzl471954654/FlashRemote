@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,6 +16,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.provider.ContactsContract;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.AppOpsManagerCompat;
@@ -102,6 +104,10 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
         phoneOnline = view.findViewById(R.id.phoneOnline);
         phoneControl = view.findViewById(R.id.phoneControl);
     }
+
+
+
+
 
     @Override
     public void onClick(View view) {

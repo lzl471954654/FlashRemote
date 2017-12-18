@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -14,7 +15,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
+import com.lp.flashremote.BuildConfig;
 import com.lp.flashremote.R;
 import com.lp.flashremote.beans.PropertiesUtil;
 import com.lp.flashremote.utils.SharePerferenceUtil;
@@ -33,14 +36,25 @@ import permissions.dispatcher.RuntimePermissions;
 //@RuntimePermissions
 public class BaseActivity extends AppCompatActivity {
 
-    String[] permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+    String[] permissions = new String[]{
+            Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO,
             Manifest.permission.CHANGE_WIFI_STATE,
             Manifest.permission.CHANGE_NETWORK_STATE
-            //Manifest.permission.WRITE_SETTINGS
+            //, Manifest.permission.WRITE_SETTINGS
     };
+
+
+    private static final int REQUEST_CODE_WRITE_SETTINGS = 1;
+    private void requestWriteSettings() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+        intent.setData(Uri.parse("package:" + getPackageName()));
+        startActivityForResult(intent, REQUEST_CODE_WRITE_SETTINGS );
+    }
+
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -129,18 +143,29 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode==100){
-            boolean flag = true;
-            for (int result : grantResults) {
-                if(result == PackageManager.PERMISSION_DENIED){
-                    flag = false;
-                    break;
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_WRITE_SETTINGS) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                if (Settings.System.canWrite(this)) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(1500);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            Intent intent=new Intent(BaseActivity.this,MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }).start();
+                    Log.i("BaseActivity", "onActivityResult write settings granted" );
+                }else{
+                    openAppDetails();
                 }
-            }
-            if(!flag){
-                openAppDetails();
-            }else {
+            }else{
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -154,6 +179,37 @@ public class BaseActivity extends AppCompatActivity {
                         finish();
                     }
                 }).start();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode==100){
+            boolean flag = true;
+            for (int result : grantResults) {
+                if(result == PackageManager.PERMISSION_DENIED){
+                    flag = false;
+                    break;
+                }
+            }
+            if(!flag){
+                openAppDetails();
+            }else {
+                requestWriteSettings();
+                /*new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(1500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        Intent intent=new Intent(BaseActivity.this,MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }).start();*/
             }
         }
     }
