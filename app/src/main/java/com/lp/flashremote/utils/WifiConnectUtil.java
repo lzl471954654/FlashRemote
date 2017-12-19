@@ -3,6 +3,7 @@ package com.lp.flashremote.utils;
 import android.content.Context;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.util.Log;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class WifiConnectUtil {
 
     public enum WifiCipherType
     {
-        WIFICIPHER_WEP,WIFICIPHER_WPA, WIFICIPHER_NOPASS, WIFICIPHER_INVALID
+        WIFICIPHER_WEP,WIFICIPHER_WPA, WIFICIPHER_NOPASS
     }
     public WifiConnectUtil(Context context){
         manager=(WifiManager) context.getSystemService(context.WIFI_SERVICE);
@@ -38,6 +39,7 @@ public class WifiConnectUtil {
 
         if(!this.OpenWifi())
         {
+            Log.e("error","打开wifi 失败");
             return false;
         }
         while(manager.getWifiState() == WifiManager.WIFI_STATE_ENABLING ){
@@ -52,6 +54,7 @@ public class WifiConnectUtil {
         WifiConfiguration wifiConfig = this.CreateWifiInfo(SSID, Password,WifiCipherType.WIFICIPHER_WPA);
         if(wifiConfig == null)
         {
+            Log.e("error","wifiConfig == null");
             return false;
         }
 
@@ -64,6 +67,7 @@ public class WifiConnectUtil {
 
         int netID = manager.addNetwork(wifiConfig);
         boolean bRet = manager.enableNetwork(netID, true);
+        Log.e("bRet",bRet+"----------");
         return bRet;
     }
 
