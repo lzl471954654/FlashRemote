@@ -1,8 +1,7 @@
 package com.lp.flashremote.beans;
 
 
-
-
+import com.lp.flashremote.utils.WifiHostBiz;
 
 public class WifiInfo {
     private String name;
@@ -10,10 +9,13 @@ public class WifiInfo {
     private String ip;
 
     public WifiInfo(String i){
-        this.setName(PropertiesUtil.WIFINAME);
-        this.setPwd(PropertiesUtil.WIFIPWD);
+        this.setName(WifiHostBiz.wifiName);
+        this.setPwd(WifiHostBiz.wifiPass);
         this.setIp(i);
     }
+
+
+
 
 
 

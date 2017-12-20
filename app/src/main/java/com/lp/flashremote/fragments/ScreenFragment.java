@@ -83,14 +83,16 @@ public class ScreenFragment extends Fragment {
             @Override
             public void run() {
                 content=socket.readLine();
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Content c=StringUtil.getContent(content);
-                        FileCommand command=new Gson().fromJson(c.getContent(),FileCommand.class);
-                        fileOperation(command, c.getContent());
-                    }
-                });
+                if (getActivity()!=null){
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Content c=StringUtil.getContent(content);
+                            FileCommand command=new Gson().fromJson(c.getContent(),FileCommand.class);
+                            fileOperation(command, c.getContent());
+                        }
+                    });
+                }
             }
         }).start();
         return rootView;

@@ -134,6 +134,8 @@ class FileFragment : Fragment(), View.OnClickListener {
     }
 
     private fun refreshCount() {
+        if (!isResumed)
+            return
         FileManagerStatic.hasData = true
 
         m_music_count.text = "${FileManagerStatic.musicList.size}项"

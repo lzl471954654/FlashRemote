@@ -17,6 +17,8 @@ import java.lang.reflect.Method;
  */
 
 public class WifiHostBiz {
+    public static String wifiName = "";
+    public static String wifiPass = "Consmitor";
     private static final String TAG="WifiHostBiz";
     private WifiManager wifiManager;
 
@@ -67,8 +69,10 @@ public class WifiHostBiz {
             WifiConfiguration wifiConfig=new WifiConfiguration();
 
 
-            wifiConfig.SSID= PropertiesUtil.WIFINAME; //wifi名称
+            wifiName = PropertiesUtil.WIFINAME+""+System.currentTimeMillis();
+            wifiConfig.SSID= wifiName; //wifi名称
             wifiConfig.preSharedKey=PropertiesUtil.WIFIPWD; //密码
+            wifiPass = wifiConfig.preSharedKey;
 
             wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
 

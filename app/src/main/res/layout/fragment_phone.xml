@@ -73,9 +73,9 @@
             android:foreground="?attr/selectableItemBackgroundBorderless"
             android:text="我是被控端"/>
         <View
-            android:layout_width="2px"
-            android:layout_marginTop="3dp"
-            android:layout_marginBottom="3dp"
+            android:layout_width="1dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:layout_height="match_parent"
             android:background="#605f5f"/>
         <android.support.v7.widget.AppCompatButton

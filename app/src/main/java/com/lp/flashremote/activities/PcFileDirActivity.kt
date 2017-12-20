@@ -60,6 +60,12 @@ class PcFileDirActivity : AppCompatActivity() , View.OnClickListener{
     }
 
 
+    override fun onDestroy() {
+        super.onDestroy()
+        if (socket is WifiSocketUtil)
+            WifiSocketUtil.stopSocket()
+    }
+
     private fun addMessage(msg: String){
         socket.addMessage(msg)
     }

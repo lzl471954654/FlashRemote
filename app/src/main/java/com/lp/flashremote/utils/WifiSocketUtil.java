@@ -39,14 +39,14 @@ import static com.lp.flashremote.utils.IntConvertUtils.getIntegerBytes;
 /**
  * Created by xiyou3g on 2017/9/19.
  * 同一网络情况下，使用的socket工具类
- *
  */
 
-public class WifiSocketUtil extends Thread  implements SocketInterface {
+public class WifiSocketUtil extends Thread implements SocketInterface {
     /**
      * 1 两个loop
      * 2 两个socket,逻辑判断使用哪个
      * 3 一次是否开启一个线程？？？
+     *
      * @return
      */
 
@@ -55,22 +55,22 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
     private String hotIP;
 
     private String startflag;//无参构造创造一个服务端socket
-    private static final String SERVER="SS";
-    private static final String CLIENT="CS";
+    private static final String SERVER = "SS";
+    private static final String CLIENT = "CS";
 
     private static final LinkedBlockingDeque<byte[]> mSendMsgQueue = new LinkedBlockingDeque<>(1024);
     private static WifiSocketUtil wifi;
 
     private Gson gson = new Gson();
     private static Handler handler;
-    private static boolean loopFlag = false;
+    private static volatile boolean loopFlag = false;
 
 
-    private WifiSocketUtil(String mode,String ip){
-        System.out.println("WIFISOCKET Start! "+mode+"\t"+ip);
-        if(mode .equals(SERVER)){
+    private WifiSocketUtil(String mode, String ip) {
+        System.out.println("WIFISOCKET Start! " + mode + "\t" + ip);
+        if (mode.equals(SERVER)) {
             startflag = SERVER;
-        }else {
+        } else {
             startflag = CLIENT;
             hotIP = ip;
         }
@@ -83,47 +83,56 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
     public static WifiSocketUtil getInstance(String mode, String ip, Handler handler) {
         stopSocket();
         WifiSocketUtil.handler = handler;
-        wifi = new WifiSocketUtil(mode,ip);
+        wifi = new WifiSocketUtil(mode, ip);
         return wifi;
     }
 
-    private static void sendHandlerMessage(Message message){
-        if (handler!=null){
+    private static void sendHandlerMessage(Message message) {
+        if (handler != null) {
             handler.sendMessage(message);
         }
     }
 
-    public static void stopSocket(){
+    public static void stopSocket() {
         loopFlag = false;
-        if(wifi!=null){
+        if (wifi != null) {
+            Log.e("stopSocket","stop");
             wifi.interrupt();
 
             mSendMsgQueue.clear();
-
             handler = null;
+
+            try {
+                if (inputStream != null)
+                    inputStream.close();
+                if (outputStream != null)
+                    outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             inputStream = null;
             outputStream = null;
             wifi = null;
+
         }
     }
 
 
-
     @Override
     public void run() {
-        System.out.println("WIFISOCKET RUN "+startflag+"\t"+hotIP);
-        try{
+        System.out.println("WIFISOCKET RUN " + startflag + "\t" + hotIP);
+        try {
             Message message = new Message();
-            if (startflag.equals(CLIENT)){
-                if (initSocketClient(hotIP)){
+            if (startflag.equals(CLIENT)) {
+                if (initSocketClient(hotIP)) {
                     loopFlag = true;
                     message.what = 12;
                     System.out.println("server ok");
                     sendHandlerMessage(message);
                     serverloop();
                 }
-            }else if (startflag.equals(SERVER)){
-                if (initSocketServer()){
+            } else if (startflag.equals(SERVER)) {
+                if (initSocketServer()) {
                     loopFlag = true;
                     message.what = 18;
                     System.out.println("client ok");
@@ -131,11 +140,10 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
                     clientloop();
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            Log.e("wifi",""+e.getMessage());
-        }
-        finally {
+            Log.e("wifi", "" + e.getMessage());
+        } finally {
             Message message = new Message();
             message.what = 17;
             sendHandlerMessage(message);
@@ -145,48 +153,47 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
 
     /**
      * 被扫码端开启的loop
-     *
      */
-    private void serverloop() throws IOException,InterruptedException{
+    private void serverloop() throws IOException, InterruptedException {
         Thread thread = new Thread(listenLoop);
         thread.start();
         sendMessageLoop();
     }
 
-    public void sendMessageLoop() throws IOException,InterruptedException{
-        while(!isInterrupted()){
+    public void sendMessageLoop() throws IOException, InterruptedException {
+        while (!isInterrupted()) {
             byte[] bytes = mSendMsgQueue.takeFirst();
             outputStream.write(bytes);
         }
     }
 
 
-
     /**
      * 扫码端开启的loop
      */
-    private void clientloop() throws IOException,InterruptedException{
+    private void clientloop() throws IOException, InterruptedException {
         sendMessageLoop();
     }
 
 
-    private boolean initSocketServer() throws IOException{
-        boolean flag=false;
-        ServerSocket serverSocket=new ServerSocket(10085);
+    private boolean initSocketServer() throws IOException {
+        boolean flag = false;
+        ServerSocket serverSocket = new ServerSocket(10085);
 
-        Socket socket=serverSocket.accept();
-        inputStream=socket.getInputStream();
-        outputStream=socket.getOutputStream();
+        Socket socket = serverSocket.accept();
+        inputStream = socket.getInputStream();
+        outputStream = socket.getOutputStream();
 
-        if (readString().equals(PropertiesUtil.HELLOSERVER)){
-            byte[] helloClent= PropertiesUtil.HELLOCLIENT.getBytes("UTF-8");
-            Log.e("222222222","fdsfdsfsdfsd");
+        if (readString().equals(PropertiesUtil.HELLOSERVER)) {
+            byte[] helloClent = PropertiesUtil.HELLOCLIENT.getBytes("UTF-8");
+            Log.e("222222222", "fdsfdsfsdfsd");
             outputStream.write(getIntegerBytes(helloClent.length));
             outputStream.write(helloClent);
-            flag=true;
+            flag = true;
         }
         return flag;
     }
+
     public static ArrayList<String> getConnectIp() throws IOException {
         ArrayList<String> connectIpList = new ArrayList<String>();
         BufferedReader br = new BufferedReader(new FileReader("/proc/net/arp"));
@@ -197,7 +204,7 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
                 String ip = splitted[0];
                 System.out.println(ip);
                 String[] verify = ip.split("\\.");
-                if (verify!=null&&verify.length>=4)
+                if (verify != null && verify.length >= 4)
                     connectIpList.add(ip);
             }
         }
@@ -206,19 +213,19 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
     }
 
 
-    private boolean initSocketClient(String ip) throws IOException{
-        boolean flag=false;
-        Log.e("1111111111","ip");
-        Socket socket=new Socket(ip,10085);
-        Log.e("1111111111","pppppppppppp");
-        inputStream=socket.getInputStream();
-        outputStream=socket.getOutputStream();
-        byte[] helloServer= PropertiesUtil.HELLOSERVER.getBytes("UTF-8");
-        Log.e("1111111111","fdsfdsfsdfsd");
+    private boolean initSocketClient(String ip) throws IOException {
+        boolean flag = false;
+        Log.e("1111111111", "ip");
+        Socket socket = new Socket(ip, 10085);
+        Log.e("1111111111", "pppppppppppp");
+        inputStream = socket.getInputStream();
+        outputStream = socket.getOutputStream();
+        byte[] helloServer = PropertiesUtil.HELLOSERVER.getBytes("UTF-8");
+        Log.e("1111111111", "fdsfdsfsdfsd");
         outputStream.write(getIntegerBytes(helloServer.length));
         outputStream.write(helloServer);
-        if (readString().equals(PropertiesUtil.HELLOCLIENT)){
-            flag=true;
+        if (readString().equals(PropertiesUtil.HELLOCLIENT)) {
+            flag = true;
         }
         return flag;
     }
@@ -234,11 +241,11 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
         return readString();
     }
 
-    public void addBytes(byte[] bytes){
+    public void addBytes(byte[] bytes) {
         mSendMsgQueue.addLast(bytes);
     }
 
-    public void addMessage(String s){
+    public void addMessage(String s) {
         s = StringUtil.addEnd_flag2Str(s);
         try {
             byte[] stringData = s.getBytes("UTF-8");
@@ -248,57 +255,57 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
             e.printStackTrace();
         }
     }
+
     private static String readString() {
-        String s="";
-        int msgSize=0;
-        byte[] msgSizeBytes=new byte[4];
-        try{
-            int readSize=inputStream.read(msgSizeBytes);
-            if(readSize<0){
+        String s = "";
+        int msgSize = 0;
+        byte[] msgSizeBytes = new byte[4];
+        try {
+            int readSize = inputStream.read(msgSizeBytes);
+            if (readSize == -1 || readSize < 0 ) {
                 loopFlag = false;
-                interrupted();
+                Thread.currentThread().interrupt();
+                throw new IOException("readSize is -1");
+            }
+            msgSize = IntConvertUtils.getIntegerByByteArray(msgSizeBytes);
+            if (msgSize <= 0) {
                 return "";
             }
-            msgSize=IntConvertUtils.getIntegerByByteArray(msgSizeBytes);
-            if (msgSize<=0){
-                return "";
-            }
-            if(msgSize>40*1024){
-                Log.e("readMsg","msg is too larg , size is "+msgSize);
+            if (msgSize > 40 * 1024) {
+                Log.e("readMsg", "msg is too larg , size is " + msgSize);
                 return "";
             }
             int i = 0;
             byte[] dataBytes = new byte[msgSize];
-            while(i<msgSize){
-                dataBytes[i] = (byte)inputStream.read();
+            while (i < msgSize) {
+                dataBytes[i] = (byte) inputStream.read();
                 i++;
             }
             s = new String(dataBytes);
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
-            interrupted();
             loopFlag = false;
         }
         return s;
     }
 
-    private void fileDelete(Content content){
-        String[] paths = gson.fromJson(content.getContent(),String[].class);
+    private void fileDelete(Content content) {
+        String[] paths = gson.fromJson(content.getContent(), String[].class);
         int originalCount = paths.length;
         int newCount = FileUtilsKt.deleteFileOrDirs(paths);
-        sendMsgWithParamEND(new String[]{PropertiesUtil.COMMAND_RESULT,String.valueOf(newCount)});
+        sendMsgWithParamEND(new String[]{PropertiesUtil.COMMAND_RESULT, String.valueOf(newCount)});
     }
 
-    private void filePathOP(Content content){
+    private void filePathOP(Content content) {
         Gson gson = new Gson();
-        Command command = gson.fromJson(content.getContent(),Command.class);
+        Command command = gson.fromJson(content.getContent(), Command.class);
         File[] files = null;
-        if(command.getDescribe().equals("")){
+        if (command.getDescribe().equals("")) {
             /*
             * describe 为空  返回根目录
             * */
             files = Environment.getExternalStorageDirectory().listFiles();
-        }else{
+        } else {
             /*
             * describe 不为空 返回要求目录
             * */
@@ -315,54 +322,53 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
         addMessage(gson.toJson(list));
     }
 
-    private void getFile(Content content){
+    private void getFile(Content content) {
         List<FileDescribe> list = new LinkedList<>();
-        FileInfo[] fileInfos = gson.fromJson(content.getContent(),FileInfo[].class);
+        FileInfo[] fileInfos = gson.fromJson(content.getContent(), FileInfo[].class);
         for (FileInfo fileInfo : fileInfos) {
             File file = new File(fileInfo.getPath());
             FileDescribe describe = new FileDescribe();
             describe.setFileSize(file.length());
-            String name = file.getName().substring(0,file.getName().lastIndexOf("."));
-            String type = file.getName().substring(file.getName().lastIndexOf(".")+1,file.getName().length());
+            String name = file.getName().substring(0, file.getName().lastIndexOf("."));
+            String type = file.getName().substring(file.getName().lastIndexOf(".") + 1, file.getName().length());
             describe.setFileName(name);
             describe.setFileType(type);
             list.add(describe);
         }
-        String command = PropertiesUtil.FILE_LIST_FLAG+"_"+gson.toJson(list);
+        String command = PropertiesUtil.FILE_LIST_FLAG + "_" + gson.toJson(list);
         addMessage(command);
         String reuslt = readLine();
-        if(reuslt.startsWith(PropertiesUtil.FILE_READY)){
-            try
-            {
+        if (reuslt.startsWith(PropertiesUtil.FILE_READY)) {
+            try {
                 for (FileInfo fileInfo : fileInfos) {
                     File file = new File(fileInfo.getPath());
                     int count = 0;
                     FileInputStream inputStream = new FileInputStream(file);
-                    while(true){
+                    while (true) {
                         byte[] bytes = new byte[4096];
                         count = inputStream.read(bytes);
-                        if(count==-1)
+                        if (count == -1)
                             break;
-                        if(count==4096)
+                        if (count == 4096)
                             addBytes(bytes);
-                        else{
+                        else {
                             byte[] newBytes = new byte[count];
                             int i = 0;
-                            for (i = 0;i<count;i++)
+                            for (i = 0; i < count; i++)
                                 newBytes[i] = bytes[i];
                             addBytes(newBytes);
                         }
                     }
                     inputStream.close();
                 }
-            }catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
                 interrupt();
             }
         }
     }
 
-    private void sendMsgWithParamEND(String[] args){
+    private void sendMsgWithParamEND(String[] args) {
         StringBuilder builder = new StringBuilder();
         for (String arg : args) {
             builder.append(arg);
@@ -382,33 +388,35 @@ public class WifiSocketUtil extends Thread  implements SocketInterface {
     private Runnable listenLoop = new Runnable() {
         @Override
         public void run() {
-            while(loopFlag&&!isInterrupted()){
+            while (loopFlag && !isInterrupted()) {
                 String is = readLine();
-                if(is==null||is.equals("")){
+                if (is == null || is.equals("")) {
                     continue;
                 }
                 Content content = StringUtil.getContent(is);
-                switch (content.getHead()){
-                    case "|COMMAND|":{
-                        Command command = gson.fromJson(content.getContent(),Command.class);
-                        switch (command.getType()){
-                            case "4":{
+                switch (content.getHead()) {
+                    case "|COMMAND|": {
+                        Command command = gson.fromJson(content.getContent(), Command.class);
+                        switch (command.getType()) {
+                            case "4": {
                                 filePathOP(content);
                                 break;
                             }
                         }
                         break;
                     }
-                    case "|FILE@DELETE|":{
+                    case "|FILE@DELETE|": {
                         fileDelete(StringUtil.getContent(is));
                         break;
                     }
-                    case "|GET@FILE|":{
+                    case "|GET@FILE|": {
                         getFile(content);
                         break;
                     }
                 }
             }
+            if (wifi!=null)
+                wifi.interrupt();
         }
     };
 }

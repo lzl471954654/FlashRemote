@@ -44,11 +44,11 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
     static private Handler handler;
     static private String mType = "";
     static private String ip = PropertiesUtil.SERVER_IP;
-    static private Boolean loopFlag = false;
+    static private volatile Boolean loopFlag = false;
     static private Thread readThread;
     private Gson gson = new Gson();
 
-    public static Boolean getLoopFlag() {
+    public static synchronized Boolean getLoopFlag() {
         return loopFlag;
     }
 
@@ -62,7 +62,7 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
         return phoneRemoteSocket;
     }
 
-    public static PhoneRemoteSocket getNowInstance(){
+    public static synchronized PhoneRemoteSocket getNowInstance(){
         return phoneRemoteSocket;
     }
 
@@ -71,7 +71,7 @@ public class PhoneRemoteSocket extends Thread implements SocketInterface {
         return in;
     }
 
-    public static void clearSocket(){
+    public static synchronized void clearSocket(){
         loopFlag = false;
         in = null;
         out = null;

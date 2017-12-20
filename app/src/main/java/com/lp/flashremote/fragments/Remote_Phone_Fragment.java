@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -108,6 +109,11 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
     }
 
 
+    private void requestWriteSettings() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+        intent.setData(Uri.parse("package:" + getContext().getPackageName()));
+        startActivity(intent);
+    }
 
 
 
@@ -121,6 +127,14 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                  * 2 本机WiFi ip
                  * 3 等待对方连接
                  */
+
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    if (!Settings.System.canWrite(getContext()))
+                    {
+                        requestWriteSettings();
+                        break;
+                    }
+                }
                 String hotIp = setwifiHot(true);   //打开热点，并开启socket
                 Log.e("hotIP","------"+hotIp);
                 WifiManager wifiManager = (WifiManager) getContext().getApplicationContext()
@@ -130,6 +144,7 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
 
                 break;
             case R.id.scanQR:
+                //WifiSocketUtil.stopSocket();
                 Intent intent = new Intent(getActivity(), CaptureActivity.class);
                 startActivityForResult(intent, QR_RESULT_CODE);
                 break;
@@ -190,14 +205,22 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
         dialogbuilder.setBitmap(bitmap);
         CodeDialog dialog = dialogbuilder.create();
         dialog.setCanceledOnTouchOutside(true);
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                if (wifiHostBiz!=null){
+                    wifiHostBiz.closeWifiAp();
+                }
+            }
+        });
+        /*dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
                 if (wifiHostBiz!=null){
                     wifiHostBiz.closeWifiAp();
                 }
             }
-        });
+        });*/
         dialog.show();
         listenConnection();
     }

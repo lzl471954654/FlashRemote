@@ -53,6 +53,8 @@ public class WifiConnectUtil {
         }
         WifiConfiguration wifiConfig = this.CreateWifiInfo(SSID, Password,WifiCipherType.WIFICIPHER_WPA);
 
+        /*boolean disConnectedFlag = manager.disconnect();
+        System.out.println("disConnectedFlag is "+disConnectedFlag);*/
 
         if(wifiConfig == null)
         {
@@ -68,7 +70,9 @@ public class WifiConnectUtil {
             manager.removeNetwork(tempConfig.networkId);
         }
 
+
         int netID = manager.addNetwork(wifiConfig);
+        System.out.println("netID is "+netID);
         boolean bRet = manager.enableNetwork(netID, true);
         Log.e("bRet",bRet+"----------");
         return bRet;

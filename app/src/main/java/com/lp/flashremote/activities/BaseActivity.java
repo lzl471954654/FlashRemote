@@ -192,19 +192,6 @@ public class BaseActivity extends AppCompatActivity {
                 openAppDetails();
             }else {
                 requestWriteSettings();
-                /*new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(1500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        Intent intent=new Intent(BaseActivity.this,MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                }).start();*/
             }
         }
     }
@@ -233,12 +220,5 @@ public class BaseActivity extends AppCompatActivity {
             }
         });
         builder.show();
-    }
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        //finish();
     }
 }

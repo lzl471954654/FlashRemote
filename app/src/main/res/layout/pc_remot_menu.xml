@@ -267,7 +267,7 @@
             android:gravity="center_horizontal"
             android:text="@string/yuying"/>
     </LinearLayout>
-    <TextView
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/hide_more_menu"
         android:layout_below="@id/tv003"
         android:layout_marginTop="30dp"
@@ -277,5 +277,6 @@
         android:layout_height="45dp"
         android:text="@string/back"
         android:gravity="center"
+        android:textColor="#ffffff"
         android:background="@drawable/remote_tv_bg"/>
 </RelativeLayout>
