@@ -74,6 +74,8 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
 
     private WifiInfo mWifiInfo;
 
+    private WifiHostBiz wifiHostBiz;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -188,6 +190,14 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
         dialogbuilder.setBitmap(bitmap);
         CodeDialog dialog = dialogbuilder.create();
         dialog.setCanceledOnTouchOutside(true);
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (wifiHostBiz!=null){
+                    wifiHostBiz.closeWifiAp();
+                }
+            }
+        });
         dialog.show();
         listenConnection();
     }
@@ -224,7 +234,7 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
     }
 
     private String setwifiHot(boolean b) {
-        WifiHostBiz wifiHostBiz = new WifiHostBiz(getContext());
+        wifiHostBiz = new WifiHostBiz(getContext());
         String hotIp;
         if (wifiHostBiz.isWifiApEnable()) {
             wifiHostBiz.setWifiAPEnable(!b);
@@ -333,6 +343,14 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
         Log.e("2222222","22222222222222");
         mWifiSocket=WifiSocketUtil.getInstance(mode,ip,handler);
         mWifiSocket.start();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (wifiHostBiz!=null){
+            wifiHostBiz.closeWifiAp();
+        }
     }
 
     @Override

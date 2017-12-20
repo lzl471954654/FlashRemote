@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.lp.flashremote.beans.PropertiesUtil;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 
@@ -80,4 +81,27 @@ public class WifiHostBiz {
         }
         return null;
     }
+    public void closeWifiAp() {
+
+        Log.e("closehot","wifiAp closing......");
+            try {
+                Method method = wifiManager.getClass().getMethod("getWifiApConfiguration");
+                method.setAccessible(true);
+                WifiConfiguration config = (WifiConfiguration) method.invoke(wifiManager);
+                Method method2 = wifiManager.getClass().getMethod("setWifiApEnabled",
+                        WifiConfiguration.class, boolean.class);
+
+                method2.invoke(wifiManager, config, false);
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+
+    }
+
 }

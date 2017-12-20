@@ -64,6 +64,7 @@ public class WifiConnectUtil {
 
         if(tempConfig != null)
         {
+            Log.e("111111","tempConfig"+tempConfig.networkId);
             manager.removeNetwork(tempConfig.networkId);
         }
 
