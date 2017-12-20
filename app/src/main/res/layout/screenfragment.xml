@@ -11,11 +11,18 @@
         android:layout_marginTop="200dp"
         android:layout_gravity="center"
         />
-    <com.lp.flashremote.views.ZoomImageView
+    <!--<com.lp.flashremote.views.ZoomImageView
         android:visibility="gone"
         android:id="@+id/operation"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="matrix" />
+        android:scaleType="matrix" />-->
+
+
+    <uk.co.senab.photoview.PhotoView
+        android:visibility="gone"
+        android:id="@+id/operation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

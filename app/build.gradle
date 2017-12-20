@@ -59,6 +59,8 @@ dependencies {
 
 
     compile 'com.carson_ho:SearchLayout:1.0.1'
+
+    compile 'com.commit451:PhotoView:1.2.4'
 }
 repositories {
     mavenCentral()

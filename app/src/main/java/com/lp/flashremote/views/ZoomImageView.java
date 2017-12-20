@@ -16,7 +16,7 @@ import android.widget.ImageView;
  * 实现图片的缩放
  */
 
-
+@Deprecated
 public class ZoomImageView extends android.support.v7.widget.AppCompatImageView  implements
         ScaleGestureDetector.OnScaleGestureListener,View.OnTouchListener,
         ViewTreeObserver.OnGlobalLayoutListener {
