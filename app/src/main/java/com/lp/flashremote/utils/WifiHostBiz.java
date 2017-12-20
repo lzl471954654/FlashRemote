@@ -68,6 +68,7 @@ public class WifiHostBiz {
 
             wifiConfig.SSID= PropertiesUtil.WIFINAME; //wifi名称
             wifiConfig.preSharedKey=PropertiesUtil.WIFIPWD; //密码
+
             wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
 
             method.invoke(wifiManager, wifiConfig, enable);

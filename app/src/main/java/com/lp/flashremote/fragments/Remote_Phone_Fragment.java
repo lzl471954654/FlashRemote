@@ -120,7 +120,9 @@ public class Remote_Phone_Fragment extends Fragment implements View.OnClickListe
                  * 3 等待对方连接
                  */
                 String hotIp = setwifiHot(true);   //打开热点，并开启socket
-                WifiManager wifiManager = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                Log.e("hotIP","------"+hotIp);
+                WifiManager wifiManager = (WifiManager) getContext().getApplicationContext()
+                        .getSystemService(Context.WIFI_SERVICE);
                 String newIP = IpAddressUtil.intIP2StringIP(wifiManager.getDhcpInfo().serverAddress);
                 initQRCode(hotIp);               //弹出二维码等待连接
 

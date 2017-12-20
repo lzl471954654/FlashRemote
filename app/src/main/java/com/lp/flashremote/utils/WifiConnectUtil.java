@@ -51,7 +51,9 @@ public class WifiConnectUtil {
             }
 
         }
-        WifiConfiguration wifiConfig = this.CreateWifiInfo(SSID, Password,WifiCipherType.WIFICIPHER_WPA);
+      //  WifiConfiguration wifiConfig = this.CreateWifiInfo(SSID, Password,WifiCipherType.WIFICIPHER_WPA);
+        WifiConfiguration wifiConfig=this.CreateWifiInfo(SSID,Password,WifiCipherType.WIFICIPHER_NOPASS);
+
         if(wifiConfig == null)
         {
             Log.e("error","wifiConfig == null");
