@@ -24,7 +24,7 @@
         android:id="@+id/codeimage"
         layout="@layout/myphone_layout"/>
 
-    <TextView
+    <android.support.v7.widget.AppCompatButton
         android:layout_marginTop="30dp"
         android:id="@+id/scanQR"
         android:layout_marginStart="70dp"
@@ -34,7 +34,9 @@
         android:text="扫码链接"
         android:gravity="center"
         android:textColor="@color/normalBackgroundColor"
-        android:background="@drawable/remote_tv_bg"/>
+        android:background="@drawable/remote_tv_bg"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        />
 
     <View
         android:layout_width="match_parent"
@@ -59,7 +61,7 @@
         android:layout_marginStart="50dp"
         android:layout_marginEnd="50dp"
         android:orientation="horizontal">
-        <TextView
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/phoneOnline"
             android:layout_marginEnd="1dp"
             android:layout_width="0dp"
@@ -67,7 +69,8 @@
             android:layout_height="45dp"
             android:gravity="center"
             android:textColor="@color/normalBackgroundColor"
-            android:background="@drawable/remote_tv_bg1"
+            android:background="@drawable/remote_tv_bg"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:text="我是被控端"/>
         <View
             android:layout_width="2px"
@@ -75,7 +78,7 @@
             android:layout_marginBottom="3dp"
             android:layout_height="match_parent"
             android:background="#605f5f"/>
-        <TextView
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/phoneControl"
 
             android:layout_marginStart="1dp"
@@ -84,7 +87,8 @@
             android:layout_height="45dp"
             android:gravity="center"
             android:textColor="@color/normalBackgroundColor"
-            android:background="@drawable/remote_tv_bg2"
+            android:background="@drawable/remote_tv_bg"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:text="我是控制端"/>
     </LinearLayout>
 </LinearLayout>

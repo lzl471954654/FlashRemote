@@ -24,11 +24,6 @@ import com.lp.flashremote.utils.SharePerferenceUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;
-
-import permissions.dispatcher.NeedsPermission;
-import permissions.dispatcher.OnPermissionDenied;
-import permissions.dispatcher.RuntimePermissions;
-
 /**
  * Created by xiyou3g on 2017/10/6.
  *

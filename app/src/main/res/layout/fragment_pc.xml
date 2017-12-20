@@ -62,7 +62,9 @@
             android:background="@color/divider"/>
     </LinearLayout>
 
-            <TextView
+            <android.support.v7.widget.AppCompatButton
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:textColor="#ffffff"
                 android:id="@+id/connpc"
                 android:layout_marginTop="30dp"
                 android:layout_marginStart="50dp"
@@ -71,8 +73,11 @@
                 android:layout_height="45dp"
                 android:text="@string/connpc"
                 android:gravity="center"
-                android:background="@drawable/remote_tv_bg"/>
-            <TextView
+                android:background="@color/primary"
+                />
+            <android.support.v7.widget.AppCompatButton
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:textColor="#ffffff"
                 android:id="@+id/breakConnpc"
                 android:layout_marginTop="30dp"
                 android:layout_marginStart="50dp"
@@ -81,7 +86,8 @@
                 android:layout_height="45dp"
                 android:text="@string/break_coonpc"
                 android:gravity="center"
-                android:background="@drawable/remote_tv_bg"/>
+                android:background="@color/primary"
+                />
 
 
 </LinearLayout>
